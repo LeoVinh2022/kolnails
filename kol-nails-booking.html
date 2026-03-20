@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KOL Nails Studio — Book Appointment</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --rose:    #c9707a;
+    --blush:   #f2d7db;
+    --cream:   #fdf6f0;
+    --sand:    #e8d5c4;
+    --dark:    #2c1f1f;
+    --mid:     #7a5c5c;
+    --light:   #f9f0ea;
+    --gold:    #b8954a;
+    --white:   #ffffff;
+    --success: #6a9e7f;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 0%, #f7e0e4 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 90% 100%, #f0ddd4 0%, transparent 60%),
+      var(--cream);
+    z-index: 0;
+  }
+
+  /* ── PETAL DECORATIONS ── */
+  .petal {
+    position: fixed;
+    border-radius: 50% 0 50% 0;
+    opacity: 0.18;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .petal-1 { width: 180px; height: 180px; background: var(--rose);  top: -40px; left: -40px; transform: rotate(25deg); }
+  .petal-2 { width: 120px; height: 120px; background: var(--gold);  top: 60px;  right: -30px; transform: rotate(-15deg); }
+  .petal-3 { width: 90px;  height: 90px;  background: var(--rose);  bottom: 120px; left: 20px; transform: rotate(45deg); }
+  .petal-4 { width: 140px; height: 140px; background: var(--sand);  bottom: -30px; right: 60px; transform: rotate(10deg); }
+
+  /* ── WRAPPER ── */
+  .wrapper {
+    position: relative; z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+  .logo-ring {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--rose), var(--gold));
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 32px rgba(201,112,122,0.35);
+  }
+  .logo-ring span { font-size: 2rem; }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    font-weight: 600;
+    color: var(--dark);
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+  }
+  header h1 em { font-style: italic; color: var(--rose); }
+  header p {
+    margin-top: 0.6rem;
+    font-size: 0.9rem;
+    color: var(--mid);
+    letter-spacing: 0.04em;
+  }
+  .lang-toggle {
+    display: inline-flex; gap: 0; margin-top: 1.2rem;
+    border: 1.5px solid var(--sand); border-radius: 20px; overflow: hidden;
+    background: var(--white);
+  }
+  .lang-toggle button {
+    padding: 0.35rem 1.1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem; font-weight: 500;
+    border: none; cursor: pointer;
+    background: transparent; color: var(--mid);
+    transition: all 0.25s;
+  }
+  .lang-toggle button.active {
+    background: var(--rose); color: var(--white); border-radius: 18px;
+  }
+
+  /* ── STEP INDICATOR ── */
+  .steps {
+    display: flex; align-items: center; justify-content: center;
+    gap: 0; margin-bottom: 2rem;
+  }
+  .step-dot {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .step-dot .dot {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 500;
+    border: 2px solid var(--sand);
+    background: var(--white); color: var(--mid);
+    transition: all 0.3s;
+  }
+  .step-dot.active .dot  { background: var(--rose); border-color: var(--rose); color: var(--white); box-shadow: 0 4px 12px rgba(201,112,122,0.4); }
+  .step-dot.done .dot    { background: var(--success); border-color: var(--success); color: var(--white); }
+  .step-dot .label { font-size: 0.7rem; color: var(--mid); white-space: nowrap; }
+  .step-dot.active .label { color: var(--rose); font-weight: 500; }
+  .step-line { width: 48px; height: 2px; background: var(--sand); margin: 0 4px; margin-bottom: 18px; transition: background 0.3s; }
+  .step-line.done { background: var(--success); }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 40px rgba(44,31,31,0.08), 0 1px 4px rgba(44,31,31,0.04);
+    border: 1px solid rgba(232,213,196,0.5);
+  }
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem; font-weight: 600;
+    color: var(--dark); margin-bottom: 1.4rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--blush);
+  }
+
+  /* ── SERVICE CARDS ── */
+  .service-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+  .service-card {
+    border: 2px solid var(--sand);
+    border-radius: 14px; padding: 1.1rem;
+    cursor: pointer; transition: all 0.25s;
+    background: var(--light);
+    position: relative; overflow: hidden;
+  }
+  .service-card::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(201,112,122,0.08), transparent);
+    opacity: 0; transition: opacity 0.25s;
+  }
+  .service-card:hover { border-color: var(--rose); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(201,112,122,0.15); }
+  .service-card:hover::after { opacity: 1; }
+  .service-card.selected { border-color: var(--rose); background: #fff5f6; box-shadow: 0 4px 20px rgba(201,112,122,0.2); }
+  .service-card.selected::after { opacity: 1; }
+  .service-icon { font-size: 1.6rem; margin-bottom: 0.4rem; }
+  .service-name { font-weight: 500; font-size: 0.95rem; color: var(--dark); }
+  .service-price { font-size: 0.85rem; color: var(--rose); font-weight: 500; margin-top: 0.2rem; }
+  .service-duration { font-size: 0.75rem; color: var(--mid); margin-top: 0.1rem; }
+  .service-check {
+    position: absolute; top: 10px; right: 10px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--rose); color: white;
+    display: none; align-items: center; justify-content: center;
+    font-size: 0.65rem;
+  }
+  .service-card.selected .service-check { display: flex; }
+
+  /* ── STAFF CARDS ── */
+  .staff-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
+  .staff-card {
+    border: 2px solid var(--sand); border-radius: 14px;
+    padding: 1.2rem 0.8rem; text-align: center;
+    cursor: pointer; transition: all 0.25s; background: var(--light);
+  }
+  .staff-card:hover { border-color: var(--rose); transform: translateY(-2px); }
+  .staff-card.selected { border-color: var(--rose); background: #fff5f6; box-shadow: 0 4px 20px rgba(201,112,122,0.2); }
+  .staff-avatar {
+    width: 52px; height: 52px; border-radius: 50%;
+    margin: 0 auto 0.6rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    background: linear-gradient(135deg, var(--blush), var(--sand));
+    border: 2px solid var(--white);
+    box-shadow: 0 2px 8px rgba(201,112,122,0.2);
+  }
+  .staff-name { font-size: 0.85rem; font-weight: 500; color: var(--dark); }
+  .staff-title { font-size: 0.72rem; color: var(--mid); margin-top: 0.2rem; }
+
+  /* ── DATE / TIME ── */
+  .date-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.4rem; margin-bottom: 1.2rem; }
+  .date-cell {
+    aspect-ratio: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    border-radius: 10px; cursor: pointer;
+    border: 1.5px solid var(--sand); background: var(--light);
+    transition: all 0.2s; font-size: 0.7rem;
+  }
+  .date-cell .wd { color: var(--mid); font-size: 0.62rem; margin-bottom: 1px; }
+  .date-cell .dd { font-weight: 600; font-size: 0.85rem; color: var(--dark); }
+  .date-cell:hover:not(.disabled) { border-color: var(--rose); background: #fff5f6; }
+  .date-cell.selected { border-color: var(--rose); background: var(--rose); }
+  .date-cell.selected .wd,
+  .date-cell.selected .dd { color: var(--white); }
+  .date-cell.disabled { opacity: 0.35; cursor: default; }
+  .date-cell.today { border-color: var(--gold); }
+  .date-cell.today .dd { color: var(--gold); }
+
+  .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+  .time-slot {
+    padding: 0.55rem 0.4rem; text-align: center;
+    border: 1.5px solid var(--sand); border-radius: 10px;
+    cursor: pointer; font-size: 0.82rem; font-weight: 500;
+    background: var(--light); color: var(--dark);
+    transition: all 0.2s;
+  }
+  .time-slot:hover { border-color: var(--rose); color: var(--rose); background: #fff5f6; }
+  .time-slot.selected { background: var(--rose); border-color: var(--rose); color: var(--white); }
+  .time-slot.booked { opacity: 0.35; cursor: default; text-decoration: line-through; }
+
+  /* ── FORM FIELDS ── */
+  .field { margin-bottom: 1.1rem; }
+  .field label { display: block; font-size: 0.82rem; font-weight: 500; color: var(--mid); margin-bottom: 0.4rem; letter-spacing: 0.02em; }
+  .field input {
+    width: 100%; padding: 0.75rem 1rem;
+    border: 1.5px solid var(--sand); border-radius: 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.92rem;
+    background: var(--light); color: var(--dark);
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .field input:focus { border-color: var(--rose); box-shadow: 0 0 0 3px rgba(201,112,122,0.12); background: var(--white); }
+  .field input::placeholder { color: #c4aaaa; }
+
+  /* ── SUMMARY BOX ── */
+  .summary {
+    background: var(--light); border-radius: 14px;
+    padding: 1.2rem; margin-bottom: 1.4rem;
+    border: 1px solid var(--sand);
+  }
+  .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; font-size: 0.88rem; }
+  .summary-row:not(:last-child) { border-bottom: 1px dashed var(--sand); }
+  .summary-row .key { color: var(--mid); }
+  .summary-row .val { font-weight: 500; color: var(--dark); }
+  .summary-row.total .val { color: var(--rose); font-size: 1rem; font-weight: 600; }
+
+  /* ── BUTTONS ── */
+  .btn-row { display: flex; gap: 0.8rem; margin-top: 1.5rem; }
+  .btn {
+    flex: 1; padding: 0.85rem;
+    border-radius: 12px; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 0.92rem; font-weight: 500;
+    transition: all 0.25s; letter-spacing: 0.01em;
+  }
+  .btn-back { background: var(--light); color: var(--mid); border: 1.5px solid var(--sand); flex: 0 0 auto; padding: 0.85rem 1.4rem; }
+  .btn-back:hover { background: var(--sand); }
+  .btn-next { background: linear-gradient(135deg, var(--rose), #d4777e); color: var(--white); box-shadow: 0 4px 16px rgba(201,112,122,0.35); }
+  .btn-next:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(201,112,122,0.45); }
+  .btn-next:disabled { opacity: 0.45; cursor: default; transform: none; box-shadow: none; }
+
+  /* ── SUCCESS ── */
+  .success-card {
+    text-align: center; padding: 2.5rem 2rem;
+  }
+  .success-icon {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, #6a9e7f, #8dbfa0);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; margin: 0 auto 1.2rem;
+    box-shadow: 0 8px 32px rgba(106,158,127,0.35);
+    animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .success-card h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--dark); margin-bottom: 0.5rem; }
+  .success-card p { color: var(--mid); font-size: 0.9rem; margin-bottom: 1.5rem; }
+  .booking-ref {
+    display: inline-block; background: var(--light); border: 1.5px solid var(--sand);
+    border-radius: 10px; padding: 0.5rem 1.2rem;
+    font-size: 0.85rem; color: var(--mid); margin-bottom: 1.5rem;
+  }
+  .booking-ref strong { color: var(--rose); font-size: 1rem; }
+  .btn-new { background: linear-gradient(135deg, var(--rose), #d4777e); color: var(--white); padding: 0.85rem 2.5rem; border-radius: 12px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.92rem; font-weight: 500; box-shadow: 0 4px 16px rgba(201,112,122,0.35); transition: all 0.25s; }
+  .btn-new:hover { transform: translateY(-1px); }
+
+  /* ── FOOTER ── */
+  footer { text-align: center; margin-top: 2rem; font-size: 0.78rem; color: var(--mid); opacity: 0.7; }
+
+  /* ── ANIMATION ── */
+  .step-panel { animation: fadeUp 0.35s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── OWNER PANEL ── */
+  .owner-link { text-align: center; margin-top: 1rem; }
+  .owner-link a { font-size: 0.78rem; color: var(--mid); text-decoration: none; opacity: 0.6; }
+  .owner-link a:hover { opacity: 1; color: var(--rose); }
+
+  @media (max-width: 480px) {
+    .service-grid { grid-template-columns: 1fr 1fr; }
+    .time-grid { grid-template-columns: repeat(3, 1fr); }
+    .date-grid { grid-template-columns: repeat(7, 1fr); gap: 0.25rem; }
+    .date-cell { font-size: 0.6rem; }
+    .date-cell .dd { font-size: 0.75rem; }
+    header h1 { font-size: 1.9rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="petal petal-1"></div>
+<div class="petal petal-2"></div>
+<div class="petal petal-3"></div>
+<div class="petal petal-4"></div>
+
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-ring"><span>💅</span></div>
+    <h1>KOL <em>Nails</em> Studio</h1>
+    <p id="header-sub">Book your appointment · Đặt lịch hẹn</p>
+    <div class="lang-toggle">
+      <button class="active" onclick="setLang('en')">EN</button>
+      <button onclick="setLang('vi')">VI</button>
+    </div>
+  </header>
+
+  <!-- STEP INDICATOR -->
+  <div class="steps">
+    <div class="step-dot active" id="sd1">
+      <div class="dot">1</div>
+      <div class="label" data-en="Service" data-vi="Dịch vụ">Service</div>
+    </div>
+    <div class="step-line" id="sl1"></div>
+    <div class="step-dot" id="sd2">
+      <div class="dot">2</div>
+      <div class="label" data-en="Staff" data-vi="Nhân viên">Staff</div>
+    </div>
+    <div class="step-line" id="sl2"></div>
+    <div class="step-dot" id="sd3">
+      <div class="dot">3</div>
+      <div class="label" data-en="Date & Time" data-vi="Ngày & Giờ">Date & Time</div>
+    </div>
+    <div class="step-line" id="sl3"></div>
+    <div class="step-dot" id="sd4">
+      <div class="dot">4</div>
+      <div class="label" data-en="Your Info" data-vi="Thông tin">Your Info</div>
+    </div>
+  </div>
+
+  <!-- CARD -->
+  <div class="card" id="main-card">
+
+    <!-- STEP 1: SERVICE -->
+    <div id="step1" class="step-panel">
+      <div class="card-title" data-en="Choose Your Service" data-vi="Chọn dịch vụ">Choose Your Service</div>
+      <div class="service-grid">
+        <div class="service-card" onclick="selectService(this,'Nail Care','')" data-service="Nail Care">
+          <div class="service-check">✓</div>
+          <div class="service-icon">💅</div>
+          <div class="service-name" data-en="Nail Care" data-vi="Chăm sóc móng">Nail Care</div>
+        </div>
+        <div class="service-card" onclick="selectService(this,'Skincare','')" data-service="Skincare">
+          <div class="service-check">✓</div>
+          <div class="service-icon">🌿</div>
+          <div class="service-name" data-en="Skincare" data-vi="Chăm sóc da">Skincare</div>
+        </div>
+        <div class="service-card" onclick="selectService(this,'Hair Wash','')" data-service="Hair Wash">
+          <div class="service-check">✓</div>
+          <div class="service-icon">🚿</div>
+          <div class="service-name" data-en="Hair Wash" data-vi="Gội đầu">Hair Wash</div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-next" id="btn1" onclick="goStep(2)" disabled data-en="Continue →" data-vi="Tiếp theo →">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: STAFF -->
+    <div id="step2" class="step-panel" style="display:none">
+      <div class="card-title" data-en="Choose Your Technician" data-vi="Chọn nhân viên">Choose Your Technician</div>
+      <div class="staff-grid">
+        <div class="staff-card" onclick="selectStaff(this,'Ms. Duyên')">
+          <div class="staff-avatar">🌺</div>
+          <div class="staff-name">Ms. Duyên</div>
+          <div class="staff-title" data-en="Nail Artist" data-vi="Thợ nail">Nail Artist</div>
+        </div>
+        <div class="staff-card" onclick="selectStaff(this,'Ms. Thy')">
+          <div class="staff-avatar">🌷</div>
+          <div class="staff-name">Ms. Thy</div>
+          <div class="staff-title" data-en="Nail Artist" data-vi="Thợ nail">Nail Artist</div>
+        </div>
+        <div class="staff-card" onclick="selectStaff(this,'Ms. Thủy')">
+          <div class="staff-avatar">🌸</div>
+          <div class="staff-name">Ms. Thủy</div>
+          <div class="staff-title" data-en="Nail Artist" data-vi="Thợ nail">Nail Artist</div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-back" onclick="goStep(1)" data-en="← Back" data-vi="← Quay lại">← Back</button>
+        <button class="btn btn-next" id="btn2" onclick="goStep(3)" disabled data-en="Continue →" data-vi="Tiếp theo →">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: DATE & TIME -->
+    <div id="step3" class="step-panel" style="display:none">
+      <div class="card-title" data-en="Pick Date & Time" data-vi="Chọn ngày & giờ">Pick Date & Time</div>
+      <div style="font-size:0.8rem;color:var(--mid);margin-bottom:0.8rem;" data-en="Next 7 days available" data-vi="7 ngày tiếp theo">Next 7 days available</div>
+      <div class="date-grid" id="dateGrid"></div>
+      <div style="font-size:0.8rem;color:var(--mid);margin:0.8rem 0 0.6rem;" data-en="Available time slots (9AM–8PM)" data-vi="Khung giờ trống (9:00–20:00)">Available time slots (9AM–8PM)</div>
+      <div class="time-grid" id="timeGrid"></div>
+      <div class="btn-row">
+        <button class="btn btn-back" onclick="goStep(2)" data-en="← Back" data-vi="← Quay lại">← Back</button>
+        <button class="btn btn-next" id="btn3" onclick="goStep(4)" disabled data-en="Continue →" data-vi="Tiếp theo →">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: INFO -->
+    <div id="step4" class="step-panel" style="display:none">
+      <div class="card-title" data-en="Your Information" data-vi="Thông tin của bạn">Your Information</div>
+      <div class="field">
+        <label data-en="Full Name *" data-vi="Họ và tên *">Full Name *</label>
+        <input type="text" id="custName" data-en-placeholder="Enter your full name" data-vi-placeholder="Nhập họ và tên" placeholder="Enter your full name" oninput="checkStep4()"/>
+      </div>
+      <div class="field">
+        <label data-en="Phone Number *" data-vi="Số điện thoại *">Phone Number *</label>
+        <input type="tel" id="custPhone" data-en-placeholder="e.g. 0912 345 678" data-vi-placeholder="VD: 0912 345 678" placeholder="e.g. 0912 345 678" oninput="checkStep4()"/>
+      </div>
+      <div class="field">
+        <label data-en="Note (optional)" data-vi="Ghi chú (tùy chọn)">Note (optional)</label>
+        <input type="text" id="custNote" data-en-placeholder="Any special request?" data-vi-placeholder="Yêu cầu đặc biệt?" placeholder="Any special request?"/>
+      </div>
+
+      <div style="font-size:0.82rem;font-weight:500;color:var(--mid);margin-bottom:0.6rem;margin-top:0.4rem;" data-en="Booking Summary" data-vi="Tóm tắt đặt lịch">Booking Summary</div>
+      <div class="summary">
+        <div class="summary-row"><span class="key" data-en="Service" data-vi="Dịch vụ">Service</span><span class="val" id="sum-service">—</span></div>
+        <div class="summary-row"><span class="key" data-en="Technician" data-vi="Nhân viên">Technician</span><span class="val" id="sum-staff">—</span></div>
+        <div class="summary-row"><span class="key" data-en="Date" data-vi="Ngày">Date</span><span class="val" id="sum-date">—</span></div>
+        <div class="summary-row"><span class="key" data-en="Time" data-vi="Giờ">Time</span><span class="val" id="sum-time">—</span></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-back" onclick="goStep(3)" data-en="← Back" data-vi="← Quay lại">← Back</button>
+        <button class="btn btn-next" id="btn4" onclick="confirmBooking()" disabled data-en="Confirm Booking ✓" data-vi="Xác nhận đặt lịch ✓">Confirm Booking ✓</button>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div id="stepSuccess" class="step-panel success-card" style="display:none">
+      <div class="success-icon">✓</div>
+      <h2 data-en="Booking Confirmed!" data-vi="Đặt lịch thành công!">Booking Confirmed!</h2>
+      <p data-en="We'll see you soon at KOL Nails Studio 💅" data-vi="Hẹn gặp bạn tại KOL Nails Studio 💅">We'll see you soon at KOL Nails Studio 💅</p>
+      <div class="booking-ref">
+        <span data-en="Booking ID:" data-vi="Mã đặt lịch:">Booking ID:</span>
+        <strong id="bookingRef">—</strong>
+      </div>
+      <div class="summary" style="text-align:left;max-width:320px;margin:0 auto 1.5rem;">
+        <div class="summary-row"><span class="key" data-en="Service" data-vi="Dịch vụ">Service</span><span class="val" id="conf-service">—</span></div>
+        <div class="summary-row"><span class="key" data-en="Technician" data-vi="Nhân viên">Technician</span><span class="val" id="conf-staff">—</span></div>
+        <div class="summary-row"><span class="key" data-en="Date & Time" data-vi="Ngày & Giờ">Date & Time</span><span class="val" id="conf-datetime">—</span></div>
+      </div>
+      <button class="btn-new" onclick="resetBooking()" data-en="Book Another Appointment" data-vi="Đặt lịch mới">Book Another Appointment</button>
+    </div>
+
+  </div>
+
+  <div class="owner-link">
+    <a href="#" onclick="toggleOwner()" data-en="🔐 Owner / Staff View" data-vi="🔐 Xem lịch hẹn (chủ tiệm)">🔐 Owner / Staff View</a>
+  </div>
+
+  <footer>
+    <p>KOL Nails Studio · 9:00 AM – 8:00 PM · <span data-en="Ho Chi Minh City, Vietnam" data-vi="TP. Hồ Chí Minh, Việt Nam">Ho Chi Minh City, Vietnam</span></p>
+  </footer>
+</div>
+
+<script>
+// ── STATE ──
+let lang = 'en';
+let booking = { service: '', price: '', staff: '', date: '', time: '', dateLabel: '' };
+let bookings = JSON.parse(localStorage.getItem('kol_bookings') || '[]');
+let currentStep = 1;
+
+// ── LANG ──
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-toggle button').forEach((b,i) => b.classList.toggle('active', (i===0&&l==='en')||(i===1&&l==='vi')));
+  document.querySelectorAll('[data-en]').forEach(el => {
+    if (el.tagName !== 'INPUT') el.textContent = el.dataset[l] || el.dataset.en;
+  });
+  document.querySelectorAll('input[data-en-placeholder]').forEach(el => {
+    el.placeholder = el.dataset[l+'Placeholder'] || el.dataset['enPlaceholder'];
+  });
+}
+
+// ── STEPS ──
+function goStep(n) {
+  document.getElementById('step'+currentStep).style.display = 'none';
+  currentStep = n;
+  const el = document.getElementById('step'+n);
+  el.style.display = 'block';
+  el.classList.remove('step-panel');
+  void el.offsetWidth;
+  el.classList.add('step-panel');
+
+  // update step dots
+  for (let i=1; i<=4; i++) {
+    const dot = document.getElementById('sd'+i);
+    dot.classList.remove('active','done');
+    if (i < n) dot.classList.add('done'), dot.querySelector('.dot').textContent = '✓';
+    if (i === n) dot.classList.add('active'), dot.querySelector('.dot').textContent = i;
+    if (i > n)  dot.querySelector('.dot').textContent = i;
+    if (i < 4) {
+      const line = document.getElementById('sl'+i);
+      line.classList.toggle('done', i < n);
+    }
+  }
+  if (n===3) buildDateGrid();
+  if (n===4) updateSummary();
+}
+
+// ── SERVICE ──
+function selectService(el, name, price) {
+  document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  booking.service = name; booking.price = price;
+  document.getElementById('btn1').disabled = false;
+}
+
+// ── STAFF ──
+function selectStaff(el, name) {
+  document.querySelectorAll('.staff-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  booking.staff = name;
+  document.getElementById('btn2').disabled = false;
+}
+
+// ── DATE GRID ──
+function buildDateGrid() {
+  const grid = document.getElementById('dateGrid');
+  grid.innerHTML = '';
+  const days = lang==='vi'
+    ? ['CN','T2','T3','T4','T5','T6','T7']
+    : ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  const today = new Date();
+  for (let i=0; i<7; i++) {
+    const d = new Date(today); d.setDate(today.getDate()+i);
+    const cell = document.createElement('div');
+    cell.className = 'date-cell' + (i===0?' today':'');
+    cell.innerHTML = `<span class="wd">${days[d.getDay()]}</span><span class="dd">${d.getDate()}</span>`;
+    const ds = d.toDateString();
+    const label = d.toLocaleDateString(lang==='vi'?'vi-VN':'en-GB',{day:'numeric',month:'short'});
+    if (booking.date === ds) cell.classList.add('selected');
+    cell.onclick = () => {
+      document.querySelectorAll('.date-cell').forEach(c=>c.classList.remove('selected'));
+      cell.classList.add('selected');
+      booking.date = ds; booking.dateLabel = label;
+      buildTimeGrid();
+      checkStep3();
+    };
+    grid.appendChild(cell);
+  }
+  buildTimeGrid();
+}
+
+// ── TIME GRID ──
+function buildTimeGrid() {
+  const grid = document.getElementById('timeGrid');
+  grid.innerHTML = '';
+  const slots = ['9:00','9:30','10:00','10:30','11:00','11:30','12:00','12:30',
+                 '13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30',
+                 '17:00','17:30','18:00','18:30','19:00','19:30'];
+  slots.forEach(t => {
+    const el = document.createElement('div');
+    el.className = 'time-slot';
+    el.textContent = t;
+    if (booking.time === t) el.classList.add('selected');
+    el.onclick = () => {
+      document.querySelectorAll('.time-slot').forEach(s=>s.classList.remove('selected'));
+      el.classList.add('selected');
+      booking.time = t;
+      checkStep3();
+    };
+    grid.appendChild(el);
+  });
+}
+
+function checkStep3() {
+  document.getElementById('btn3').disabled = !(booking.date && booking.time);
+}
+
+// ── STEP 4 ──
+function updateSummary() {
+  document.getElementById('sum-service').textContent = booking.service;
+  document.getElementById('sum-staff').textContent   = booking.staff;
+  document.getElementById('sum-date').textContent    = booking.dateLabel;
+  document.getElementById('sum-time').textContent    = booking.time;
+  document.getElementById('sum-price').textContent   = booking.price;
+}
+function checkStep4() {
+  const n = document.getElementById('custName').value.trim();
+  const p = document.getElementById('custPhone').value.trim();
+  document.getElementById('btn4').disabled = !(n && p);
+}
+
+// ── CONFIRM ──
+function confirmBooking() {
+  const name  = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const note  = document.getElementById('custNote').value.trim();
+  const ref   = 'KOL-' + Date.now().toString(36).toUpperCase().slice(-6);
+
+  const entry = { ref, name, phone, note, ...booking, bookedAt: new Date().toISOString() };
+  bookings.push(entry);
+  localStorage.setItem('kol_bookings', JSON.stringify(bookings));
+
+  // show success
+  document.getElementById('step4').style.display = 'none';
+  document.getElementById('stepSuccess').style.display = 'block';
+  document.getElementById('bookingRef').textContent = ref;
+  document.getElementById('conf-service').textContent  = booking.service;
+  document.getElementById('conf-staff').textContent    = booking.staff;
+  document.getElementById('conf-datetime').textContent = booking.dateLabel + ' · ' + booking.time;
+
+  // hide steps
+  document.querySelector('.steps').style.display = 'none';
+
+  setLang(lang);
+}
+
+// ── RESET ──
+function resetBooking() {
+  booking = { service:'', price:'', staff:'', date:'', time:'', dateLabel:'' };
+  document.querySelectorAll('.service-card,.staff-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('custName').value = '';
+  document.getElementById('custPhone').value = '';
+  document.getElementById('custNote').value = '';
+  document.getElementById('btn1').disabled = true;
+  document.getElementById('btn2').disabled = true;
+  document.getElementById('btn3').disabled = true;
+  document.getElementById('btn4').disabled = true;
+  document.getElementById('stepSuccess').style.display = 'none';
+  document.querySelector('.steps').style.display = 'flex';
+  currentStep = 1;
+  goStep(1);
+  document.getElementById('step1').style.display = 'block';
+}
+
+// ── OWNER VIEW ──
+function toggleOwner() {
+  const existing = document.getElementById('ownerPanel');
+  if (existing) { existing.remove(); return; }
+  const saved = JSON.parse(localStorage.getItem('kol_bookings') || '[]');
+  const panel = document.createElement('div');
+  panel.id = 'ownerPanel';
+  panel.style.cssText = 'margin-top:1.5rem;background:var(--white);border-radius:16px;padding:1.5rem;border:1px solid var(--sand);box-shadow:0 4px 20px rgba(44,31,31,0.08)';
+
+  if (!saved.length) {
+    panel.innerHTML = `<div style="text-align:center;color:var(--mid);font-size:0.88rem;padding:1rem 0;">
+      ${lang==='vi' ? 'Chưa có lịch hẹn nào.' : 'No bookings yet.'}</div>`;
+  } else {
+    const title = lang==='vi' ? '📋 Danh sách lịch hẹn' : '📋 All Bookings';
+    let rows = saved.map(b => `
+      <div style="padding:0.8rem 0;border-bottom:1px dashed var(--sand);font-size:0.83rem;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:2px;">
+          <strong>${b.name}</strong>
+          <span style="color:var(--rose);font-weight:500;">${b.price}</span>
+        </div>
+        <div style="color:var(--mid);">${b.phone} · ${b.service} · ${b.staff}</div>
+        <div style="color:var(--mid);">${b.dateLabel} ${b.time} · <span style="color:var(--gold);font-size:0.75rem;">${b.ref}</span></div>
+        ${b.note ? `<div style="color:var(--mid);font-style:italic;">"${b.note}"</div>` : ''}
+      </div>`).join('');
+    const clearBtn = lang==='vi' ? 'Xóa tất cả' : 'Clear all';
+    panel.innerHTML = `<div style="font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:1rem;color:var(--dark);">${title}</div>${rows}
+      <div style="text-align:right;margin-top:0.8rem;">
+        <button onclick="clearBookings()" style="font-family:'DM Sans',sans-serif;font-size:0.78rem;background:none;border:1px solid var(--sand);border-radius:8px;padding:0.3rem 0.8rem;cursor:pointer;color:var(--mid);">${clearBtn}</button>
+      </div>`;
+  }
+  document.querySelector('.owner-link').after(panel);
+}
+
+function clearBookings() {
+  if (confirm(lang==='vi' ? 'Xóa tất cả lịch hẹn?' : 'Clear all bookings?')) {
+    localStorage.removeItem('kol_bookings');
+    bookings = [];
+    document.getElementById('ownerPanel')?.remove();
+  }
+}
+
+// init
+buildDateGrid();
+</script>
+</body>
+</html>
