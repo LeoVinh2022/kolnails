@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="KOL Nails">
@@ -11,6 +11,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+/* Chặn double-tap zoom toàn bộ */
+html { touch-action: manipulation; }
 
 :root {
   --bg:         #111111;
@@ -109,21 +112,26 @@ html, body {
 .chip.green { color: var(--green); border-color: var(--green-dim); background: var(--green-dim); }
 .chip.blue  { color: var(--blue);  border-color: #0d2035;          background: #0d1828; }
 
-/* service pills */
-.svc-wrap { flex-shrink: 0; padding: 10px 0 8px; }
-.svc-scroll {
-  display: flex; gap: 8px; overflow-x: auto;
-  padding: 2px 22px; scrollbar-width: none;
+/* service grid — 5 nút lớn */
+.svc-wrap { flex-shrink: 0; padding: 10px 22px 8px; }
+.svc-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 }
-.svc-scroll::-webkit-scrollbar { display: none; }
-.svc-pill {
-  flex-shrink: 0; border-radius: 22px; padding: 10px 18px;
-  font-size: 15px; font-weight: 600; color: var(--sub);
-  background: var(--surface); border: 1.5px solid var(--border);
-  cursor: pointer; white-space: nowrap; transition: all 0.14s;
+.svc-btn {
+  border-radius: 14px; padding: 14px 6px;
+  font-size: 14px; font-weight: 700; color: var(--sub);
+  background: var(--surface); border: 2px solid var(--border);
+  cursor: pointer; text-align: center; line-height: 1.3;
+  transition: all 0.14s; display: flex; flex-direction: column;
+  align-items: center; gap: 5px;
 }
-.svc-pill:active { transform: scale(0.95); }
-.svc-pill.active { color: var(--gold); border-color: var(--gold); background: var(--gold-dim); }
+.svc-btn .svc-ico { font-size: 22px; }
+.svc-btn:active { transform: scale(0.95); }
+.svc-btn.active {
+  color: var(--gold); border-color: var(--gold);
+  background: var(--gold-dim);
+}
 
 /* quick keys */
 .quick-row {
@@ -554,7 +562,7 @@ html, body {
   </div>
 
   <div class="svc-wrap">
-    <div class="svc-scroll" id="svc-scroll"></div>
+    <div class="svc-grid" id="svc-grid"></div>
   </div>
 
   <div class="quick-row" id="qrow">
@@ -716,11 +724,9 @@ html, body {
   <div class="safe-top"></div>
   <div class="topbar">
     <button class="btn-icon" onclick="go('screen-pos')">←</button>
-    <div class="topbar-title">Cài đặt</div>
+    <div class="topbar-title">Bảo mật Admin</div>
   </div>
   <div class="set-scroll">
-
-    <div class="sec-label">Bảo mật Admin</div>
     <div class="set-card">
       <div class="pin-setup-row">
         <div>
@@ -730,73 +736,11 @@ html, body {
         <div class="pin-badge" id="pin-setup-btn" onclick="openPinSetup()">Đặt PIN</div>
       </div>
     </div>
-
-    <div class="sec-label">Kết nối Google Sheets</div>
-    <div class="set-card">
-      <div class="set-row">
-        <label>URL Google Apps Script</label>
-        <input class="set-input" id="cfg-url" type="url" placeholder="https://script.google.com/macros/s/…/exec">
-        <div class="set-hint">Sau khi Deploy → Web App, copy URL dán vào đây.</div>
-      </div>
+    <div class="set-hint" style="margin-top:14px;font-size:13px;line-height:1.7;color:var(--sub)">
+      🔐 Sau khi đặt PIN, nhân viên bấm sửa hoặc xoá giao dịch sẽ phải nhập mã PIN Admin mới thực hiện được.<br><br>
+      Chỉ admin (vợ/chồng chủ tiệm) biết mã PIN này.
     </div>
-
-    <div class="sec-label">Nhân viên</div>
-    <div class="set-card">
-      <div class="set-row">
-        <label>Danh sách (cách bằng dấu phẩy)</label>
-        <input class="set-input" id="cfg-staff" type="text" placeholder="Lan, Hoa, Mỹ, Châu">
-      </div>
-    </div>
-
-    <div class="sec-label">Dịch vụ</div>
-    <div class="set-card">
-      <div class="set-row">
-        <label>Danh sách dịch vụ (cách bằng dấu phẩy)</label>
-        <input class="set-input" id="cfg-services" type="text" placeholder="Gel thường, Gel ombre, Acrylic, Pedicure">
-        <div class="set-hint">Để trống sẽ dùng danh sách mặc định.</div>
-      </div>
-    </div>
-
-    <div class="sec-label">Phím nhanh</div>
-    <div class="set-card">
-      <div class="set-row">
-        <label>4 mức giá hay dùng (cách nhau bằng dấu phẩy)</label>
-        <input class="set-input" id="cfg-quick" type="text" placeholder="50000, 100000, 150000, 200000">
-      </div>
-    </div>
-
-    <button class="btn-save-set" onclick="saveSettings()">💾  Lưu cài đặt</button>
-
-    <div class="sec-label" style="margin-top:28px">Hướng dẫn Apps Script</div>
-    <div class="set-card">
-      <div class="set-row">
-        <div class="set-hint" style="font-size:14px">
-          <b style="color:var(--text)">1.</b> Tạo Google Sheet — tab tên <b style="color:var(--gold)">Data</b><br>
-          <b style="color:var(--text)">2.</b> Extensions → Apps Script → dán code dưới đây:<br>
-        </div>
-        <div class="code-block">
-function doPost(e){<br>
-&nbsp;var d=JSON.parse(e.postData.contents);<br>
-&nbsp;var s=SpreadsheetApp<br>
-&nbsp;&nbsp;.getActiveSpreadsheet()<br>
-&nbsp;&nbsp;.getSheetByName('Data');<br>
-&nbsp;s.appendRow([d.date,d.time,<br>
-&nbsp;&nbsp;d.service,d.price,<br>
-&nbsp;&nbsp;d.payment,d.staff,d.note]);<br>
-&nbsp;return ContentService<br>
-&nbsp;&nbsp;.createTextOutput('ok');<br>
-}
-        </div>
-        <div class="set-hint" style="font-size:14px;margin-top:12px">
-          <b style="color:var(--text)">3.</b> Deploy → New deployment<br>
-          &nbsp;&nbsp;• Type: <b style="color:var(--gold)">Web app</b><br>
-          &nbsp;&nbsp;• Execute as: <b style="color:var(--gold)">Me</b><br>
-          &nbsp;&nbsp;• Who has access: <b style="color:var(--gold)">Anyone</b><br>
-          <b style="color:var(--text)">4.</b> Copy URL → dán vào ô trên ↑
-        </div>
-      </div>
-    </div>
-    <div style="height:50px"></div>
+    <div style="height:40px"></div>
   </div>
 </div>
 
@@ -861,14 +805,20 @@ let pinMode    = 'verify';   // 'verify' | 'setup-new' | 'setup-confirm'
 let pinNewTemp = '';
 function getPin() { return localStorage.getItem('kn_pin') || ''; }
 
-const DEFAULT_SVCS = ['Gel thường','Gel ombre','Acrylic','Nail art','Tháo gel','Cắt dũa','Pedicure','Spa tay','Nối tip','Combo','Khác'];
+// ── CẤU HÌNH CỐ ĐỊNH ─────────────────────────────────────────
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxhtDuFtFIVNFdOVHkVY0XgBlGIHoV8EH061n_Ug8QzAcciwqH0Drd5moDvoh2GFVfUA/exec';
 
-let cfg = {
-  url:      localStorage.getItem('kn_url') || '',
-  staff:    JSON.parse(localStorage.getItem('kn_staff')    || '["Lan","Hoa","Mỹ","Châu"]'),
-  services: JSON.parse(localStorage.getItem('kn_services') || '[]'),
-  quick:    JSON.parse(localStorage.getItem('kn_quick')    || '[50000,100000,150000,200000]'),
-};
+const SERVICES = [
+  { ico: '💅', label: 'Sơn tay'  },
+  { ico: '🦶', label: 'Sơn chân' },
+  { ico: '👁',  label: 'Nối mi'  },
+  { ico: '🚿', label: 'Gội đầu' },
+  { ico: '💸', label: 'Tiền tip' },
+];
+
+const STAFF = ['Duyên','Thy','Thuỳ','Trân','Ngọc'];
+
+const QUICK = [50000, 100000, 150000, 200000];
 
 // ── INIT ─────────────────────────────────────────────────────
 function init() {
@@ -876,13 +826,10 @@ function init() {
   renderQuick();
   updateChips();
 
-  // wiring buttons
   document.getElementById('btn-settings').onclick = openSettings;
   document.getElementById('btn-to-hist').onclick  = () => openHistory('screen-success');
   document.getElementById('link-hist').onclick    = () => openHistory('screen-confirm');
   document.getElementById('hist-back').onclick    = () => go(fromScreen);
-  document.getElementById('chip-svc').onclick     = () =>
-    document.getElementById('svc-scroll').scrollIntoView({behavior:'smooth',block:'nearest'});
   document.getElementById('chip-pay').onclick     = cyclePay;
 }
 
@@ -913,14 +860,18 @@ function syncDisplay() {
 
 // ── SERVICES ─────────────────────────────────────────────────
 function renderSvcs() {
-  const list = cfg.services.length ? cfg.services : DEFAULT_SVCS;
-  const c    = document.getElementById('svc-scroll');
+  const c = document.getElementById('svc-grid');
   c.innerHTML = '';
-  list.forEach(s => {
+  SERVICES.forEach(s => {
     const el = document.createElement('div');
-    el.className   = 'svc-pill' + (s === curSvc ? ' active' : '');
-    el.textContent = s;
-    el.onclick     = () => { curSvc = curSvc === s ? '' : s; renderSvcs(); updateChips(); syncDisplay(); };
+    el.className = 'svc-btn' + (s.label === curSvc ? ' active' : '');
+    el.innerHTML = `<span class="svc-ico">${s.ico}</span>${s.label}`;
+    el.onclick   = () => {
+      curSvc = curSvc === s.label ? '' : s.label;
+      renderSvcs(); updateChips(); syncDisplay();
+    };
+    // Nút "Tiền tip" chiếm 2 cột (hàng thứ 2, vị trí 5)
+    if (s.label === 'Tiền tip') el.style.gridColumn = '2 / 4';
     c.appendChild(el);
   });
 }
@@ -928,7 +879,7 @@ function renderSvcs() {
 // ── QUICK KEYS ───────────────────────────────────────────────
 function renderQuick() {
   const keys = document.querySelectorAll('.qkey');
-  cfg.quick.slice(0,4).forEach((v,i) => {
+  QUICK.forEach((v, i) => {
     if (!keys[i]) return;
     keys[i].textContent = v >= 1000 ? (v/1000)+'k' : v;
     keys[i].onclick = () => setQuick(v);
@@ -982,7 +933,7 @@ function goConfirm() {
 function buildStaff() {
   const g = document.getElementById('staff-grid');
   g.innerHTML = '';
-  cfg.staff.forEach(name => {
+  STAFF.forEach(name => {
     const el = document.createElement('div');
     el.className = 'staff-btn' + (name === curStaff ? ' active' : '');
     el.innerHTML = `<div class="s-avatar">${name.slice(0,2)}</div><div class="s-name">${name}</div>`;
@@ -1024,13 +975,11 @@ async function doCharge() {
   btn.disabled = true; txt.style.display = 'none'; spin.style.display = 'block';
 
   try {
-    if (cfg.url) {
-      await fetch(cfg.url, {
-        method:'POST', mode:'no-cors',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(entry),
-      });
-    }
+    await fetch(SCRIPT_URL, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(entry),
+    });
     sessions.unshift(entry);
     if (sessions.length > 80) sessions.pop();
 
@@ -1147,29 +1096,10 @@ function doDelete() {
   openHistory(fromScreen);
 }
 
-// ── CÀI ĐẶT ─────────────────────────────────────────────────
+// ── CÀI ĐẶT (chỉ PIN) ───────────────────────────────────────
 function openSettings() {
-  document.getElementById('cfg-url').value      = cfg.url;
-  document.getElementById('cfg-staff').value    = cfg.staff.join(', ');
-  document.getElementById('cfg-services').value = cfg.services.join(', ');
-  document.getElementById('cfg-quick').value    = cfg.quick.join(', ');
   updatePinStatusUI();
   go('screen-settings');
-}
-function saveSettings() {
-  cfg.url      = document.getElementById('cfg-url').value.trim();
-  cfg.staff    = document.getElementById('cfg-staff').value.split(',').map(s=>s.trim()).filter(Boolean);
-  cfg.services = document.getElementById('cfg-services').value.split(',').map(s=>s.trim()).filter(Boolean);
-  cfg.quick    = document.getElementById('cfg-quick').value.split(',').map(s=>parseInt(s.trim())).filter(Boolean);
-  if (!cfg.staff.length) cfg.staff = ['Lan','Hoa','Mỹ','Châu'];
-  if (!cfg.quick.length) cfg.quick = [50000,100000,150000,200000];
-  localStorage.setItem('kn_url',      cfg.url);
-  localStorage.setItem('kn_staff',    JSON.stringify(cfg.staff));
-  localStorage.setItem('kn_services', JSON.stringify(cfg.services));
-  localStorage.setItem('kn_quick',    JSON.stringify(cfg.quick));
-  renderSvcs(); renderQuick(); updateChips();
-  toast('Đã lưu cài đặt ✓', 'ok');
-  setTimeout(() => go('screen-pos'), 700);
 }
 
 // ── PIN LOGIC ─────────────────────────────────────────────────
