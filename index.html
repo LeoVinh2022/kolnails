@@ -11,27 +11,25 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-/* Chặn double-tap zoom toàn bộ */
 html { touch-action: manipulation; }
 
 :root {
-  --bg:         #111111;
-  --surface:    #1c1c1c;
-  --surface2:   #252525;
-  --border:     #303030;
-  --text:       #f2f2f2;
-  --sub:        #999999;
-  --gold:       #e0b46a;
-  --gold-dim:   #2e2108;
-  --gold-mid:   #3d2d0a;
-  --green:      #52c48a;
-  --green-dim:  #0c2518;
-  --red:        #e06060;
-  --blue:       #6aadee;
-  --safe-top:   env(safe-area-inset-top);
-  --safe-bot:   env(safe-area-inset-bottom);
-  --font:       'Nunito', sans-serif;
+  --bg:        #111111;
+  --surface:   #1c1c1c;
+  --surface2:  #252525;
+  --border:    #2e2e2e;
+  --text:      #f2f2f2;
+  --sub:       #888888;
+  --gold:      #e0b46a;
+  --gold-dim:  #2e2108;
+  --green:     #52c48a;
+  --green-dim: #0c2518;
+  --red:       #e06060;
+  --red-dim:   #2a0e0e;
+  --safe-top:  env(safe-area-inset-top);
+  --safe-bot:  env(safe-area-inset-bottom);
+  --font:      'Nunito', sans-serif;
+  --mono:      'Nunito Sans', sans-serif;
 }
 
 html, body {
@@ -41,270 +39,279 @@ html, body {
   -webkit-user-select: none; user-select: none;
 }
 
-/* ─── SCREENS ───────────────────────────────────────── */
+/* ── SCREENS ─────────────────────────────────────────── */
 .screen {
   position: fixed; inset: 0;
   display: flex; flex-direction: column;
   opacity: 0; pointer-events: none;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.18s ease;
   overflow: hidden;
+  padding-top: calc(var(--safe-top) + 14px);
+  padding-bottom: var(--safe-bot);
 }
 .screen.active { opacity: 1; pointer-events: all; }
 
-.safe-top { height: calc(var(--safe-top) + 14px); min-height: 54px; flex-shrink: 0; }
-.safe-bot  { height: calc(var(--safe-bot) + 8px);  min-height: 16px; flex-shrink: 0; }
-
-/* ─── SHARED ─────────────────────────────────────────── */
+/* ── TOPBAR ──────────────────────────────────────────── */
 .topbar {
-  flex-shrink: 0; padding: 0 20px 14px;
+  flex-shrink: 0;
   display: flex; align-items: center; gap: 14px;
+  padding: 0 20px 16px;
 }
-.topbar-title { font-size: 20px; font-weight: 800; color: var(--text); flex: 1; }
-.topbar-sub   { font-size: 13px; font-weight: 600; color: var(--sub); }
-
+.topbar-title { font-size: 20px; font-weight: 800; flex: 1; }
+.topbar-sub   { font-size: 12px; font-weight: 600; color: var(--sub); margin-top: 2px; }
 .btn-icon {
   width: 42px; height: 42px; border-radius: 50%;
   background: var(--surface2); border: none;
   color: var(--sub); font-size: 20px;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: background 0.12s; flex-shrink: 0;
+  cursor: pointer; flex-shrink: 0;
 }
 .btn-icon:active { background: var(--border); }
 
-.sec-label {
-  font-size: 12px; font-weight: 800; color: var(--sub);
-  text-transform: uppercase; letter-spacing: 1.5px;
-  margin: 22px 0 10px;
-}
+/* ── SHARED SECTION LABEL ────────────────────────────── */
+.sec { font-size: 11px; font-weight: 800; color: var(--sub);
+       text-transform: uppercase; letter-spacing: 1.5px; margin: 18px 0 10px; }
 
-/* ═══════════════════════════════════════════════════════
-   SCREEN 1 – POS
-═══════════════════════════════════════════════════════ */
-#screen-pos { background: var(--bg); }
+/* ════════════════════════════════════════════════════════
+   SCREEN 1 — NHẬP DỊCH VỤ
+════════════════════════════════════════════════════════ */
+#s-entry { background: var(--bg); }
 
-.pos-header { flex-shrink: 0; padding: 0 22px 10px; }
-.pos-brand {
-  font-size: 13px; font-weight: 800; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--gold); margin-bottom: 14px;
+/* brand */
+.brand {
+  flex-shrink: 0;
   display: flex; justify-content: space-between; align-items: center;
+  padding: 0 22px 14px;
+  font-size: 13px; font-weight: 800; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--gold);
 }
-.amount-row {
-  display: flex; align-items: baseline; gap: 8px; min-height: 70px;
-}
-.amount-cur { font-size: 26px; font-weight: 600; color: var(--sub); padding-bottom: 4px; }
-.amount-num {
-  flex: 1; text-align: right;
-  font-size: 60px; font-weight: 300; line-height: 1;
-  color: var(--text); overflow: hidden; white-space: nowrap;
-  font-family: 'Nunito Sans', sans-serif; letter-spacing: -1px;
-}
-.amount-num.lit { color: var(--gold); }
 
-.pos-chips { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-.chip {
-  border-radius: 20px; padding: 8px 15px;
-  font-size: 14px; font-weight: 700;
-  border: 1.5px solid var(--border);
-  background: var(--surface2); color: var(--sub);
-  cursor: pointer; white-space: nowrap; transition: all 0.15s;
+/* giỏ dịch vụ */
+.cart-box {
+  flex-shrink: 0;
+  min-height: 56px; max-height: 180px;
+  overflow-y: auto;
+  padding: 0 22px;
+  border-bottom: 1px solid var(--border);
 }
-.chip.gold  { color: var(--gold);  border-color: var(--gold-mid);  background: var(--gold-dim); }
-.chip.green { color: var(--green); border-color: var(--green-dim); background: var(--green-dim); }
-.chip.blue  { color: var(--blue);  border-color: #0d2035;          background: #0d1828; }
+.cart-hint {
+  font-size: 13px; color: var(--sub); font-weight: 600;
+  padding: 16px 0; text-align: center;
+}
+.cart-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 0; border-bottom: 1px solid var(--border);
+}
+.cart-row:last-child { border-bottom: none; }
+.cart-ico  { font-size: 20px; flex-shrink: 0; }
+.cart-name { flex: 1; font-size: 15px; font-weight: 700; color: var(--text); }
+.cart-price {
+  font-size: 15px; font-weight: 800; color: var(--gold);
+  cursor: pointer; min-width: 80px; text-align: right;
+}
+.cart-price.none { color: var(--red); font-size: 13px; font-weight: 600; }
+.cart-del {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--red-dim); border: none;
+  color: var(--red); font-size: 17px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+}
+.cart-del:active { opacity: 0.7; }
 
-/* service grid */
-.svc-wrap { flex-shrink: 0; padding: 10px 22px 80px; }
+/* tổng nhỏ */
+.cart-total-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 22px 0; flex-shrink: 0;
+}
+.cart-total-bar .label { font-size: 12px; font-weight: 700; color: var(--sub); }
+.cart-total-bar .amt {
+  font-size: 20px; font-weight: 800; color: var(--gold);
+  font-family: var(--mono);
+}
+
+/* 5 nút dịch vụ */
 .svc-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: auto auto;
-  gap: 10px;
+  flex-shrink: 0;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 10px; padding: 12px 22px;
 }
 .svc-btn {
-  border-radius: 16px; padding: 16px 6px 14px;
-  font-size: 14px; font-weight: 700; color: var(--sub);
+  border-radius: 16px; padding: 16px 4px 13px;
+  font-size: 13px; font-weight: 700; color: var(--sub);
   background: var(--surface); border: 2px solid var(--border);
-  cursor: pointer; text-align: center; line-height: 1.3;
-  transition: all 0.14s; display: flex; flex-direction: column;
-  align-items: center; gap: 6px;
+  cursor: pointer; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  transition: all 0.13s;
 }
-.svc-btn .svc-ico { font-size: 24px; }
-.svc-btn:active { transform: scale(0.95); }
-.svc-btn.active {
-  color: var(--gold); border-color: var(--gold);
-  background: var(--gold-dim);
-}
-/* Ô trống thứ 6 trong grid — không hiển thị */
-.svc-go-placeholder {
-  border-radius: 16px;
-  background: transparent; border: none;
-  pointer-events: none;
-}
+.svc-btn .ico { font-size: 24px; }
+.svc-btn:active { transform: scale(0.94); }
+.svc-btn.on { color: var(--gold); border-color: var(--gold); background: var(--gold-dim); }
 
-/* Nút Tiếp → cố định dưới cùng viewport */
-#pos-go-bar {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  padding: 12px 22px calc(env(safe-area-inset-bottom) + 12px);
-  background: linear-gradient(to bottom, transparent, var(--bg) 35%);
-  z-index: 50;
+/* bàn phím số — ẩn/hiện */
+#keypad-wrap {
+  flex: 1; display: none; flex-direction: column; overflow: hidden;
 }
-.svc-go {
-  width: 100%; border-radius: 16px; padding: 18px 6px;
-  font-size: 17px; font-weight: 900; color: var(--sub);
-  background: var(--surface2); border: 2px solid var(--border);
-  cursor: pointer; text-align: center; line-height: 1.3;
-  transition: all 0.14s; display: flex; flex-direction: row;
-  align-items: center; justify-content: center; gap: 10px;
-  font-family: var(--font);
-  opacity: 0.35; pointer-events: none;
-}
-.svc-go:active { transform: scale(0.98); }
-.svc-go.ready {
-  background: var(--gold); border-color: var(--gold);
-  color: #111; opacity: 1; pointer-events: all;
-  box-shadow: 0 4px 20px rgba(224,180,106,0.35);
-}
+#keypad-wrap.show { display: flex; }
 
-/* quick keys */
+.kp-header {
+  flex-shrink: 0;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 22px; border-top: 1px solid var(--border);
+}
+.kp-label { font-size: 15px; font-weight: 800; color: var(--text); }
+.kp-preview { font-size: 22px; font-weight: 300; color: var(--gold); font-family: var(--mono); }
+.btn-done {
+  background: var(--gold); color: #111; border: none;
+  border-radius: 22px; padding: 9px 22px;
+  font-family: var(--font); font-size: 14px; font-weight: 900; cursor: pointer;
+}
+.btn-done:active { opacity: 0.8; }
+
 .quick-row {
-  flex-shrink: 0; display: grid; grid-template-columns: repeat(4,1fr);
-  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  display: grid; grid-template-columns: repeat(4,1fr);
   gap: 1px; background: var(--border);
+  border-top: 1px solid var(--border);
 }
-.qkey {
+.qk {
   background: var(--bg); padding: 12px 4px;
   text-align: center; font-size: 15px; font-weight: 800;
   color: var(--sub); cursor: pointer; font-family: var(--font);
-  transition: all 0.1s;
 }
-.qkey:active { background: var(--surface); color: var(--text); }
+.qk:active { background: var(--surface); color: var(--text); }
 
-/* keypad */
-.keypad {
+.numpad {
   flex: 1; display: grid;
   grid-template-columns: repeat(3,1fr);
-  grid-template-rows: repeat(5,1fr);
-  gap: 1px; background: var(--border); overflow: hidden;
+  grid-template-rows: repeat(4,1fr);
+  gap: 1px; background: var(--border);
 }
-.key {
+.nk {
   background: var(--surface);
   display: flex; align-items: center; justify-content: center;
   font-size: 30px; font-weight: 400; color: var(--text);
-  cursor: pointer; transition: background 0.08s;
-  font-family: 'Nunito Sans', sans-serif;
+  cursor: pointer; font-family: var(--mono);
 }
-.key:active { background: var(--surface2); }
-.key.fn {
-  background: var(--bg); color: var(--sub);
-  font-size: 16px; font-weight: 800; font-family: var(--font);
-}
-.key.fn:active { background: var(--surface); }
-.key.del { color: var(--red); font-size: 24px; }
-.key.go {
-  background: var(--gold); color: #111;
-  font-size: 17px; font-weight: 900; font-family: var(--font);
-  letter-spacing: 0.3px; grid-row: span 2;
-  text-align: center; line-height: 1.4; padding: 0 4px;
-}
-.key.go:active { background: #c49a40; }
-.key.go.off { background: var(--surface2); color: var(--sub); }
+.nk:active { background: var(--surface2); }
+.nk.fn { background: var(--bg); color: var(--sub); font-size: 16px; font-weight: 800; font-family: var(--font); }
+.nk.fn:active { background: var(--surface); }
+.nk.red { color: var(--red); }
 
-/* ═══════════════════════════════════════════════════════
-   SCREEN 2 – XÁC NHẬN
-═══════════════════════════════════════════════════════ */
-#screen-confirm { background: var(--bg); }
-
-.conf-amount-wrap { padding: 0 22px 18px; flex-shrink: 0; }
-.conf-big {
-  font-size: 48px; font-weight: 300; color: var(--text);
-  font-family: 'Nunito Sans', sans-serif; letter-spacing: -1px; line-height: 1;
+/* nút TIẾP — dưới cùng, luôn nhìn thấy */
+.entry-footer {
+  flex-shrink: 0;
+  padding: 12px 22px calc(var(--safe-bot) + 12px);
+  border-top: 1px solid var(--border);
 }
-.conf-big span { font-size: 24px; color: var(--sub); }
-.conf-svc { font-size: 16px; font-weight: 700; color: var(--sub); margin-top: 6px; }
-
-.conf-scroll { flex: 1; overflow-y: auto; padding: 0 22px; }
-
-/* staff */
-.staff-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
-.staff-btn {
-  background: var(--surface); border: 2px solid var(--border);
-  border-radius: 14px; padding: 18px 8px 14px;
-  text-align: center; cursor: pointer; transition: all 0.14s;
+.btn-next {
+  width: 100%; border: none; border-radius: 16px;
+  padding: 18px; font-family: var(--font);
+  font-size: 17px; font-weight: 900; cursor: pointer;
+  transition: all 0.14s;
 }
-.staff-btn:active { transform: scale(0.95); }
-.s-avatar {
-  width: 48px; height: 48px; border-radius: 50%;
-  background: var(--surface2); margin: 0 auto 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 17px; font-weight: 800; color: var(--sub); transition: all 0.14s;
-}
-.s-name { font-size: 15px; font-weight: 700; color: var(--sub); transition: color 0.14s; }
-.staff-btn.active { border-color: var(--gold); background: var(--gold-dim); }
-.staff-btn.active .s-avatar { background: var(--gold); color: #111; }
-.staff-btn.active .s-name   { color: var(--gold); }
+.btn-next.off { background: var(--surface2); color: var(--sub); pointer-events: none; }
+.btn-next.on  { background: var(--gold); color: #111; box-shadow: 0 4px 20px rgba(224,180,106,0.3); }
+.btn-next.on:active { transform: scale(0.98); }
 
-/* payment */
+/* ════════════════════════════════════════════════════════
+   SCREEN 2 — HOÁ ĐƠN + NHÂN VIÊN
+════════════════════════════════════════════════════════ */
+#s-invoice { background: var(--bg); }
+.invoice-scroll { flex: 1; overflow-y: auto; padding: 0 22px; }
+
+/* hoá đơn */
+.invoice-box {
+  background: var(--surface); border-radius: 18px;
+  border: 1px solid var(--border); overflow: hidden;
+  margin-bottom: 4px;
+}
+.invoice-header {
+  background: var(--gold-dim); border-bottom: 1px solid var(--border);
+  padding: 14px 18px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.invoice-title { font-size: 13px; font-weight: 800; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; }
+.invoice-time  { font-size: 12px; color: var(--sub); font-weight: 600; }
+
+.invoice-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 18px; border-bottom: 1px solid var(--border);
+}
+.invoice-row:last-child { border-bottom: none; }
+.inv-ico  { font-size: 18px; flex-shrink: 0; }
+.inv-name { flex: 1; font-size: 15px; font-weight: 700; color: var(--text); }
+.inv-price { font-size: 15px; font-weight: 800; color: var(--text); font-family: var(--mono); }
+
+.invoice-total {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 18px;
+  background: var(--surface2); border-top: 1px solid var(--border);
+}
+.inv-total-label { font-size: 14px; font-weight: 800; color: var(--sub); }
+.inv-total-amt   { font-size: 28px; font-weight: 300; color: var(--gold); font-family: var(--mono); letter-spacing: -1px; }
+
+/* thanh toán */
 .pay-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .pay-btn {
   background: var(--surface); border: 2px solid var(--border);
-  border-radius: 14px; padding: 18px 12px;
+  border-radius: 14px; padding: 16px 12px;
   cursor: pointer; transition: all 0.14s;
-  display: flex; align-items: center; gap: 12px;
+  display: flex; align-items: center; gap: 10px;
 }
 .pay-btn:active { transform: scale(0.97); }
-.pay-icon  { font-size: 28px; }
-.pay-label { font-size: 16px; font-weight: 700; color: var(--sub); }
-.pay-btn.active { border-color: var(--green); background: var(--green-dim); }
-.pay-btn.active .pay-label { color: var(--green); }
+.pay-ico   { font-size: 26px; }
+.pay-label { font-size: 15px; font-weight: 700; color: var(--sub); }
+.pay-btn.on { border-color: var(--green); background: var(--green-dim); }
+.pay-btn.on .pay-label { color: var(--green); }
 
-/* note */
-.note-box {
+/* nhân viên */
+.staff-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.staff-btn {
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: 14px; padding: 16px 6px 13px;
+  text-align: center; cursor: pointer; transition: all 0.14s;
+}
+.staff-btn:active { transform: scale(0.95); }
+.staff-av {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--surface2); margin: 0 auto 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 800; color: var(--sub);
+  transition: all 0.14s;
+}
+.staff-nm { font-size: 14px; font-weight: 700; color: var(--sub); transition: color 0.14s; }
+.staff-btn.on { border-color: var(--gold); background: var(--gold-dim); }
+.staff-btn.on .staff-av { background: var(--gold); color: #111; }
+.staff-btn.on .staff-nm { color: var(--gold); }
+
+/* ghi chú */
+.note-inp {
   width: 100%; background: var(--surface);
   border: 1.5px solid var(--border); border-radius: 14px;
-  padding: 15px 16px; font-family: var(--font);
-  font-size: 16px; color: var(--text); outline: none;
-  resize: none; height: 68px; transition: border-color 0.15s;
+  padding: 14px 16px; font-family: var(--font);
+  font-size: 15px; color: var(--text); outline: none;
+  resize: none; height: 64px;
   -webkit-user-select: text; user-select: text;
+  transition: border-color 0.15s;
 }
-.note-box:focus { border-color: var(--gold); }
-.note-box::placeholder { color: var(--sub); }
+.note-inp:focus { border-color: var(--gold); }
+.note-inp::placeholder { color: var(--sub); }
 
-/* history mini */
-.hi {
-  display: flex; align-items: center; gap: 12px;
-  padding: 15px 0; border-bottom: 1px solid var(--border);
+/* footer */
+.invoice-footer {
+  flex-shrink: 0; padding: 12px 22px calc(var(--safe-bot) + 12px);
+  border-top: 1px solid var(--border);
+  display: flex; gap: 10px;
 }
-.hi:last-child { border-bottom: none; }
-.hi-dot {
-  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
-  background: var(--gold-dim); border: 2px solid var(--gold);
+.btn-finish {
+  flex: 1; background: var(--gold); color: #111; border: none;
+  border-radius: 16px; padding: 18px;
+  font-family: var(--font); font-size: 17px; font-weight: 900; cursor: pointer;
+  transition: all 0.14s;
 }
-.hi-main { flex: 1; min-width: 0; }
-.hi-name { font-size: 16px; font-weight: 700; color: var(--text); }
-.hi-sub  { font-size: 13px; font-weight: 500; color: var(--sub); margin-top: 3px; }
-.hi-r    { text-align: right; flex-shrink: 0; }
-.hi-price { font-size: 17px; font-weight: 800; color: var(--gold); }
-.hi-pay   { font-size: 12px; color: var(--sub); margin-top: 2px; }
-.hi-edit  {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: var(--surface2); border: none; color: var(--sub);
-  font-size: 16px; display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; cursor: pointer;
-}
-.hi-edit:active { background: var(--border); }
-
-/* conf footer */
-.conf-footer { flex-shrink: 0; padding: 14px 22px; }
-.btn-charge {
-  width: 100%; background: var(--gold); color: #111;
-  border: none; border-radius: 16px; padding: 20px;
-  font-family: var(--font); font-size: 18px; font-weight: 900;
-  cursor: pointer; transition: all 0.14s;
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-}
-.btn-charge:active { transform: scale(0.98); background: #c49a40; }
-.btn-charge:disabled { background: var(--surface2); color: var(--sub); }
+.btn-finish:active { transform: scale(0.98); opacity: 0.85; }
+.btn-finish:disabled { background: var(--surface2); color: var(--sub); }
 .spin {
   width: 20px; height: 20px; border-radius: 50%;
   border: 2.5px solid rgba(0,0,0,0.2); border-top-color: #111;
@@ -312,538 +319,292 @@ html, body {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ═══════════════════════════════════════════════════════
-   SCREEN 3 – THÀNH CÔNG
-═══════════════════════════════════════════════════════ */
-#screen-success {
-  background: var(--bg); align-items: center;
-  justify-content: center; text-align: center; padding: 32px 28px;
+/* ════════════════════════════════════════════════════════
+   SCREEN 3 — THÀNH CÔNG
+════════════════════════════════════════════════════════ */
+#s-ok {
+  background: var(--bg);
+  align-items: center; justify-content: center;
+  text-align: center; padding: 32px 28px;
 }
 .ok-ring {
-  width: 100px; height: 100px; border-radius: 50%;
+  width: 96px; height: 96px; border-radius: 50%;
   background: var(--green-dim); border: 2px solid var(--green);
   display: flex; align-items: center; justify-content: center;
-  font-size: 42px; margin: 0 auto 28px;
-  animation: pop 0.4s cubic-bezier(.34,1.56,.64,1) both;
+  font-size: 42px; margin: 0 auto 24px;
+  animation: pop .4s cubic-bezier(.34,1.56,.64,1) both;
 }
-@keyframes pop { from { transform: scale(0.4); opacity:0; } }
-.ok-tag  { font-size: 12px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: var(--green); margin-bottom: 12px; }
-.ok-amt  { font-size: 44px; font-weight: 300; font-family: 'Nunito Sans', sans-serif; color: var(--text); letter-spacing: -1px; margin-bottom: 8px; }
-.ok-svc  { font-size: 17px; font-weight: 600; color: var(--sub); }
-.ok-who  { font-size: 20px; font-weight: 800; color: var(--gold); margin-top: 6px; }
-.ok-time { font-size: 14px; color: var(--sub); margin-top: 10px; }
+@keyframes pop { from { transform: scale(0.3); opacity: 0; } }
+.ok-tag  { font-size: 11px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: var(--green); margin-bottom: 10px; }
+.ok-amt  { font-size: 44px; font-weight: 300; font-family: var(--mono); color: var(--text); letter-spacing: -1px; margin-bottom: 6px; }
+.ok-who  { font-size: 18px; font-weight: 800; color: var(--gold); }
+.ok-svcs { font-size: 13px; color: var(--sub); margin-top: 10px; line-height: 1.8; }
+.ok-time { font-size: 12px; color: var(--sub); margin-top: 8px; }
 .btn-new {
-  margin-top: 48px; width: 100%;
+  margin-top: 44px; width: 100%;
   background: var(--surface2); border: 1.5px solid var(--border);
   border-radius: 16px; padding: 18px;
-  font-family: var(--font); font-size: 17px; font-weight: 800;
+  font-family: var(--font); font-size: 16px; font-weight: 800;
   color: var(--text); cursor: pointer;
 }
 .btn-new:active { background: var(--border); }
 .btn-hist {
-  margin-top: 10px; width: 100%;
-  background: transparent; border: none;
-  font-family: var(--font); font-size: 15px; font-weight: 700;
-  color: var(--sub); cursor: pointer; padding: 14px;
+  margin-top: 10px; width: 100%; background: none; border: none;
+  font-family: var(--font); font-size: 14px; font-weight: 700;
+  color: var(--sub); cursor: pointer; padding: 12px;
 }
 
-/* ═══════════════════════════════════════════════════════
-   SCREEN 4 – LỊCH SỬ
-═══════════════════════════════════════════════════════ */
-#screen-history { background: var(--bg); }
+/* ════════════════════════════════════════════════════════
+   SCREEN 4 — LỊCH SỬ
+════════════════════════════════════════════════════════ */
+#s-hist { background: var(--bg); }
 .hist-scroll { flex: 1; overflow-y: auto; padding: 0 22px; }
-
-/* ═══════════════════════════════════════════════════════
-   SCREEN 5 – SỬA GIAO DỊCH
-═══════════════════════════════════════════════════════ */
-#screen-edit { background: var(--bg); }
-.edit-scroll { flex: 1; overflow-y: auto; padding: 0 22px; }
-
-.e-field { margin-bottom: 20px; }
-.e-label {
-  font-size: 12px; font-weight: 800; color: var(--sub);
-  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;
+.hi {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
 }
-.e-input {
-  width: 100%; background: var(--surface);
-  border: 1.5px solid var(--border); border-radius: 14px;
-  padding: 16px 17px; font-family: var(--font);
-  font-size: 17px; color: var(--text); outline: none;
-  -webkit-user-select: text; user-select: text;
-  transition: border-color 0.15s;
+.hi:last-child { border-bottom: none; }
+.hi-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 5px;
+  background: var(--gold-dim); border: 2px solid var(--gold);
 }
-.e-input:focus { border-color: var(--gold); }
-.e-input[type=number] { -moz-appearance: textfield; }
-.e-input[type=number]::-webkit-inner-spin-button { display: none; }
+.hi-main { flex: 1; min-width: 0; }
+.hi-who   { font-size: 15px; font-weight: 800; color: var(--text); }
+.hi-items { font-size: 12px; color: var(--sub); margin-top: 4px; line-height: 1.7; }
+.hi-meta  { font-size: 11px; color: var(--sub); margin-top: 3px; }
+.hi-right { text-align: right; flex-shrink: 0; }
+.hi-total { font-size: 16px; font-weight: 800; color: var(--gold); font-family: var(--mono); }
+.hi-cnt   { font-size: 11px; color: var(--sub); margin-top: 2px; }
+.no-hist  { font-size: 14px; color: var(--sub); text-align: center; padding: 30px 0; }
 
-.e-pay-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.e-pay {
-  background: var(--surface); border: 2px solid var(--border);
-  border-radius: 14px; padding: 16px 12px;
-  cursor: pointer; transition: all 0.14s;
-  display: flex; align-items: center; gap: 10px;
-  font-size: 16px; font-weight: 700; color: var(--sub); font-family: var(--font);
-}
-.e-pay.active { border-color: var(--green); background: var(--green-dim); color: var(--green); }
-
-.edit-warn {
-  font-size: 13px; color: var(--sub); text-align: center;
-  line-height: 1.7; margin-top: 4px; padding: 0 4px;
-}
-
-.edit-footer { flex-shrink: 0; padding: 14px 22px; display: flex; gap: 10px; }
-.btn-save {
-  flex: 1; background: var(--gold); color: #111;
-  border: none; border-radius: 16px; padding: 18px;
-  font-family: var(--font); font-size: 17px; font-weight: 900; cursor: pointer;
-}
-.btn-save:active { background: #c49a40; }
-.btn-del {
-  width: 58px; background: #2a1010; color: var(--red);
-  border: 2px solid #3a1010; border-radius: 16px;
-  font-size: 22px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-}
-.btn-del:active { background: #3a1818; }
-
-/* ═══════════════════════════════════════════════════════
-   SCREEN 6 – CÀI ĐẶT
-═══════════════════════════════════════════════════════ */
-#screen-settings { background: var(--bg); }
-.set-scroll { flex: 1; overflow-y: auto; padding: 0 22px 50px; }
-
+/* ════════════════════════════════════════════════════════
+   SCREEN 5 — BẢO MẬT (PIN)
+════════════════════════════════════════════════════════ */
+#s-settings { background: var(--bg); }
+.set-scroll { flex: 1; overflow-y: auto; padding: 0 22px 40px; }
 .set-card {
   background: var(--surface); border-radius: 16px;
-  overflow: hidden; border: 1px solid var(--border); margin-bottom: 16px;
+  border: 1px solid var(--border); overflow: hidden; margin-bottom: 16px;
 }
-.set-row {
-  display: flex; flex-direction: column;
-  padding: 17px 18px; border-bottom: 1px solid var(--border);
+.pin-setup-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 18px; gap: 14px;
 }
-.set-row:last-child { border-bottom: none; }
-.set-row label {
-  font-size: 12px; font-weight: 800; color: var(--sub);
-  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px;
+.pin-setup-label { font-size: 15px; font-weight: 700; color: var(--text); }
+.pin-setup-sub   { font-size: 12px; color: var(--sub); margin-top: 2px; }
+.pin-badge {
+  background: var(--gold-dim); border: 1.5px solid var(--gold);
+  border-radius: 10px; padding: 9px 18px;
+  font-size: 14px; font-weight: 800; color: var(--gold);
+  cursor: pointer; white-space: nowrap; flex-shrink: 0;
 }
-.set-input {
-  background: var(--surface2); border: 1.5px solid var(--border);
-  border-radius: 12px; padding: 14px 16px;
-  font-family: var(--font); font-size: 15px; color: var(--text);
-  outline: none; width: 100%;
-  -webkit-user-select: text; user-select: text;
-  transition: border-color 0.15s;
-}
-.set-input:focus { border-color: var(--gold); }
-.set-input::placeholder { color: var(--sub); }
-.set-hint { font-size: 13px; color: var(--sub); margin-top: 8px; line-height: 1.6; }
+.pin-badge:active { opacity: 0.75; }
+.pin-badge.set { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.set-hint { font-size: 13px; color: var(--sub); line-height: 1.7; margin-top: 12px; }
 
-.code-block {
-  background: var(--bg); border-radius: 10px;
-  padding: 13px 15px; margin-top: 10px;
-  font-family: 'Courier New', monospace; font-size: 11.5px;
-  color: #aaa; line-height: 1.9; overflow-x: auto;
-}
-.btn-save-set {
-  width: 100%; background: var(--gold); color: #111;
-  border: none; border-radius: 16px; padding: 19px;
-  font-family: var(--font); font-size: 17px; font-weight: 900;
-  cursor: pointer; margin-top: 4px;
-}
-.btn-save-set:active { background: #c49a40; }
-
-/* ─── MODAL XOÁ ──────────────────────────────────────── */
-#modal-del {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.72);
-  display: none; align-items: flex-end; justify-content: center;
-  z-index: 500; padding-bottom: calc(var(--safe-bot) + 20px);
-}
-#modal-del.open { display: flex; }
-.m-sheet {
-  background: var(--surface); border-radius: 22px 22px 0 0;
-  padding: 30px 24px 34px; width: 100%; max-width: 480px;
-  animation: up 0.28s ease;
-}
-@keyframes up { from { transform: translateY(100%); } }
-.m-title { font-size: 19px; font-weight: 800; text-align: center; margin-bottom: 8px; }
-.m-desc  { font-size: 14px; color: var(--sub); text-align: center; line-height: 1.6; margin-bottom: 28px; }
-.m-btns  { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.btn-mc {
-  background: var(--surface2); border: 1.5px solid var(--border);
-  border-radius: 14px; padding: 17px;
-  font-family: var(--font); font-size: 16px; font-weight: 700; color: var(--text); cursor: pointer;
-}
-.btn-md {
-  background: #2a1010; border: 2px solid var(--red);
-  border-radius: 14px; padding: 17px;
-  font-family: var(--font); font-size: 16px; font-weight: 800; color: var(--red); cursor: pointer;
-}
-.btn-md:active { background: #3a1818; }
-
-/* ─── MODAL PIN ──────────────────────────────────────── */
+/* ── MODAL PIN ───────────────────────────────────────── */
 #modal-pin {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.82);
-  display: none; align-items: flex-end; justify-content: center;
-  z-index: 600;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.82);
+  display: none; align-items: flex-end; justify-content: center; z-index: 600;
 }
 #modal-pin.open { display: flex; }
 .pin-sheet {
   background: var(--surface); border-radius: 24px 24px 0 0;
   padding: 28px 24px calc(var(--safe-bot) + 28px);
   width: 100%; max-width: 480px;
-  animation: up 0.28s ease;
+  animation: up .28s ease;
 }
-.pin-title {
-  font-size: 18px; font-weight: 800; text-align: center;
-  margin-bottom: 6px;
-}
-.pin-sub {
-  font-size: 13px; color: var(--sub); text-align: center;
-  margin-bottom: 24px; font-weight: 600;
-}
-/* dots */
-.pin-dots {
-  display: flex; justify-content: center; gap: 16px; margin-bottom: 28px;
-}
-.pin-dot {
-  width: 18px; height: 18px; border-radius: 50%;
-  border: 2px solid var(--border); background: transparent;
-  transition: all 0.15s;
-}
+@keyframes up { from { transform: translateY(100%); } }
+.pin-title { font-size: 18px; font-weight: 800; text-align: center; margin-bottom: 6px; }
+.pin-sub   { font-size: 13px; color: var(--sub); text-align: center; margin-bottom: 22px; font-weight: 600; }
+.pin-dots  { display: flex; justify-content: center; gap: 16px; margin-bottom: 26px; }
+.pin-dot   { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); background: transparent; transition: all .15s; }
 .pin-dot.filled { background: var(--gold); border-color: var(--gold); }
-.pin-dot.shake  { animation: shake 0.35s ease; }
+.pin-dot.shake  { animation: shake .35s ease; }
 @keyframes shake {
-  0%,100% { transform: translateX(0); }
-  20%     { transform: translateX(-6px); }
-  40%     { transform: translateX(6px); }
-  60%     { transform: translateX(-4px); }
-  80%     { transform: translateX(4px); }
+  0%,100% { transform: translateX(0); } 20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
 }
-/* pin keypad */
-.pin-pad {
-  display: grid; grid-template-columns: repeat(3,1fr);
-  gap: 10px;
-}
-.pin-key {
+.pin-pad { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.pk {
   background: var(--surface2); border: none; border-radius: 14px;
-  padding: 18px 8px; text-align: center; cursor: pointer;
-  transition: background 0.1s; font-family: var(--font);
+  padding: 18px 8px; text-align: center; cursor: pointer; font-family: var(--font);
 }
-.pin-key:active { background: var(--border); }
-.pin-key .pk-num { font-size: 24px; font-weight: 700; color: var(--text); line-height: 1; }
-.pin-key .pk-sub { font-size: 9px; font-weight: 700; color: var(--sub); letter-spacing: 1px; margin-top: 2px; }
-.pin-key.pin-del { color: var(--red); font-size: 22px; font-weight: 700; }
-.pin-key.pin-cancel {
-  background: transparent; color: var(--sub);
-  font-size: 15px; font-weight: 700;
-}
-.pin-err {
-  text-align: center; font-size: 13px; font-weight: 700;
-  color: var(--red); margin-top: 14px; min-height: 18px;
-}
-/* setup PIN notice in settings */
-.pin-setup-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 18px;
-}
-.pin-setup-label { font-size: 15px; font-weight: 700; color: var(--text); }
-.pin-setup-sub   { font-size: 12px; color: var(--sub); margin-top: 2px; }
-.pin-badge {
-  background: var(--gold-dim); border: 1.5px solid var(--gold);
-  border-radius: 10px; padding: 8px 16px;
-  font-size: 14px; font-weight: 800; color: var(--gold);
-  cursor: pointer; white-space: nowrap; flex-shrink: 0;
-}
-.pin-badge:active { background: var(--gold-mid); }
-.pin-badge.set { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.pk:active { background: var(--border); }
+.pk-n { font-size: 24px; font-weight: 700; color: var(--text); line-height: 1; }
+.pk-s { font-size: 9px; font-weight: 700; color: var(--sub); letter-spacing: 1px; margin-top: 2px; }
+.pk.del { color: var(--red); font-size: 22px; font-weight: 700; }
+.pk.cancel { background: transparent; color: var(--sub); font-size: 15px; font-weight: 700; }
+.pin-err { text-align: center; font-size: 13px; font-weight: 700; color: var(--red); margin-top: 14px; min-height: 18px; }
 
-/* ─── CART ───────────────────────────────────────────── */
-.cart-total-row {
-  display: flex; justify-content: space-between; align-items: flex-end;
-  margin-bottom: 4px;
-}
-.cart-total-label { font-size: 12px; font-weight: 700; color: var(--sub); margin-bottom: 2px; }
-.cart-total-amt {
-  font-size: 44px; font-weight: 300; line-height: 1;
-  font-family: 'Nunito Sans', sans-serif; letter-spacing: -1px; color: var(--text);
-}
-.cart-total-amt.has-val { color: var(--gold); }
-.cart-count-badge {
-  background: var(--gold-dim); border: 1.5px solid var(--gold);
-  border-radius: 20px; padding: 6px 14px;
-  font-size: 13px; font-weight: 800; color: var(--gold);
-}
-
-/* cart items */
-.cart-wrap {
-  flex-shrink: 0; min-height: 52px; max-height: 152px;
-  overflow-y: auto; padding: 0 22px;
-  border-bottom: 1px solid var(--border);
-}
-.cart-empty {
-  font-size: 13px; color: var(--sub); font-weight: 600;
-  padding: 14px 0; text-align: center;
-}
-.cart-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 0; border-bottom: 1px solid var(--border);
-}
-.cart-item:last-child { border-bottom: none; }
-.cart-item-ico  { font-size: 20px; flex-shrink: 0; }
-.cart-item-name { flex: 1; font-size: 15px; font-weight: 700; color: var(--text); }
-.cart-item-price {
-  font-size: 15px; font-weight: 800; color: var(--gold);
-  cursor: pointer; min-width: 70px; text-align: right;
-}
-.cart-item-price.empty { color: var(--red); font-size: 13px; }
-.cart-item-del {
-  width: 30px; height: 30px; border-radius: 50%;
-  background: none; border: none; color: var(--sub);
-  font-size: 18px; cursor: pointer; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-}
-.cart-item-del:active { background: var(--surface2); }
-
-/* keypad header */
-.keypad-header {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 12px 22px; flex-shrink: 0;
-  border-top: 1px solid var(--border);
-}
-.keypad-for { font-size: 15px; font-weight: 800; color: var(--text); }
-.btn-keypad-done {
-  background: var(--gold); color: #111; border: none;
-  border-radius: 20px; padding: 8px 20px;
-  font-family: var(--font); font-size: 14px; font-weight: 800; cursor: pointer;
-}
-.btn-keypad-done:active { background: #c49a40; }
-
-/* confirm screen — multiple services list */
-.conf-svc-list { margin-bottom: 2px; }
-.conf-svc-row {
-  display: flex; justify-content: space-between;
-  font-size: 14px; padding: 3px 0;
-}
-.conf-svc-row .csn { color: var(--sub); font-weight: 600; }
-.conf-svc-row .csp { color: var(--gold); font-weight: 800; }
-
-/* ─── TOAST ──────────────────────────────────────────── */
+/* ── TOAST ───────────────────────────────────────────── */
 #toast {
   position: fixed; bottom: 36px; left: 50%;
   transform: translateX(-50%) translateY(70px);
   background: var(--surface2); color: var(--text);
   padding: 13px 28px; border-radius: 30px;
-  font-size: 15px; font-weight: 700;
-  border: 1px solid var(--border); z-index: 999;
-  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+  font-size: 15px; font-weight: 700; border: 1px solid var(--border);
+  z-index: 999; transition: transform .3s cubic-bezier(.34,1.56,.64,1);
   pointer-events: none; white-space: nowrap;
 }
 #toast.show { transform: translateX(-50%) translateY(0); }
 #toast.ok  { border-color: var(--green); color: var(--green); }
-#toast.err { border-color: var(--red);   color: var(--red);   }
+#toast.err { border-color: var(--red);   color: var(--red); }
 </style>
 </head>
 <body>
 
-<!-- ══ S1: POS ═══════════════════════════════════════ -->
-<div id="screen-pos" class="screen active">
-  <div class="safe-top"></div>
-  <div class="pos-header">
-    <div class="pos-brand">
-      <span>✦ KOL Nails</span>
-      <button class="btn-icon" id="btn-settings" style="font-size:19px">☰</button>
-    </div>
+<!-- ══ SCREEN 1: NHẬP DỊCH VỤ ═══════════════════════════ -->
+<div id="s-entry" class="screen active">
 
-    <!-- Tổng giỏ -->
-    <div class="cart-total-row">
+  <div class="brand">
+    <span>✦ KOL Nails</span>
+    <button class="btn-icon" id="btn-settings" style="font-size:18px">☰</button>
+  </div>
+
+  <!-- Giỏ dịch vụ đã chọn -->
+  <div class="cart-box" id="cart-box">
+    <div class="cart-hint" id="cart-hint">Chọn dịch vụ bên dưới để thêm vào</div>
+  </div>
+
+  <!-- Tổng nhỏ -->
+  <div class="cart-total-bar" id="cart-total-bar" style="display:none">
+    <span class="label">Tổng</span>
+    <span class="amt" id="cart-total-amt">0đ</span>
+  </div>
+
+  <!-- 5 nút dịch vụ -->
+  <div class="svc-grid" id="svc-grid"></div>
+
+  <!-- Bàn phím nhập giá -->
+  <div id="keypad-wrap">
+    <div class="kp-header">
       <div>
-        <div class="cart-total-label">Tổng cộng</div>
-        <div class="cart-total-amt"><span style="font-size:22px;color:var(--sub)">₫</span> <span id="cart-total">0</span></div>
+        <div class="kp-label" id="kp-label">Nhập giá</div>
+        <div class="kp-preview" id="kp-preview">₫ 0</div>
       </div>
-      <div class="cart-count-badge" id="cart-badge" style="display:none">
-        <span id="cart-count">0</span> dịch vụ
-      </div>
+      <button class="btn-done" onclick="donePrice()">Xong ✓</button>
+    </div>
+    <div class="quick-row">
+      <div class="qk" onclick="setQ(50000)">50k</div>
+      <div class="qk" onclick="setQ(100000)">100k</div>
+      <div class="qk" onclick="setQ(150000)">150k</div>
+      <div class="qk" onclick="setQ(200000)">200k</div>
+    </div>
+    <div class="numpad">
+      <div class="nk" onclick="tap('7')">7</div>
+      <div class="nk" onclick="tap('8')">8</div>
+      <div class="nk" onclick="tap('9')">9</div>
+      <div class="nk" onclick="tap('4')">4</div>
+      <div class="nk" onclick="tap('5')">5</div>
+      <div class="nk" onclick="tap('6')">6</div>
+      <div class="nk" onclick="tap('1')">1</div>
+      <div class="nk" onclick="tap('2')">2</div>
+      <div class="nk" onclick="tap('3')">3</div>
+      <div class="nk fn" onclick="tap('000')">000</div>
+      <div class="nk" onclick="tap('0')">0</div>
+      <div class="nk fn red" onclick="tap('del')">⌫</div>
     </div>
   </div>
 
-  <!-- GIỎ DỊCH VỤ -->
-  <div class="cart-wrap" id="cart-wrap">
-    <div class="cart-empty" id="cart-empty">Chọn dịch vụ bên dưới để thêm vào</div>
+  <!-- Nút TIẾP — luôn ở dưới cùng, dễ bấm -->
+  <div class="entry-footer">
+    <button class="btn-next off" id="btn-next" onclick="goInvoice()">
+      Tiếp theo →
+    </button>
   </div>
 
-  <!-- CHỌN DỊCH VỤ -->
-  <div class="svc-wrap" id="svc-wrap">
-    <div class="svc-grid" id="svc-grid"></div>
-  </div>
-
-  <!-- BÀN PHÍM SỐ -->
-  <div id="keypad-area" style="display:none; flex-direction:column; flex:1;">
-    <div class="keypad-header">
-      <div class="keypad-for" id="keypad-for">Nhập giá —</div>
-      <button class="btn-keypad-done" onclick="confirmPrice()">Xong ✓</button>
-    </div>
-
-    <div class="quick-row" id="qrow">
-      <div class="qkey">50k</div>
-      <div class="qkey">100k</div>
-      <div class="qkey">150k</div>
-      <div class="qkey">200k</div>
-    </div>
-
-    <div class="keypad">
-      <div class="key" onclick="tap('7')">7</div>
-      <div class="key" onclick="tap('8')">8</div>
-      <div class="key" onclick="tap('9')">9</div>
-      <div class="key" onclick="tap('4')">4</div>
-      <div class="key" onclick="tap('5')">5</div>
-      <div class="key" onclick="tap('6')">6</div>
-      <div class="key" onclick="tap('1')">1</div>
-      <div class="key" onclick="tap('2')">2</div>
-      <div class="key" onclick="tap('3')">3</div>
-      <div class="key fn" onclick="tap('000')">000</div>
-      <div class="key" onclick="tap('0')">0</div>
-      <div class="key fn del" onclick="tap('del')">⌫</div>
-      <div class="key fn" onclick="tap('clear')">Xoá</div>
-      <div class="key fn" onclick="cancelPrice()" style="grid-column:2/4;color:var(--red)">Huỷ</div>
-    </div>
-  </div>
-  <div class="safe-bot"></div>
 </div>
 
-<!-- NÚT TIẾP — fixed, ngoài mọi screen để không bị overflow:hidden cắt -->
-<div id="pos-go-bar">
-  <div id="svc-go-btn" class="svc-go">→&nbsp; Tiếp</div>
-</div>
+<!-- ══ SCREEN 2: HOÁ ĐƠN + NHÂN VIÊN ═══════════════════ -->
+<div id="s-invoice" class="screen">
 
-<!-- ══ S2: XÁC NHẬN ══════════════════════════════════ -->
-<div id="screen-confirm" class="screen">
-  <div class="safe-top"></div>
   <div class="topbar">
-    <button class="btn-icon" onclick="go('screen-pos')">←</button>
+    <button class="btn-icon" onclick="goBack()">←</button>
     <div>
-      <div class="topbar-title">Xác nhận</div>
-      <div class="topbar-sub" id="conf-time">--:--</div>
+      <div class="topbar-title">Xác nhận hoá đơn</div>
+      <div class="topbar-sub" id="inv-time">--:--</div>
     </div>
   </div>
 
-  <div class="conf-amount-wrap">
-    <div class="conf-big"><span>₫</span> <span id="conf-amt">0</span></div>
-    <div class="conf-svc-list" id="conf-svc-list"></div>
-  </div>
+  <div class="invoice-scroll">
 
-  <div class="conf-scroll">
-    <div class="sec-label">Nhân viên thực hiện</div>
-    <div class="staff-grid" id="staff-grid"></div>
+    <!-- Hoá đơn -->
+    <div class="invoice-box">
+      <div class="invoice-header">
+        <span class="invoice-title">✦ KOL Nails</span>
+        <span class="invoice-time" id="inv-date">--/--/----</span>
+      </div>
+      <div id="inv-rows"></div>
+      <div class="invoice-total">
+        <span class="inv-total-label">TỔNG CỘNG</span>
+        <span class="inv-total-amt">₫ <span id="inv-total">0</span></span>
+      </div>
+    </div>
 
-    <div class="sec-label">Thanh toán</div>
+    <!-- Thanh toán -->
+    <div class="sec">Thanh toán</div>
     <div class="pay-row">
-      <div class="pay-btn active" data-val="Tiền mặt" onclick="pickPay(this)">
-        <span class="pay-icon">💵</span><span class="pay-label">Tiền mặt</span>
+      <div class="pay-btn on" data-val="Tiền mặt" onclick="pickPay(this)">
+        <span class="pay-ico">💵</span><span class="pay-label">Tiền mặt</span>
       </div>
       <div class="pay-btn" data-val="Chuyển khoản" onclick="pickPay(this)">
-        <span class="pay-icon">📱</span><span class="pay-label">Chuyển khoản</span>
+        <span class="pay-ico">📱</span><span class="pay-label">Chuyển khoản</span>
       </div>
     </div>
 
-    <div class="sec-label">Ghi chú</div>
-    <textarea class="note-box" id="note-in" placeholder="Tuỳ chọn…"></textarea>
+    <!-- Nhân viên -->
+    <div class="sec">Nhân viên thực hiện</div>
+    <div class="staff-grid" id="staff-grid"></div>
 
-    <div class="sec-label" style="margin-top:28px">
-      Giao dịch hôm nay
-      <span id="link-hist" style="font-size:13px;color:var(--gold);margin-left:8px;cursor:pointer;font-weight:700">(xem tất cả →)</span>
-    </div>
-    <div id="hist-mini"></div>
-    <div style="height:24px"></div>
+    <!-- Ghi chú -->
+    <div class="sec">Ghi chú</div>
+    <textarea class="note-inp" id="note-inp" placeholder="Tuỳ chọn…"></textarea>
+
+    <div style="height:16px"></div>
   </div>
 
-  <div class="conf-footer">
-    <button class="btn-charge" id="btn-charge" onclick="doCharge()" disabled>
-      <span id="charge-txt">Chọn nhân viên trước</span>
+  <div class="invoice-footer">
+    <button class="btn-finish" id="btn-finish" onclick="doFinish()" disabled>
+      <span id="finish-txt">Chọn nhân viên trước</span>
       <div class="spin" id="spin"></div>
     </button>
   </div>
-  <div class="safe-bot"></div>
+
 </div>
 
-<!-- ══ S3: THÀNH CÔNG ════════════════════════════════ -->
-<div id="screen-success" class="screen">
+<!-- ══ SCREEN 3: THÀNH CÔNG ═════════════════════════════ -->
+<div id="s-ok" class="screen">
   <div class="ok-ring">✓</div>
   <div class="ok-tag">Đã lưu thành công</div>
   <div class="ok-amt" id="ok-amt">₫ 0</div>
-  <div class="ok-svc" id="ok-svc">—</div>
   <div class="ok-who" id="ok-who">—</div>
+  <div class="ok-svcs" id="ok-svcs"></div>
   <div class="ok-time" id="ok-time">—</div>
-  <div id="ok-items" style="margin-top:10px;font-size:13px;color:var(--sub);line-height:1.8;text-align:center"></div>
   <button class="btn-new" onclick="newEntry()">＋  Giao dịch mới</button>
-  <button class="btn-hist" id="btn-to-hist">Xem lịch sử hôm nay</button>
+  <button class="btn-hist" onclick="openHist('s-ok')">Xem lịch sử hôm nay</button>
 </div>
 
-<!-- ══ S4: LỊCH SỬ ═══════════════════════════════════ -->
-<div id="screen-history" class="screen">
-  <div class="safe-top"></div>
+<!-- ══ SCREEN 4: LỊCH SỬ ════════════════════════════════ -->
+<div id="s-hist" class="screen">
   <div class="topbar">
-    <button class="btn-icon" id="hist-back">←</button>
+    <button class="btn-icon" id="hist-back-btn">←</button>
     <div>
       <div class="topbar-title">Lịch sử hôm nay</div>
       <div class="topbar-sub" id="hist-sum">—</div>
     </div>
   </div>
   <div class="hist-scroll">
-    <div id="hist-full"></div>
-    <div style="height:32px"></div>
-  </div>
-  <div class="safe-bot"></div>
-</div>
-
-<!-- ══ S5: SỬA ═══════════════════════════════════════ -->
-<div id="screen-edit" class="screen">
-  <div class="safe-top"></div>
-  <div class="topbar">
-    <button class="btn-icon" onclick="go('screen-history')">←</button>
-    <div class="topbar-title">Sửa giao dịch</div>
-  </div>
-  <div class="edit-scroll">
-    <div class="e-field">
-      <div class="e-label">Dịch vụ</div>
-      <input class="e-input" id="e-svc" type="text" placeholder="Tên dịch vụ">
-    </div>
-    <div class="e-field">
-      <div class="e-label">Giá tiền (VNĐ)</div>
-      <input class="e-input" id="e-price" type="number" placeholder="vd: 150000">
-    </div>
-    <div class="e-field">
-      <div class="e-label">Thanh toán</div>
-      <div class="e-pay-row">
-        <div class="e-pay active" data-val="Tiền mặt" onclick="pickEditPay(this)">💵  Tiền mặt</div>
-        <div class="e-pay" data-val="Chuyển khoản" onclick="pickEditPay(this)">📱  Chuyển khoản</div>
-      </div>
-    </div>
-    <div class="e-field">
-      <div class="e-label">Nhân viên</div>
-      <input class="e-input" id="e-staff" type="text" placeholder="Tên nhân viên">
-    </div>
-    <div class="e-field">
-      <div class="e-label">Ghi chú</div>
-      <input class="e-input" id="e-note" type="text" placeholder="Tuỳ chọn">
-    </div>
-    <p class="edit-warn">
-      ⚠️ Sửa ở đây chỉ cập nhật trên điện thoại (phiên hôm nay).<br>
-      Nếu đã gửi lên Google Sheets rồi, hãy vào Sheets để sửa trực tiếp.
-    </p>
+    <div id="hist-list"></div>
     <div style="height:20px"></div>
   </div>
-  <div class="edit-footer">
-    <button class="btn-del" onclick="askDelete()" title="Xoá">🗑</button>
-    <button class="btn-save" onclick="saveEdit()">Lưu thay đổi</button>
-  </div>
-  <div class="safe-bot"></div>
 </div>
 
-<!-- ══ S6: CÀI ĐẶT ════════════════════════════════════ -->
-<div id="screen-settings" class="screen">
-  <div class="safe-top"></div>
+<!-- ══ SCREEN 5: BẢO MẬT ════════════════════════════════ -->
+<div id="s-settings" class="screen">
   <div class="topbar">
-    <button class="btn-icon" onclick="go('screen-pos')">←</button>
+    <button class="btn-icon" onclick="go('s-entry')">←</button>
     <div class="topbar-title">Bảo mật Admin</div>
   </div>
   <div class="set-scroll">
@@ -851,24 +612,22 @@ html, body {
       <div class="pin-setup-row">
         <div>
           <div class="pin-setup-label">Mã PIN Admin</div>
-          <div class="pin-setup-sub" id="pin-status-txt">Chưa đặt PIN — ai cũng sửa/xoá được</div>
+          <div class="pin-setup-sub" id="pin-status-txt">Chưa đặt PIN</div>
         </div>
         <div class="pin-badge" id="pin-setup-btn" onclick="openPinSetup()">Đặt PIN</div>
       </div>
     </div>
-    <div class="set-hint" style="margin-top:14px;font-size:13px;line-height:1.7;color:var(--sub)">
-      🔐 Sau khi đặt PIN, nhân viên bấm sửa hoặc xoá giao dịch sẽ phải nhập mã PIN Admin mới thực hiện được.<br><br>
-      Chỉ admin (vợ/chồng chủ tiệm) biết mã PIN này.
+    <div class="set-hint">
+      🔐 Sau khi đặt PIN, nhân viên không thể xoá lịch sử giao dịch. Chỉ admin biết mã PIN mới chỉnh sửa được.
     </div>
-    <div style="height:40px"></div>
   </div>
 </div>
 
 <!-- MODAL PIN -->
 <div id="modal-pin">
   <div class="pin-sheet">
-    <div class="pin-title">🔐 Xác nhận Admin</div>
-    <div class="pin-sub" id="pin-sub">Nhập mã PIN 4 số để tiếp tục</div>
+    <div class="pin-title">🔐 Admin PIN</div>
+    <div class="pin-sub" id="pin-sub">Nhập mã PIN 4 số</div>
     <div class="pin-dots">
       <div class="pin-dot" id="pd0"></div>
       <div class="pin-dot" id="pd1"></div>
@@ -876,311 +635,242 @@ html, body {
       <div class="pin-dot" id="pd3"></div>
     </div>
     <div class="pin-pad">
-      <div class="pin-key" onclick="pinTap('1')"><div class="pk-num">1</div></div>
-      <div class="pin-key" onclick="pinTap('2')"><div class="pk-num">2</div><div class="pk-sub">ABC</div></div>
-      <div class="pin-key" onclick="pinTap('3')"><div class="pk-num">3</div><div class="pk-sub">DEF</div></div>
-      <div class="pin-key" onclick="pinTap('4')"><div class="pk-num">4</div><div class="pk-sub">GHI</div></div>
-      <div class="pin-key" onclick="pinTap('5')"><div class="pk-num">5</div><div class="pk-sub">JKL</div></div>
-      <div class="pin-key" onclick="pinTap('6')"><div class="pk-num">6</div><div class="pk-sub">MNO</div></div>
-      <div class="pin-key" onclick="pinTap('7')"><div class="pk-num">7</div><div class="pk-sub">PQRS</div></div>
-      <div class="pin-key" onclick="pinTap('8')"><div class="pk-num">8</div><div class="pk-sub">TUV</div></div>
-      <div class="pin-key" onclick="pinTap('9')"><div class="pk-num">9</div><div class="pk-sub">WXYZ</div></div>
-      <div class="pin-key pin-cancel" onclick="closePinModal()">Huỷ</div>
-      <div class="pin-key" onclick="pinTap('0')"><div class="pk-num">0</div></div>
-      <div class="pin-key pin-del" onclick="pinDel()">⌫</div>
+      <div class="pk" onclick="pinTap('1')"><div class="pk-n">1</div></div>
+      <div class="pk" onclick="pinTap('2')"><div class="pk-n">2</div><div class="pk-s">ABC</div></div>
+      <div class="pk" onclick="pinTap('3')"><div class="pk-n">3</div><div class="pk-s">DEF</div></div>
+      <div class="pk" onclick="pinTap('4')"><div class="pk-n">4</div><div class="pk-s">GHI</div></div>
+      <div class="pk" onclick="pinTap('5')"><div class="pk-n">5</div><div class="pk-s">JKL</div></div>
+      <div class="pk" onclick="pinTap('6')"><div class="pk-n">6</div><div class="pk-s">MNO</div></div>
+      <div class="pk" onclick="pinTap('7')"><div class="pk-n">7</div><div class="pk-s">PQRS</div></div>
+      <div class="pk" onclick="pinTap('8')"><div class="pk-n">8</div><div class="pk-s">TUV</div></div>
+      <div class="pk" onclick="pinTap('9')"><div class="pk-n">9</div><div class="pk-s">WXYZ</div></div>
+      <div class="pk cancel" onclick="closePinModal()">Huỷ</div>
+      <div class="pk" onclick="pinTap('0')"><div class="pk-n">0</div></div>
+      <div class="pk del" onclick="pinDel()">⌫</div>
     </div>
     <div class="pin-err" id="pin-err"></div>
-  </div>
-</div>
-
-<!-- MODAL XOÁ -->
-<div id="modal-del">
-  <div class="m-sheet">
-    <div class="m-title">Xoá giao dịch?</div>
-    <div class="m-desc" id="m-desc">Giao dịch sẽ bị xoá khỏi danh sách trên máy.<br>Dữ liệu đã gửi lên Google Sheets cần xoá thủ công trên Sheets.</div>
-    <div class="m-btns">
-      <button class="btn-mc" onclick="closeModal()">Huỷ</button>
-      <button class="btn-md" onclick="doDelete()">Xoá</button>
-    </div>
   </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
-// ── STATE ────────────────────────────────────────────────────
-let raw        = '';       // digits đang nhập cho 1 item trong giỏ
-let cart       = [];       // [{ svc, ico, price }, ...]  — giỏ dịch vụ
-let editingCartIdx = -1;   // index item đang nhập giá (-1 = không)
-let curStaff   = '';
-let curPay     = 'Tiền mặt';
-let sessions   = [];
-let editIdx    = -1;
-let editPay    = 'Tiền mặt';
-let fromScreen = 'screen-confirm';
-
-// PIN
-let pinBuffer  = '';
-let pinAction  = null;
-let pinMode    = 'verify';   // 'verify' | 'setup-new' | 'setup-confirm'
-let pinNewTemp = '';
-function getPin() { return localStorage.getItem('kn_pin') || ''; }
-
-// ── CẤU HÌNH CỐ ĐỊNH ─────────────────────────────────────────
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxhtDuFtFIVNFdOVHkVY0XgBlGIHoV8EH061n_Ug8QzAcciwqH0Drd5moDvoh2GFVfUA/exec';
+// ══ CẤU HÌNH ═════════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxaxVzrUv9T3K1hdou3R5gsOiupf17CoyRk93wXQkqDw-R-0EpgnzUWt_1X5107to1o/exec';
 
 const SERVICES = [
-  { ico: '💅', label: 'Sơn tay'  },
-  { ico: '🦶', label: 'Sơn chân' },
-  { ico: '👁',  label: 'Nối mi'  },
-  { ico: '🚿', label: 'Gội đầu' },
-  { ico: '💸', label: 'Tiền tip' },
+  { ico:'💅', label:'Sơn tay'  },
+  { ico:'🦶', label:'Sơn chân' },
+  { ico:'👁',  label:'Nối mi'  },
+  { ico:'🚿', label:'Gội đầu' },
+  { ico:'💸', label:'Tiền tip' },
 ];
 
 const STAFF = ['Duyên','Thy','Thuỳ','Trân','Ngọc'];
-
 const QUICK = [50000, 100000, 150000, 200000];
+const TTL   = 24 * 60 * 60 * 1000; // 24h
 
-// ── LƯU LỊCH SỬ (localStorage, tồn tại 24h) ─────────────────
-const SESSION_KEY = 'kn_sessions';
-const TTL_MS      = 24 * 60 * 60 * 1000; // 24 giờ
+// ══ STATE ═════════════════════════════════════════════════
+let cart     = [];   // [{ico, label, price}]
+let raw      = '';   // digits đang nhập
+let editIdx  = -1;   // index item đang nhập giá
+let curPay   = 'Tiền mặt';
+let curStaff = '';
+let sessions = [];
+let histFrom = 's-ok';
 
-function saveSessions() {
-  localStorage.setItem(SESSION_KEY, JSON.stringify({
-    saved: Date.now(),
-    data:  sessions,
-  }));
-}
+// PIN
+let pinBuf    = '';
+let pinAct    = null;
+let pinMode   = 'verify';
+let pinNewTmp = '';
+const getPin  = () => localStorage.getItem('kn_pin') || '';
 
-function loadSessions() {
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    if (!raw) return;
-    const obj = JSON.parse(raw);
-    // Bỏ nếu quá 24h
-    if (Date.now() - obj.saved > TTL_MS) {
-      localStorage.removeItem(SESSION_KEY);
-      return;
-    }
-    sessions = obj.data || [];
-  } catch(e) {
-    sessions = [];
-  }
-}
-
-// ── INIT ─────────────────────────────────────────────────────
-function init() {
-  loadSessions();
-  renderCart();
-  renderSvcs();
-  renderQuick();
-
-  document.getElementById('btn-settings').onclick = openSettings;
-  document.getElementById('btn-to-hist').onclick  = () => openHistory('screen-success');
-  document.getElementById('link-hist').onclick    = () => openHistory('screen-confirm');
-  document.getElementById('hist-back').onclick    = () => go(fromScreen);
-}
-
-// ── NAVIGATION ───────────────────────────────────────────────
+// ══ NAVIGATION ════════════════════════════════════════════
 function go(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  // Nút Tiếp chỉ hiển thị khi ở màn POS và bàn phím số không mở
-  const bar = document.getElementById('pos-go-bar');
-  if (bar) bar.style.display = (id === 'screen-pos') ? 'block' : 'none';
 }
 
-// ── KEYPAD ───────────────────────────────────────────────────
-function tap(k) {
-  if (k === 'del')        raw = raw.slice(0,-1);
-  else if (k === 'clear') raw = '';
-  else if (k === '000')   { if (raw) raw += '000'; }
-  else                    { if (raw.length < 10) raw += k; }
-  syncKeypad();
-}
-function setQuick(v) { raw = String(v); syncKeypad(); }
-
-function syncKeypad() {
-  const n = parseInt(raw || '0');
-  document.getElementById('keypad-for').textContent =
-    (editingCartIdx >= 0 ? cart[editingCartIdx].svc : '—') +
-    '  ₫ ' + n.toLocaleString('vi-VN');
+// ══ INIT ══════════════════════════════════════════════════
+function init() {
+  loadSessions();
+  renderSvcGrid();
+  document.getElementById('btn-settings').onclick = openSettings;
+  document.getElementById('hist-back-btn').onclick = () => go(histFrom);
 }
 
-// ── CART ─────────────────────────────────────────────────────
-function addToCart(svc) {
-  // Nếu dịch vụ đã có → bật lại bàn phím để sửa giá
-  const existing = cart.findIndex(c => c.svc === svc.label);
+// ══ SCREEN 1: DỊCH VỤ ════════════════════════════════════
+
+// Render 5 nút dịch vụ
+function renderSvcGrid() {
+  const g = document.getElementById('svc-grid');
+  g.innerHTML = '';
+  SERVICES.forEach(s => {
+    const inCart = cart.some(c => c.label === s.label);
+    const el = document.createElement('div');
+    el.className = 'svc-btn' + (inCart ? ' on' : '');
+    el.innerHTML = `<span class="ico">${s.ico}</span>${s.label}`;
+    el.onclick = () => tapService(s);
+    g.appendChild(el);
+  });
+}
+
+// Bấm dịch vụ → mở bàn phím nhập giá
+function tapService(s) {
+  const existing = cart.findIndex(c => c.label === s.label);
   if (existing >= 0) {
-    openKeypadFor(existing);
-    return;
+    // Đã có → sửa giá
+    editIdx = existing;
+    raw = cart[existing].price > 0 ? String(cart[existing].price) : '';
+  } else {
+    // Thêm mới
+    cart.push({ ico: s.ico, label: s.label, price: 0 });
+    editIdx = cart.length - 1;
+    raw = '';
   }
-  // Thêm mới vào giỏ
-  cart.push({ svc: svc.label, ico: svc.ico, price: 0 });
-  openKeypadFor(cart.length - 1);
+  openKeypad(s.label);
 }
 
-function openKeypadFor(idx) {
-  editingCartIdx = idx;
-  raw = cart[idx].price > 0 ? String(cart[idx].price) : '';
-  syncKeypad();
-  document.getElementById('keypad-area').style.display = 'flex';
-  document.getElementById('svc-wrap').style.display    = 'none';
-  document.getElementById('pos-go-bar').style.display  = 'none';
-  renderCart();
+function openKeypad(label) {
+  document.getElementById('kp-label').textContent = label;
+  syncKpPreview();
+  document.getElementById('keypad-wrap').classList.add('show');
+  document.getElementById('svc-grid').style.display = 'none';
+  document.getElementById('btn-next').style.display = 'none';
 }
 
-function confirmPrice() {
-  if (editingCartIdx < 0) return;
+function closeKeypad() {
+  document.getElementById('keypad-wrap').classList.remove('show');
+  document.getElementById('svc-grid').style.display = 'grid';
+  document.getElementById('btn-next').style.display = 'block';
+}
+
+// Bàn phím số
+function tap(k) {
+  if (k === 'del')   raw = raw.slice(0,-1);
+  else if (raw.length < 10) raw += k;
+  syncKpPreview();
+}
+function setQ(v) { raw = String(v); syncKpPreview(); }
+function syncKpPreview() {
+  const n = parseInt(raw || '0');
+  document.getElementById('kp-preview').textContent = '₫ ' + n.toLocaleString('vi-VN');
+}
+
+// Bấm Xong
+function donePrice() {
   const price = parseInt(raw || '0');
-  if (price <= 0) { toast('Nhập giá tiền trước', 'err'); return; }
-  cart[editingCartIdx].price = price;
-  raw = ''; editingCartIdx = -1;
-  document.getElementById('keypad-area').style.display = 'none';
-  document.getElementById('svc-wrap').style.display    = 'block';
-  document.getElementById('pos-go-bar').style.display  = 'block';
-  renderCart();
-  renderSvcs(); // cập nhật nút Tiếp luôn
-}
-
-function cancelPrice() {
-  if (editingCartIdx >= 0 && cart[editingCartIdx].price === 0) {
-    cart.splice(editingCartIdx, 1);
+  if (price <= 0) {
+    // Nếu không nhập giá → xoá item khỏi giỏ
+    if (editIdx >= 0 && cart[editIdx].price === 0) {
+      cart.splice(editIdx, 1);
+    }
+  } else {
+    cart[editIdx].price = price;
   }
-  raw = ''; editingCartIdx = -1;
-  document.getElementById('keypad-area').style.display = 'none';
-  document.getElementById('svc-wrap').style.display    = 'block';
-  document.getElementById('pos-go-bar').style.display  = 'block';
+  raw = ''; editIdx = -1;
+  closeKeypad();
   renderCart();
-  renderSvcs();
+  renderSvcGrid();
+  syncNextBtn();
 }
 
-function removeFromCart(idx) {
-  cart.splice(idx, 1);
-  if (editingCartIdx === idx) {
-    editingCartIdx = -1; raw = '';
-    document.getElementById('keypad-area').style.display = 'none';
-    document.getElementById('svc-wrap').style.display    = 'block';
-  }
-  renderCart();
-  renderSvcs();
-}
-
+// Render giỏ
 function renderCart() {
-  const wrap  = document.getElementById('cart-wrap');
-  const empty = document.getElementById('cart-empty');
-  const total = cart.reduce((s, c) => s + c.price, 0);
-  const badge = document.getElementById('cart-badge');
-  const tatmt = document.getElementById('cart-total');
-
-  tatmt.textContent = total.toLocaleString('vi-VN');
-  tatmt.parentElement.className = 'cart-total-amt' + (total > 0 ? ' has-val' : '');
+  const box   = document.getElementById('cart-box');
+  const hint  = document.getElementById('cart-hint');
+  const tbar  = document.getElementById('cart-total-bar');
+  const tamt  = document.getElementById('cart-total-amt');
+  const total = cart.reduce((s,c)=>s+c.price,0);
 
   if (!cart.length) {
-    empty.style.display = 'block';
-    badge.style.display = 'none';
-    wrap.innerHTML = '';
-    wrap.appendChild(empty);
+    box.innerHTML = '';
+    box.appendChild(hint);
+    hint.style.display = 'block';
+    tbar.style.display = 'none';
     return;
   }
 
-  empty.style.display = 'none';
-  badge.style.display = 'block';
-  document.getElementById('cart-count').textContent = cart.length;
+  hint.style.display = 'none';
+  tbar.style.display = 'flex';
+  tamt.textContent = total.toLocaleString('vi-VN') + 'đ';
 
-  wrap.innerHTML = cart.map((c, i) => `
-    <div class="cart-item" style="${editingCartIdx === i ? 'background:var(--gold-dim);border-radius:10px;padding:10px 8px;margin:0 -8px' : ''}">
-      <span class="cart-item-ico">${c.ico}</span>
-      <span class="cart-item-name">${c.svc}</span>
-      <span class="cart-item-price ${c.price === 0 ? 'empty' : ''}" onclick="openKeypadFor(${i})">
-        ${c.price > 0 ? Number(c.price).toLocaleString('vi-VN') + 'đ' : 'Nhập giá ✎'}
+  box.innerHTML = cart.map((c,i) => `
+    <div class="cart-row">
+      <span class="cart-ico">${c.ico}</span>
+      <span class="cart-name">${c.label}</span>
+      <span class="cart-price" onclick="editCartItem(${i})">
+        ${c.price > 0
+          ? Number(c.price).toLocaleString('vi-VN')+'đ  ✎'
+          : '<span class="none">Nhập giá ✎</span>'}
       </span>
-      <button class="cart-item-del" onclick="removeFromCart(${i})">✕</button>
+      <button class="cart-del" onclick="delCartItem(${i})">✕</button>
     </div>
   `).join('');
 }
 
-function updatePosFooter() {
-  const btn = document.getElementById('svc-go-btn');
-  if (!btn) return;
-  const ready = cart.reduce((s, c) => s + c.price, 0) > 0;
-  btn.className = 'svc-go' + (ready ? ' ready' : '');
-  btn.onclick = ready ? goConfirm : null;
+function editCartItem(i) {
+  editIdx = i;
+  raw = cart[i].price > 0 ? String(cart[i].price) : '';
+  openKeypad(cart[i].label);
 }
 
-// ── SERVICES ─────────────────────────────────────────────────
-function renderSvcs() {
-  const c = document.getElementById('svc-grid');
-  c.innerHTML = '';
-  const ready = cart.reduce((s, ci) => s + ci.price, 0) > 0;
-
-  // 5 nút dịch vụ — grid 3 cột
-  SERVICES.forEach(s => {
-    const inCart = cart.some(ci => ci.svc === s.label);
-    const el = document.createElement('div');
-    el.className = 'svc-btn' + (inCart ? ' active' : '');
-    el.innerHTML = `<span class="svc-ico">${s.ico}</span>${s.label}`;
-    el.onclick   = () => addToCart(s);
-    c.appendChild(el);
-  });
-
-  // Ô trống thứ 6 để giữ layout 3 cột đều
-  const blank = document.createElement('div');
-  blank.className = 'svc-go-placeholder';
-  c.appendChild(blank);
-
-  updatePosFooter();
+function delCartItem(i) {
+  cart.splice(i, 1);
+  renderCart();
+  renderSvcGrid();
+  syncNextBtn();
 }
 
-// ── QUICK KEYS ───────────────────────────────────────────────
-function renderQuick() {
-  const keys = document.querySelectorAll('.qkey');
-  QUICK.forEach((v, i) => {
-    if (!keys[i]) return;
-    keys[i].textContent = v >= 1000 ? (v/1000)+'k' : v;
-    keys[i].onclick = () => setQuick(v);
-  });
+// Nút Tiếp
+function syncNextBtn() {
+  const ready = cart.length > 0 && cart.every(c=>c.price>0);
+  const btn = document.getElementById('btn-next');
+  btn.className = 'btn-next ' + (ready ? 'on' : 'off');
 }
 
-// ── CHIPS (không còn dùng chip-svc) ─────────────────────────
-function updateChips() {}
+// ══ SCREEN 2: HOÁ ĐƠN ════════════════════════════════════
+function goInvoice() {
+  if (!cart.length || cart.some(c=>c.price===0)) return;
 
-function cyclePay() {
-  curPay = curPay === 'Tiền mặt' ? 'Chuyển khoản' : 'Tiền mặt';
-  document.querySelectorAll('.pay-btn').forEach(el =>
-    el.classList.toggle('active', el.dataset.val === curPay));
-}
-function pickPay(el) {
-  document.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  curPay = el.dataset.val;
-}
+  const now   = new Date();
+  const total = cart.reduce((s,c)=>s+c.price,0);
 
-// ── GO CONFIRM ───────────────────────────────────────────────
-function goConfirm() {
-  if (!cart.length || cart.some(c => c.price === 0)) return;
+  document.getElementById('inv-time').textContent = now.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('inv-date').textContent = now.toLocaleDateString('vi-VN');
+  document.getElementById('inv-total').textContent = total.toLocaleString('vi-VN');
 
-  const total = cart.reduce((s, c) => s + c.price, 0);
-  document.getElementById('conf-amt').textContent = total.toLocaleString('vi-VN');
+  document.getElementById('inv-rows').innerHTML = cart.map(c=>`
+    <div class="invoice-row">
+      <span class="inv-ico">${c.ico}</span>
+      <span class="inv-name">${c.label}</span>
+      <span class="inv-price">${Number(c.price).toLocaleString('vi-VN')}đ</span>
+    </div>
+  `).join('');
 
-  // Danh sách dịch vụ trong giỏ
-  document.getElementById('conf-svc-list').innerHTML = cart.map(c =>
-    `<div class="conf-svc-row">
-       <span class="csn">${c.ico} ${c.svc}</span>
-       <span class="csp">${Number(c.price).toLocaleString('vi-VN')}đ</span>
-     </div>`
-  ).join('');
+  // Reset thanh toán
+  curPay = 'Tiền mặt';
+  document.querySelectorAll('.pay-btn').forEach(el=>
+    el.classList.toggle('on', el.dataset.val==='Tiền mặt'));
 
-  document.getElementById('conf-time').textContent =
-    new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
-
-  document.querySelectorAll('.pay-btn').forEach(el =>
-    el.classList.toggle('active', el.dataset.val === curPay));
-
+  // Reset nhân viên
+  curStaff = '';
   buildStaff();
-  updateChargeBtn();
-  renderHistMini();
-  go('screen-confirm');
+  updateFinishBtn();
+
+  document.getElementById('note-inp').value = '';
+  go('s-invoice');
+}
+
+function goBack() {
+  go('s-entry');
+}
+
+function pickPay(el) {
+  document.querySelectorAll('.pay-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  curPay = el.dataset.val;
 }
 
 function buildStaff() {
@@ -1188,64 +878,63 @@ function buildStaff() {
   g.innerHTML = '';
   STAFF.forEach(name => {
     const el = document.createElement('div');
-    el.className = 'staff-btn' + (name === curStaff ? ' active' : '');
-    el.innerHTML = `<div class="s-avatar">${name.slice(0,2)}</div><div class="s-name">${name}</div>`;
-    el.onclick   = () => {
-      curStaff = curStaff === name ? '' : name;
-      buildStaff(); updateChargeBtn(); updateChips();
+    el.className = 'staff-btn' + (name===curStaff?' on':'');
+    el.innerHTML = `<div class="staff-av">${name.slice(0,2)}</div><div class="staff-nm">${name}</div>`;
+    el.onclick = () => {
+      curStaff = curStaff===name ? '' : name;
+      buildStaff(); updateFinishBtn();
     };
     g.appendChild(el);
   });
 }
 
-function updateChargeBtn() {
-  const btn = document.getElementById('btn-charge');
-  const txt = document.getElementById('charge-txt');
+function updateFinishBtn() {
+  const btn = document.getElementById('btn-finish');
+  const txt = document.getElementById('finish-txt');
   const ok  = !!curStaff;
-  btn.disabled    = !ok;
+  btn.disabled = !ok;
   txt.textContent = ok
-    ? `Lưu  ·  ${curPay === 'Tiền mặt' ? '💵' : '📱'}  ${curPay}`
+    ? `Hoàn tất  ·  ${curPay==='Tiền mặt'?'💵':'📱'}  ${curPay}`
     : 'Chọn nhân viên trước';
 }
 
-// ── DO CHARGE ────────────────────────────────────────────────
-async function doCharge() {
+// ══ HOÀN TẤT — GỬI LÊN SHEETS ═══════════════════════════
+async function doFinish() {
   if (!curStaff || !cart.length) return;
-  const now   = new Date();
-  const note  = document.getElementById('note-in').value.trim();
-  const total = cart.reduce((s, c) => s + c.price, 0);
+  const now  = new Date();
+  const note = document.getElementById('note-inp').value.trim();
+  const total = cart.reduce((s,c)=>s+c.price,0);
 
-  const btn  = document.getElementById('btn-charge');
-  const txt  = document.getElementById('charge-txt');
+  const btn  = document.getElementById('btn-finish');
+  const txt  = document.getElementById('finish-txt');
   const spin = document.getElementById('spin');
-  btn.disabled = true; txt.style.display = 'none'; spin.style.display = 'block';
+  btn.disabled=true; txt.style.display='none'; spin.style.display='block';
 
   try {
-    // Gửi TỪNG dịch vụ trong giỏ thành 1 dòng riêng lên Sheets
+    // Gửi từng dịch vụ = 1 dòng riêng trên Sheets
     for (const item of cart) {
-      const entry = {
-        service: item.svc,
-        price:   item.price,
-        payment: curPay,
-        staff:   curStaff,
-        note:    note,
-      };
       await fetch(SCRIPT_URL, {
         method:'POST', mode:'no-cors',
         headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(entry),
+        body: JSON.stringify({
+          service: item.label,
+          price:   item.price,
+          payment: curPay,
+          staff:   curStaff,
+          note,
+        }),
       });
     }
 
-    // Lưu vào lịch sử local — 1 nhóm giao dịch (group)
+    // Lưu lịch sử local
     const group = {
       id:      Date.now(),
-      time:    now.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),
       date:    now.toLocaleDateString('vi-VN'),
+      time:    now.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),
       staff:   curStaff,
       payment: curPay,
       note,
-      items:   cart.map(c => ({ svc: c.svc, ico: c.ico, price: c.price })),
+      items:   cart.map(c=>({ico:c.ico,label:c.label,price:c.price})),
       total,
     };
     sessions.unshift(group);
@@ -1253,295 +942,177 @@ async function doCharge() {
     saveSessions();
 
     // Màn thành công
-    const svcNames = cart.map(c => c.ico + ' ' + c.svc + '  ' + Number(c.price).toLocaleString('vi-VN') + 'đ').join('\n');
-    document.getElementById('ok-amt').textContent   = '₫ ' + total.toLocaleString('vi-VN');
-    document.getElementById('ok-svc').textContent   = cart.length + ' dịch vụ';
-    document.getElementById('ok-who').textContent   = curStaff;
-    document.getElementById('ok-time').textContent  = group.date + '  ·  ' + group.time;
-    document.getElementById('ok-items').innerHTML   =
-      cart.map(c => `${c.ico} ${c.svc}  <b style="color:var(--gold)">${Number(c.price).toLocaleString('vi-VN')}đ</b>`).join('<br>');
-    go('screen-success');
+    document.getElementById('ok-amt').textContent  = '₫ ' + total.toLocaleString('vi-VN');
+    document.getElementById('ok-who').textContent  = curStaff;
+    document.getElementById('ok-svcs').innerHTML   =
+      cart.map(c=>`${c.ico} ${c.label}  <b style="color:var(--gold)">${Number(c.price).toLocaleString('vi-VN')}đ</b>`).join('<br>');
+    document.getElementById('ok-time').textContent = group.date + '  ·  ' + group.time;
+    go('s-ok');
 
-  } catch(err) {
-    toast('Lỗi kết nối — kiểm tra URL Script', 'err');
-    btn.disabled = false; txt.style.display = ''; spin.style.display = 'none';
+  } catch(e) {
+    toast('Lỗi kết nối — kiểm tra mạng', 'err');
+    btn.disabled=false; txt.style.display=''; spin.style.display='none';
   }
 }
 
-// ── NEW ENTRY ────────────────────────────────────────────────
+// ══ GIAO DỊCH MỚI ════════════════════════════════════════
 function newEntry() {
-  cart = []; raw = ''; curStaff = ''; editingCartIdx = -1;
-  document.getElementById('note-in').value = '';
-  document.getElementById('keypad-area').style.display = 'none';
-  document.getElementById('svc-wrap').style.display    = 'block';
-  renderCart(); renderSvcs(); updateChargeBtn();
-  go('screen-pos');
+  cart=[]; raw=''; curStaff=''; editIdx=-1;
+  document.getElementById('keypad-wrap').classList.remove('show');
+  document.getElementById('svc-grid').style.display = 'grid';
+  document.getElementById('btn-next').style.display = 'block';
+  renderCart(); renderSvcGrid(); syncNextBtn();
+  go('s-entry');
 }
 
-// ── LỊCH SỬ ─────────────────────────────────────────────────
-function hiHTML(h, i) {
-  const itemsHTML = h.items.map(it =>
-    `<span style="font-size:12px;color:var(--sub)">${it.ico} ${it.svc} · ${Number(it.price).toLocaleString('vi-VN')}đ</span>`
-  ).join('<br>');
-  return `<div class="hi">
-    <div class="hi-dot"></div>
-    <div class="hi-main">
-      <div class="hi-name">${h.staff}</div>
-      <div class="hi-sub" style="line-height:1.7">${itemsHTML}</div>
-      <div class="hi-sub">${h.time} · ${h.payment}</div>
-    </div>
-    <div class="hi-r">
-      <div class="hi-price">${Number(h.total).toLocaleString('vi-VN')}đ</div>
-      <div class="hi-pay">${h.items.length} dịch vụ</div>
-    </div>
-    <button class="hi-edit" onclick="openEdit(${i});event.stopPropagation()">✎</button>
-  </div>`;
-}
+// ══ LỊCH SỬ ══════════════════════════════════════════════
+function openHist(from) {
+  histFrom = from;
+  const total = sessions.reduce((s,h)=>s+h.total,0);
 
-function renderHistMini() {
-  const el = document.getElementById('hist-mini');
-  if (!sessions.length) {
-    el.innerHTML = '<div style="font-size:15px;color:var(--sub);padding:10px 0">Chưa có giao dịch nào hôm nay.</div>';
-    return;
-  }
-  el.innerHTML = sessions.slice(0,5).map((h,i) => hiHTML(h,i)).join('');
-}
-
-function openHistory(from) {
-  fromScreen = from;
-  const total  = sessions.reduce((s,h) => s + h.total, 0);
+  // Tổng theo nhân viên
   const byStaff = {};
   sessions.forEach(h => {
-    if (!byStaff[h.staff]) byStaff[h.staff] = 0;
-    byStaff[h.staff] += h.total;
+    byStaff[h.staff] = (byStaff[h.staff]||0) + h.total;
   });
-  const staffTxt = Object.entries(byStaff)
-    .map(([n, v]) => n + ': ' + Number(v).toLocaleString('vi-VN') + 'đ')
-    .join('  |  ');
+  const staffLine = Object.entries(byStaff)
+    .map(([n,v])=>`${n}: ${Number(v).toLocaleString('vi-VN')}đ`).join('  ·  ');
 
   document.getElementById('hist-sum').textContent =
     sessions.length + ' giao dịch  ·  ' + total.toLocaleString('vi-VN') + 'đ';
 
-  // Dòng phụ tên nhân viên
-  let staffEl = document.getElementById('hist-staff-row');
-  if (!staffEl) {
-    staffEl = document.createElement('div');
-    staffEl.id = 'hist-staff-row';
-    staffEl.style.cssText = 'font-size:12px;color:var(--gold);padding:0 22px 10px;line-height:1.6;';
-    document.getElementById('hist-full').parentNode.insertBefore(staffEl, document.getElementById('hist-full'));
-  }
-  staffEl.textContent = staffTxt || '';
-
-  const el = document.getElementById('hist-full');
+  const list = document.getElementById('hist-list');
   if (!sessions.length) {
-    el.innerHTML = '<div style="font-size:15px;color:var(--sub);padding:20px 0;text-align:center">Chưa có giao dịch nào.</div>';
+    list.innerHTML = '<div class="no-hist">Chưa có giao dịch nào hôm nay</div>';
   } else {
-    el.innerHTML = sessions.map((h,i) => hiHTML(h,i)).join('');
+    // Dòng tổng nhân viên
+    const staffDiv = staffLine
+      ? `<div style="font-size:12px;color:var(--gold);padding:10px 0 14px;border-bottom:1px solid var(--border);line-height:1.8">${staffLine}</div>`
+      : '';
+    list.innerHTML = staffDiv + sessions.map(h=>`
+      <div class="hi">
+        <div class="hi-dot"></div>
+        <div class="hi-main">
+          <div class="hi-who">${h.staff}</div>
+          <div class="hi-items">${h.items.map(i=>`${i.ico} ${i.label} · ${Number(i.price).toLocaleString('vi-VN')}đ`).join('<br>')}</div>
+          <div class="hi-meta">${h.time}  ·  ${h.payment}${h.note?' · '+h.note:''}</div>
+        </div>
+        <div class="hi-right">
+          <div class="hi-total">${Number(h.total).toLocaleString('vi-VN')}đ</div>
+          <div class="hi-cnt">${h.items.length} dịch vụ</div>
+        </div>
+      </div>
+    `).join('');
   }
-  go('screen-history');
+  go('s-hist');
 }
 
-// ── SỬA ─────────────────────────────────────────────────────
-function openEdit(idx) {
-  editIdx = idx;
-  requirePin(() => {
-    const h = sessions[editIdx];
-    document.getElementById('e-svc').value   = h.items.map(i => i.svc).join(', ');
-    document.getElementById('e-price').value = h.total;
-    document.getElementById('e-staff').value = h.staff;
-    document.getElementById('e-note').value  = h.note || '';
-    // Làm readonly svc và price — chỉ sửa nhân viên/thanh toán/ghi chú
-    document.getElementById('e-svc').readOnly   = true;
-    document.getElementById('e-price').readOnly = true;
-    document.getElementById('e-svc').style.opacity   = '0.5';
-    document.getElementById('e-price').style.opacity = '0.5';
-    editPay = h.payment;
-    document.querySelectorAll('.e-pay').forEach(el =>
-      el.classList.toggle('active', el.dataset.val === editPay));
-    go('screen-edit');
-  });
+// ══ LƯU LỊCH SỬ (localStorage 24h) ══════════════════════
+function saveSessions() {
+  localStorage.setItem('kn_sess', JSON.stringify({ ts: Date.now(), data: sessions }));
+}
+function loadSessions() {
+  try {
+    const r = localStorage.getItem('kn_sess');
+    if (!r) return;
+    const o = JSON.parse(r);
+    if (Date.now() - o.ts > TTL) { localStorage.removeItem('kn_sess'); return; }
+    sessions = o.data || [];
+  } catch(e) { sessions = []; }
 }
 
-function pickEditPay(el) {
-  document.querySelectorAll('.e-pay').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  editPay = el.dataset.val;
-}
-
-function saveEdit() {
-  if (editIdx < 0) return;
-  const staff = document.getElementById('e-staff').value.trim();
-  const note  = document.getElementById('e-note').value.trim();
-  if (!staff) { toast('Vui lòng điền tên nhân viên', 'err'); return; }
-  sessions[editIdx] = { ...sessions[editIdx], staff, payment: editPay, note };
-  saveSessions();
-  toast('Đã cập nhật ✓', 'ok');
-  openHistory(fromScreen);
-}
-
-// ── XOÁ ─────────────────────────────────────────────────────
-function askDelete() {
-  if (editIdx < 0) return;
-  requirePin(() => {
-    const h = sessions[editIdx];
-    document.getElementById('m-desc').innerHTML =
-      `<b style="color:var(--text)">${h.service}</b> &mdash; ${Number(h.price).toLocaleString('vi-VN')}đ &mdash; ${h.staff}<br><br>` +
-      `Giao dịch sẽ bị xoá khỏi danh sách trên điện thoại.<br>Nếu đã gửi lên Sheets, cần xoá thủ công trên Sheets.`;
-    document.getElementById('modal-del').classList.add('open');
-  });
-}
-function closeModal() { document.getElementById('modal-del').classList.remove('open'); }
-function doDelete() {
-  sessions.splice(editIdx, 1);
-  editIdx = -1;
-  saveSessions();
-  closeModal();
-  toast('Đã xoá giao dịch', 'ok');
-  openHistory(fromScreen);
-}
-
-// ── CÀI ĐẶT (chỉ PIN) ───────────────────────────────────────
-function openSettings() {
-  updatePinStatusUI();
-  go('screen-settings');
-}
-
-// ── PIN LOGIC ─────────────────────────────────────────────────
-// requirePin(callback) — nếu chưa có PIN thì chạy thẳng callback,
-// nếu có PIN thì hiện modal xác nhận trước.
-function requirePin(callback) {
-  if (!getPin()) {
-    // Chưa đặt PIN → cho qua luôn (nhắc đặt PIN)
-    callback();
-    return;
-  }
-  pinAction = callback;
-  pinMode   = 'verify';
-  openPinModal('Nhập mã PIN Admin để tiếp tục');
-}
-
-function openPinModal(subText) {
-  pinBuffer = '';
-  document.getElementById('pin-sub').textContent  = subText;
-  document.getElementById('pin-err').textContent  = '';
-  document.getElementById('modal-pin').classList.add('open');
-  updatePinDots();
-}
-
-function closePinModal() {
-  document.getElementById('modal-pin').classList.remove('open');
-  pinBuffer = ''; pinAction = null;
-}
-
-function updatePinDots() {
-  for (let i = 0; i < 4; i++) {
-    const dot = document.getElementById('pd' + i);
-    dot.className = 'pin-dot' + (i < pinBuffer.length ? ' filled' : '');
-  }
-}
-
-function pinTap(d) {
-  if (pinBuffer.length >= 4) return;
-  pinBuffer += d;
-  updatePinDots();
-  if (pinBuffer.length === 4) {
-    setTimeout(() => handlePinComplete(), 120); // nhỏ delay cho dot animation
-  }
-}
-
-function pinDel() {
-  if (!pinBuffer.length) return;
-  pinBuffer = pinBuffer.slice(0,-1);
-  updatePinDots();
-}
-
-function handlePinComplete() {
-  if (pinMode === 'verify') {
-    if (pinBuffer === getPin()) {
-      // Đúng PIN
-      document.getElementById('modal-pin').classList.remove('open');
-      pinBuffer = '';
-      if (pinAction) { pinAction(); pinAction = null; }
-    } else {
-      // Sai PIN
-      shakeDots();
-      document.getElementById('pin-err').textContent = 'Mã PIN không đúng. Thử lại.';
-      pinBuffer = '';
-      setTimeout(() => updatePinDots(), 10);
-    }
-
-  } else if (pinMode === 'setup-new') {
-    // Lưu PIN mới tạm, hỏi xác nhận lại
-    pinNewTemp = pinBuffer;
-    pinBuffer  = '';
-    pinMode    = 'setup-confirm';
-    document.getElementById('pin-sub').textContent = 'Nhập lại PIN để xác nhận';
-    document.getElementById('pin-err').textContent = '';
-    updatePinDots();
-
-  } else if (pinMode === 'setup-confirm') {
-    if (pinBuffer === pinNewTemp) {
-      // Khớp — lưu PIN
-      localStorage.setItem('kn_pin', pinBuffer);
-      document.getElementById('modal-pin').classList.remove('open');
-      pinBuffer = ''; pinNewTemp = '';
-      updatePinStatusUI();
-      toast('Đã đặt mã PIN Admin ✓', 'ok');
-    } else {
-      shakeDots();
-      document.getElementById('pin-err').textContent = 'Không khớp. Nhập lại từ đầu.';
-      pinBuffer = ''; pinNewTemp = '';
-      pinMode   = 'setup-new';
-      document.getElementById('pin-sub').textContent = 'Tạo mã PIN Admin mới (4 số)';
-      setTimeout(() => updatePinDots(), 10);
-    }
-  }
-}
-
-function shakeDots() {
-  for (let i = 0; i < 4; i++) {
-    const d = document.getElementById('pd' + i);
-    d.classList.remove('shake');
-    void d.offsetWidth; // reflow
-    d.classList.add('shake');
-  }
-}
-
-// Setup PIN từ màn cài đặt
-function openPinSetup() {
-  pinBuffer  = ''; pinNewTemp = '';
-  if (getPin()) {
-    // Phải xác nhận PIN cũ trước
-    pinMode = 'verify';
-    pinAction = () => {
-      // Sau khi xác nhận PIN cũ → vào tạo PIN mới
-      pinMode = 'setup-new';
-      openPinModal('Tạo mã PIN Admin mới (4 số)');
-    };
-    openPinModal('Nhập PIN hiện tại để đổi');
-  } else {
-    pinMode = 'setup-new';
-    openPinModal('Tạo mã PIN Admin mới (4 số)');
-  }
-}
-
-function updatePinStatusUI() {
-  const has  = !!getPin();
-  const txt  = document.getElementById('pin-status-txt');
-  const btn  = document.getElementById('pin-setup-btn');
-  if (!txt || !btn) return;
-  txt.textContent = has ? 'Đã đặt PIN — sửa/xoá yêu cầu xác nhận' : 'Chưa đặt PIN — ai cũng sửa/xoá được';
+// ══ CÀI ĐẶT ══════════════════════════════════════════════
+function openSettings() { updatePinUI(); go('s-settings'); }
+function updatePinUI() {
+  const has = !!getPin();
+  document.getElementById('pin-status-txt').textContent =
+    has ? 'Đã đặt — lịch sử được bảo vệ' : 'Chưa đặt — ai cũng xem lịch sử được';
+  const btn = document.getElementById('pin-setup-btn');
   btn.textContent = has ? 'Đổi PIN' : 'Đặt PIN';
   btn.className   = 'pin-badge' + (has ? ' set' : '');
 }
 
-// ── TOAST ────────────────────────────────────────────────────
+// ══ PIN ═══════════════════════════════════════════════════
+function requirePin(cb) {
+  if (!getPin()) { cb(); return; }
+  pinAct = cb; pinMode = 'verify';
+  openPinModal('Nhập mã PIN Admin để tiếp tục');
+}
+function openPinSetup() {
+  pinBuf=''; pinNewTmp='';
+  if (getPin()) {
+    pinAct = () => { pinMode='setup-new'; openPinModal('Tạo mã PIN mới (4 số)'); };
+    pinMode='verify'; openPinModal('Nhập PIN hiện tại trước');
+  } else {
+    pinMode='setup-new'; openPinModal('Tạo mã PIN Admin (4 số)');
+  }
+}
+function openPinModal(sub) {
+  pinBuf='';
+  document.getElementById('pin-sub').textContent = sub;
+  document.getElementById('pin-err').textContent = '';
+  document.getElementById('modal-pin').classList.add('open');
+  updateDots();
+}
+function closePinModal() {
+  document.getElementById('modal-pin').classList.remove('open');
+  pinBuf=''; pinAct=null;
+}
+function updateDots() {
+  for(let i=0;i<4;i++){
+    const d=document.getElementById('pd'+i);
+    d.className='pin-dot'+(i<pinBuf.length?' filled':'');
+  }
+}
+function pinTap(d) {
+  if(pinBuf.length>=4) return;
+  pinBuf+=d; updateDots();
+  if(pinBuf.length===4) setTimeout(handlePin, 120);
+}
+function pinDel() { if(pinBuf.length) { pinBuf=pinBuf.slice(0,-1); updateDots(); } }
+function handlePin() {
+  if(pinMode==='verify') {
+    if(pinBuf===getPin()) {
+      document.getElementById('modal-pin').classList.remove('open');
+      pinBuf='';
+      if(pinAct){pinAct();pinAct=null;}
+    } else {
+      shakeDots();
+      document.getElementById('pin-err').textContent='Mã PIN không đúng';
+      pinBuf=''; setTimeout(updateDots,10);
+    }
+  } else if(pinMode==='setup-new') {
+    pinNewTmp=pinBuf; pinBuf=''; pinMode='setup-confirm';
+    document.getElementById('pin-sub').textContent='Nhập lại để xác nhận';
+    document.getElementById('pin-err').textContent='';
+    updateDots();
+  } else if(pinMode==='setup-confirm') {
+    if(pinBuf===pinNewTmp) {
+      localStorage.setItem('kn_pin',pinBuf);
+      closePinModal(); pinNewTmp='';
+      updatePinUI(); toast('Đã đặt mã PIN ✓','ok');
+    } else {
+      shakeDots();
+      document.getElementById('pin-err').textContent='Không khớp, thử lại';
+      pinBuf=''; pinNewTmp=''; pinMode='setup-new';
+      document.getElementById('pin-sub').textContent='Tạo mã PIN mới (4 số)';
+      setTimeout(updateDots,10);
+    }
+  }
+}
+function shakeDots() {
+  for(let i=0;i<4;i++){
+    const d=document.getElementById('pd'+i);
+    d.classList.remove('shake'); void d.offsetWidth; d.classList.add('shake');
+  }
+}
+
+// ══ TOAST ═════════════════════════════════════════════════
 let _tt;
-function toast(msg, type='') {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.className = 'show ' + type;
-  clearTimeout(_tt);
-  _tt = setTimeout(() => { el.className = ''; }, 2600);
+function toast(msg,type='') {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='show '+type;
+  clearTimeout(_tt); _tt=setTimeout(()=>el.className='',2600);
 }
 
 init();
