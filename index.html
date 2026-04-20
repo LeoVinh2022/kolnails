@@ -806,7 +806,7 @@ let pinNewTemp = '';
 function getPin() { return localStorage.getItem('kn_pin') || ''; }
 
 // ── CẤU HÌNH CỐ ĐỊNH ─────────────────────────────────────────
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxaxVzrUv9T3K1hdou3R5gsOiupf17CoyRk93wXQkqDw-R-0EpgnzUWt_1X5107to1o/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxhtDuFtFIVNFdOVHkVY0XgBlGIHoV8EH061n_Ug8QzAcciwqH0Drd5moDvoh2GFVfUA/exec';
 
 const SERVICES = [
   { ico: '💅', label: 'Sơn tay'  },
@@ -820,8 +820,36 @@ const STAFF = ['Duyên','Thy','Thuỳ','Trân','Ngọc'];
 
 const QUICK = [50000, 100000, 150000, 200000];
 
+// ── LƯU LỊCH SỬ (localStorage, tồn tại 24h) ─────────────────
+const SESSION_KEY = 'kn_sessions';
+const TTL_MS      = 24 * 60 * 60 * 1000; // 24 giờ
+
+function saveSessions() {
+  localStorage.setItem(SESSION_KEY, JSON.stringify({
+    saved: Date.now(),
+    data:  sessions,
+  }));
+}
+
+function loadSessions() {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return;
+    const obj = JSON.parse(raw);
+    // Bỏ nếu quá 24h
+    if (Date.now() - obj.saved > TTL_MS) {
+      localStorage.removeItem(SESSION_KEY);
+      return;
+    }
+    sessions = obj.data || [];
+  } catch(e) {
+    sessions = [];
+  }
+}
+
 // ── INIT ─────────────────────────────────────────────────────
 function init() {
+  loadSessions();   // Tải lại lịch sử từ localStorage khi mở app
   renderSvcs();
   renderQuick();
   updateChips();
@@ -982,6 +1010,7 @@ async function doCharge() {
     });
     sessions.unshift(entry);
     if (sessions.length > 80) sessions.pop();
+    saveSessions(); // Lưu vào localStorage ngay sau khi thêm
 
     document.getElementById('ok-amt').textContent  = '₫ ' + entry.price.toLocaleString('vi-VN');
     document.getElementById('ok-svc').textContent  = entry.service;
@@ -1030,9 +1059,32 @@ function renderHistMini() {
 
 function openHistory(from) {
   fromScreen = from;
-  const total = sessions.reduce((s,h)=>s+h.price,0);
+  const total  = sessions.reduce((s,h) => s + h.price, 0);
+  const today  = new Date().toLocaleDateString('vi-VN');
+
+  // Tổng theo nhân viên (chỉ hôm nay)
+  const byStaff = {};
+  sessions.forEach(h => {
+    if (!byStaff[h.staff]) byStaff[h.staff] = 0;
+    byStaff[h.staff] += h.price;
+  });
+  const staffTxt = Object.entries(byStaff)
+    .map(([n, v]) => n + ': ' + Number(v).toLocaleString('vi-VN') + 'đ')
+    .join('  |  ');
+
   document.getElementById('hist-sum').textContent =
     sessions.length + ' giao dịch  ·  ' + total.toLocaleString('vi-VN') + 'đ';
+
+  // Dòng phụ tên nhân viên
+  let staffEl = document.getElementById('hist-staff-row');
+  if (!staffEl) {
+    staffEl = document.createElement('div');
+    staffEl.id = 'hist-staff-row';
+    staffEl.style.cssText = 'font-size:12px;color:var(--gold);padding:0 22px 10px;line-height:1.6;';
+    document.getElementById('hist-full').parentNode.insertBefore(staffEl, document.getElementById('hist-full'));
+  }
+  staffEl.textContent = staffTxt || '';
+
   const el = document.getElementById('hist-full');
   if (!sessions.length) {
     el.innerHTML = '<div style="font-size:15px;color:var(--sub);padding:20px 0;text-align:center">Chưa có giao dịch nào.</div>';
@@ -1072,6 +1124,7 @@ function saveEdit() {
   const note  = document.getElementById('e-note').value.trim();
   if (!svc || !price || !staff) { toast('Vui lòng điền đầy đủ thông tin', 'err'); return; }
   sessions[editIdx] = { ...sessions[editIdx], service:svc, price, payment:editPay, staff, note };
+  saveSessions();
   toast('Đã cập nhật ✓', 'ok');
   openHistory(fromScreen);
 }
@@ -1091,6 +1144,7 @@ function closeModal() { document.getElementById('modal-del').classList.remove('o
 function doDelete() {
   sessions.splice(editIdx, 1);
   editIdx = -1;
+  saveSessions();
   closeModal();
   toast('Đã xoá giao dịch', 'ok');
   openHistory(fromScreen);
