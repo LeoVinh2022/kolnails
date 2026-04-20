@@ -785,8 +785,8 @@ function renderCart() {
   const total = cart.reduce((s,c)=>s+c.price,0);
 
   if (!cart.length) {
-    box.innerHTML = '';
-    box.appendChild(hint);
+    // Xoá hết item nhưng giữ lại hint
+    Array.from(box.querySelectorAll('.cart-row')).forEach(el=>el.remove());
     hint.style.display = 'block';
     tbar.style.display = 'none';
     return;
@@ -796,8 +796,12 @@ function renderCart() {
   tbar.style.display = 'flex';
   tamt.textContent = total.toLocaleString('vi-VN') + 'đ';
 
-  box.innerHTML = cart.map((c,i) => `
-    <div class="cart-row">
+  // Xoá rows cũ, thêm rows mới (không đụng cart-hint)
+  Array.from(box.querySelectorAll('.cart-row')).forEach(el=>el.remove());
+  cart.forEach((c,i) => {
+    const row = document.createElement('div');
+    row.className = 'cart-row';
+    row.innerHTML = `
       <span class="cart-ico">${c.ico}</span>
       <span class="cart-name">${c.label}</span>
       <span class="cart-price" onclick="editCartItem(${i})">
@@ -806,8 +810,9 @@ function renderCart() {
           : '<span class="none">Nhập giá ✎</span>'}
       </span>
       <button class="cart-del" onclick="delCartItem(${i})">✕</button>
-    </div>
-  `).join('');
+    `;
+    box.appendChild(row);
+  });
 }
 
 function editCartItem(i) {
@@ -912,10 +917,12 @@ async function doFinish() {
 
   try {
     // Gửi từng dịch vụ = 1 dòng riêng trên Sheets
+    // Dùng text/plain để tránh preflight CORS với Google Apps Script
     for (const item of cart) {
       await fetch(SCRIPT_URL, {
-        method:'POST', mode:'no-cors',
-        headers:{'Content-Type':'application/json'},
+        method: 'POST',
+        mode:   'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({
           service: item.label,
           price:   item.price,
@@ -958,10 +965,16 @@ async function doFinish() {
 // ══ GIAO DỊCH MỚI ════════════════════════════════════════
 function newEntry() {
   cart=[]; raw=''; curStaff=''; editIdx=-1;
+  // Reset bàn phím
   document.getElementById('keypad-wrap').classList.remove('show');
   document.getElementById('svc-grid').style.display = 'grid';
   document.getElementById('btn-next').style.display = 'block';
-  renderCart(); renderSvcGrid(); syncNextBtn();
+  // Reset ghi chú
+  document.getElementById('note-inp').value = '';
+  // Reset cart-box về trạng thái ban đầu
+  renderCart();
+  renderSvcGrid();
+  syncNextBtn();
   go('s-entry');
 }
 
