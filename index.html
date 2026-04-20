@@ -1003,43 +1003,42 @@ function openKeypadFor(idx) {
   raw = cart[idx].price > 0 ? String(cart[idx].price) : '';
   syncKeypad();
   document.getElementById('keypad-area').style.display = 'flex';
-  document.getElementById('pos-footer').style.display  = 'none';
+  document.getElementById('svc-wrap').style.display    = 'none';
   renderCart();
 }
 
 function confirmPrice() {
   if (editingCartIdx < 0) return;
   const price = parseInt(raw || '0');
-  if (price <= 0) {
-    toast('Nhập giá tiền trước', 'err'); return;
-  }
+  if (price <= 0) { toast('Nhập giá tiền trước', 'err'); return; }
   cart[editingCartIdx].price = price;
   raw = ''; editingCartIdx = -1;
   document.getElementById('keypad-area').style.display = 'none';
+  document.getElementById('svc-wrap').style.display    = 'block';
   renderCart();
-  updatePosFooter();
+  renderSvcs(); // cập nhật nút Tiếp luôn
 }
 
 function cancelPrice() {
-  // Nếu item chưa có giá → xoá khỏi giỏ
   if (editingCartIdx >= 0 && cart[editingCartIdx].price === 0) {
     cart.splice(editingCartIdx, 1);
   }
   raw = ''; editingCartIdx = -1;
   document.getElementById('keypad-area').style.display = 'none';
+  document.getElementById('svc-wrap').style.display    = 'block';
   renderCart();
-  updatePosFooter();
+  renderSvcs();
 }
 
 function removeFromCart(idx) {
   cart.splice(idx, 1);
   if (editingCartIdx === idx) {
-    editingCartIdx = -1;
-    raw = '';
+    editingCartIdx = -1; raw = '';
     document.getElementById('keypad-area').style.display = 'none';
+    document.getElementById('svc-wrap').style.display    = 'block';
   }
   renderCart();
-  updatePosFooter();
+  renderSvcs();
 }
 
 function renderCart() {
@@ -1252,6 +1251,7 @@ function newEntry() {
   cart = []; raw = ''; curStaff = ''; editingCartIdx = -1;
   document.getElementById('note-in').value = '';
   document.getElementById('keypad-area').style.display = 'none';
+  document.getElementById('svc-wrap').style.display    = 'block';
   renderCart(); renderSvcs(); updateChargeBtn();
   go('screen-pos');
 }
