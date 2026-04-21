@@ -605,13 +605,26 @@ html, body {
 <div id="s-settings" class="screen">
   <div class="topbar">
     <button class="btn-icon" onclick="go('s-entry')">←</button>
-    <div class="topbar-title">Bảo mật Admin</div>
+    <div class="topbar-title">Cài đặt</div>
   </div>
   <div class="set-scroll">
+
+    <!-- Lịch sử giao dịch -->
+    <div class="set-card">
+      <div class="pin-setup-row" onclick="openHist('s-settings')" style="cursor:pointer">
+        <div>
+          <div class="pin-setup-label">📋 Lịch sử hôm nay</div>
+          <div class="pin-setup-sub" id="hist-quick-sub">Xem tất cả giao dịch trong ngày</div>
+        </div>
+        <div class="pin-badge" style="background:var(--surface2);border-color:var(--border);color:var(--sub)">Xem →</div>
+      </div>
+    </div>
+
+    <!-- Mã PIN -->
     <div class="set-card">
       <div class="pin-setup-row">
         <div>
-          <div class="pin-setup-label">Mã PIN Admin</div>
+          <div class="pin-setup-label">🔐 Mã PIN Admin</div>
           <div class="pin-setup-sub" id="pin-status-txt">Chưa đặt PIN</div>
         </div>
         <div class="pin-badge" id="pin-setup-btn" onclick="openPinSetup()">Đặt PIN</div>
@@ -785,8 +798,8 @@ function renderCart() {
   const total = cart.reduce((s,c)=>s+c.price,0);
 
   if (!cart.length) {
-    // Xoá hết item nhưng giữ lại hint
-    Array.from(box.querySelectorAll('.cart-row')).forEach(el=>el.remove());
+    box.innerHTML = '';
+    box.appendChild(hint);
     hint.style.display = 'block';
     tbar.style.display = 'none';
     return;
@@ -796,12 +809,8 @@ function renderCart() {
   tbar.style.display = 'flex';
   tamt.textContent = total.toLocaleString('vi-VN') + 'đ';
 
-  // Xoá rows cũ, thêm rows mới (không đụng cart-hint)
-  Array.from(box.querySelectorAll('.cart-row')).forEach(el=>el.remove());
-  cart.forEach((c,i) => {
-    const row = document.createElement('div');
-    row.className = 'cart-row';
-    row.innerHTML = `
+  box.innerHTML = cart.map((c,i) => `
+    <div class="cart-row">
       <span class="cart-ico">${c.ico}</span>
       <span class="cart-name">${c.label}</span>
       <span class="cart-price" onclick="editCartItem(${i})">
@@ -810,9 +819,8 @@ function renderCart() {
           : '<span class="none">Nhập giá ✎</span>'}
       </span>
       <button class="cart-del" onclick="delCartItem(${i})">✕</button>
-    `;
-    box.appendChild(row);
-  });
+    </div>
+  `).join('');
 }
 
 function editCartItem(i) {
@@ -917,12 +925,10 @@ async function doFinish() {
 
   try {
     // Gửi từng dịch vụ = 1 dòng riêng trên Sheets
-    // Dùng text/plain để tránh preflight CORS với Google Apps Script
     for (const item of cart) {
       await fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode:   'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
+        method:'POST', mode:'no-cors',
+        headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
           service: item.label,
           price:   item.price,
@@ -965,16 +971,10 @@ async function doFinish() {
 // ══ GIAO DỊCH MỚI ════════════════════════════════════════
 function newEntry() {
   cart=[]; raw=''; curStaff=''; editIdx=-1;
-  // Reset bàn phím
   document.getElementById('keypad-wrap').classList.remove('show');
   document.getElementById('svc-grid').style.display = 'grid';
   document.getElementById('btn-next').style.display = 'block';
-  // Reset ghi chú
-  document.getElementById('note-inp').value = '';
-  // Reset cart-box về trạng thái ban đầu
-  renderCart();
-  renderSvcGrid();
-  syncNextBtn();
+  renderCart(); renderSvcGrid(); syncNextBtn();
   go('s-entry');
 }
 
@@ -1035,7 +1035,18 @@ function loadSessions() {
 }
 
 // ══ CÀI ĐẶT ══════════════════════════════════════════════
-function openSettings() { updatePinUI(); go('s-settings'); }
+function openSettings() {
+  updatePinUI();
+  // Hiển thị tổng nhanh trên nút lịch sử
+  const total = sessions.reduce((s,h)=>s+h.total,0);
+  const sub   = document.getElementById('hist-quick-sub');
+  if (sub) {
+    sub.textContent = sessions.length
+      ? `${sessions.length} giao dịch  ·  ${total.toLocaleString('vi-VN')}đ hôm nay`
+      : 'Chưa có giao dịch nào hôm nay';
+  }
+  go('s-settings');
+}
 function updatePinUI() {
   const has = !!getPin();
   document.getElementById('pin-status-txt').textContent =
