@@ -668,7 +668,7 @@ const SERVICES = [
 
 const STAFF = ['Duyên','Thy','Thuỳ','Trân','Ngọc'];
 const QUICK = [50000, 100000, 150000, 200000];
-const TTL   = 7 * 24 * 60 * 60 * 1000; // 7 ngày
+const TTL   = 90 * 24 * 60 * 60 * 1000; // 90 ngày (~3 tháng)
 
 // ══ STATE ═════════════════════════════════════════════════
 let cart     = [];   // [{ico, label, price}]
@@ -939,7 +939,7 @@ async function doFinish() {
       total,
     };
     sessions.unshift(group);
-    if (sessions.length > 80) sessions.pop();
+    if (sessions.length > 2000) sessions.pop(); // ~90 ngày × ~20 bill/ngày
     saveSessions();
 
     // Màn thành công
@@ -970,10 +970,10 @@ function newEntry() {
   const noteEl = document.getElementById('note-inp');
   if (noteEl) noteEl.value = '';
 
-  // Reset cart-box — đảm bảo cart-hint không bị mất
+  // Reset cart UI — xoá .cart-row, giữ nguyên #cart-hint trong DOM
   const box  = document.getElementById('cart-box');
   const hint = document.getElementById('cart-hint');
-  Array.from(box.querySelectorAll('.cart-row')).forEach(el=>el.remove());
+  Array.from(box.querySelectorAll('.cart-row')).forEach(el => el.remove());
   if (hint) hint.style.display = 'block';
   const tbar = document.getElementById('cart-total-bar');
   if (tbar) tbar.style.display = 'none';
@@ -1025,10 +1025,10 @@ function openHist(from) {
   go('s-hist');
 }
 
-// ══ LƯU LỊCH SỬ (localStorage 7 ngày, tự xoá từng giao dịch quá hạn) ══
+// ══ LƯU LỊCH SỬ (localStorage 90 ngày, xoá từng giao dịch quá hạn) ══
 function saveSessions() {
-  // Đảm bảo mỗi session có savedAt để tính tuổi
-  sessions.forEach(s => { if (!s.savedAt) s.savedAt = s.id; });
+  // Mỗi session lưu kèm savedAt để tính tuổi
+  sessions.forEach(s => { if (!s.savedAt) s.savedAt = s.id || Date.now(); });
   localStorage.setItem('kn_sess', JSON.stringify(sessions));
 }
 function loadSessions() {
@@ -1036,11 +1036,11 @@ function loadSessions() {
     const r = localStorage.getItem('kn_sess');
     if (!r) return;
     const all = JSON.parse(r);
+    // Hỗ trợ cả format cũ { ts, data } lẫn format mới (array)
+    const arr = Array.isArray(all) ? all : (all.data || []);
     const cutoff = Date.now() - TTL;
-    // Giữ lại những session chưa quá 7 ngày, xoá từng cái quá hạn
-    sessions = all.filter(s => (s.savedAt || s.id) > cutoff);
-    // Nếu có giao dịch bị pruned → lưu lại để dọn storage
-    if (sessions.length < all.length) saveSessions();
+    sessions = arr.filter(s => (s.savedAt || s.id || 0) > cutoff);
+    if (sessions.length < arr.length) saveSessions(); // dọn storage
   } catch(e) { sessions = []; }
 }
 
