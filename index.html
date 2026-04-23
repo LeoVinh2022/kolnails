@@ -669,7 +669,7 @@ const SERVICES = [
 
 const STAFF = ['Duyên','Thy','Thuỳ','Trân','Ngọc'];
 const QUICK = [50000, 100000, 150000, 200000];
-const TTL   = 24 * 60 * 60 * 1000; // 24h
+const TTL   = 60 * 24 * 60 * 60 * 1000; // 60 ngày
 
 // ══ STATE ═════════════════════════════════════════════════
 let cart     = [];   // [{ico, label, price}]
@@ -902,21 +902,25 @@ function updateFinishBtn() {
 // ══ HOÀN TẤT — GỬI LÊN SHEETS ═══════════════════════════
 async function doFinish() {
   if (!curStaff || !cart.length) return;
-  const now  = new Date();
-  const note = document.getElementById('note-inp').value.trim();
-  const total = cart.reduce((s,c)=>s+c.price,0);
 
   const btn  = document.getElementById('btn-finish');
   const txt  = document.getElementById('finish-txt');
   const spin = document.getElementById('spin');
-  btn.disabled=true; txt.style.display='none'; spin.style.display='block';
+
+  // Khoá nút, hiện spinner
+  btn.disabled = true;
+  txt.style.display = 'none';
+  spin.style.display = 'block';
+
+  const now   = new Date();
+  const note  = document.getElementById('note-inp').value.trim();
+  const total = cart.reduce((s,c) => s + c.price, 0);
 
   try {
-    // Gửi từng dịch vụ = 1 dòng riêng trên Sheets
     for (const item of cart) {
       await fetch(SCRIPT_URL, {
-        method:'POST', mode:'no-cors',
-        headers:{'Content-Type':'application/json'},
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           service: item.label,
           price:   item.price,
@@ -927,79 +931,92 @@ async function doFinish() {
       });
     }
 
-    // Lưu lịch sử local
+    // Lưu lịch sử — id = timestamp để lọc 60 ngày
     const group = {
       id:      Date.now(),
       date:    now.toLocaleDateString('vi-VN'),
-      time:    now.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),
+      time:    now.toLocaleTimeString('vi-VN', { hour:'2-digit', minute:'2-digit', second:'2-digit' }),
       staff:   curStaff,
       payment: curPay,
       note,
-      items:   cart.map(c=>({ico:c.ico,label:c.label,price:c.price})),
+      items:   cart.map(c => ({ ico: c.ico, label: c.label, price: c.price })),
       total,
     };
     sessions.unshift(group);
-    if (sessions.length > 80) sessions.pop();
     saveSessions();
 
-    // Màn thành công
-    document.getElementById('ok-amt').textContent  = '₫ ' + total.toLocaleString('vi-VN');
-    document.getElementById('ok-who').textContent  = curStaff;
-    document.getElementById('ok-svcs').innerHTML   =
-      cart.map(c=>`${c.ico} ${c.label}  <b style="color:var(--gold)">${Number(c.price).toLocaleString('vi-VN')}đ</b>`).join('<br>');
+    // Điền màn thành công TRƯỚC khi reset state
+    document.getElementById('ok-amt').textContent = '₫ ' + total.toLocaleString('vi-VN');
+    document.getElementById('ok-who').textContent = curStaff;
+    document.getElementById('ok-svcs').innerHTML  =
+      cart.map(c => `${c.ico} ${c.label}  <b style="color:var(--gold)">${Number(c.price).toLocaleString('vi-VN')}đ</b>`).join('<br>');
     document.getElementById('ok-time').textContent = group.date + '  ·  ' + group.time;
+
+    // Reset spinner/btn NGAY để newEntry không gặp state cũ
+    btn.disabled = false;
+    txt.style.display = '';
+    spin.style.display = 'none';
+
     go('s-ok');
 
   } catch(e) {
     toast('Lỗi kết nối — kiểm tra mạng', 'err');
-    btn.disabled=false; txt.style.display=''; spin.style.display='none';
+    btn.disabled = false;
+    txt.style.display = '';
+    spin.style.display = 'none';
   }
 }
 
 // ══ GIAO DỊCH MỚI ════════════════════════════════════════
 function newEntry() {
-  // Reset toàn bộ state
-  cart = []; raw = ''; editIdx = -1;
-  curStaff = ''; curPay = 'Tiền mặt';
+  // 1. Reset state JS
+  cart     = [];
+  raw      = '';
+  editIdx  = -1;
+  curStaff = '';
+  curPay   = 'Tiền mặt';
 
-  // Reset giao diện entry
-  document.getElementById('keypad-wrap').classList.remove('show');
-  document.getElementById('svc-grid').style.display = 'grid';
-  document.getElementById('btn-next').style.display = 'block';
+  // 2. Reset màn entry — ẩn bàn phím, hiện grid và nút tiếp
+  const kp   = document.getElementById('keypad-wrap');
+  const grid = document.getElementById('svc-grid');
+  const btnN = document.getElementById('btn-next');
+  kp.classList.remove('show');
+  kp.style.display = '';        // xoá inline style nếu có
+  grid.style.display = 'grid';
+  btnN.style.display = 'block';
+  btnN.className = 'btn-next off'; // tắt nút tiếp (chưa chọn gì)
 
-  // Reset nút Hoàn tất (tránh bị kẹt disabled)
-  const btn  = document.getElementById('btn-finish');
-  const txt  = document.getElementById('finish-txt');
-  const spin = document.getElementById('spin');
-  btn.disabled = true;
-  txt.textContent = 'Chọn nhân viên trước';
-  txt.style.display = '';
-  spin.style.display = 'none';
-
-  // Reset ghi chú
+  // 3. Reset màn hoá đơn
   document.getElementById('note-inp').value = '';
-
-  // Reset thanh toán về Tiền mặt
   document.querySelectorAll('.pay-btn').forEach(el =>
     el.classList.toggle('on', el.dataset.val === 'Tiền mặt'));
 
+  // 4. Reset giỏ và grid dịch vụ
   renderCart();
   renderSvcGrid();
-  syncNextBtn();
+
+  // 5. Chuyển màn
   go('s-entry');
 }
 
-// ══ LƯU LỊCH SỬ (localStorage 24h) ══════════════════════
+// ══ LƯU LỊCH SỬ (localStorage, giữ 60 ngày, xoá dần cũ nhất) ══
 function saveSessions() {
-  localStorage.setItem('kn_sess', JSON.stringify({ ts: Date.now(), data: sessions }));
+  // Mỗi session đã có field id = Date.now() khi tạo
+  // Xoá các entry cũ hơn 60 ngày trước khi lưu
+  const cutoff = Date.now() - TTL;
+  sessions = sessions.filter(h => (h.id || 0) > cutoff);
+  localStorage.setItem('kn_sess', JSON.stringify({ v: 2, data: sessions }));
 }
+
 function loadSessions() {
   try {
-    const r = localStorage.getItem('kn_sess');
-    if (!r) return;
-    const o = JSON.parse(r);
-    if (Date.now() - o.ts > TTL) { localStorage.removeItem('kn_sess'); return; }
-    sessions = o.data || [];
+    const raw = localStorage.getItem('kn_sess');
+    if (!raw) return;
+    const o = JSON.parse(raw);
+    // Hỗ trợ cả format cũ (v1 có ts) và mới (v2 lọc từng entry)
+    const all = o.data || [];
+    const cutoff = Date.now() - TTL;
+    sessions = all.filter(h => (h.id || 0) > cutoff);
   } catch(e) { sessions = []; }
 }
 
