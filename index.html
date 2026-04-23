@@ -2,637 +2,360 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="KOL Nails">
-<meta name="theme-color" content="#111111">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>KOL Nails</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html { touch-action: manipulation; }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0e0e0e;--card:#161616;--border:#252525;
+  --text:#f0f0f0;--sub:#777;--surface:#1e1e1e;
+  --gold:#e0b46a;--gold-dim:#1e1500;--gold-mid:rgba(224,180,106,.4);
+  --green:#52c48a;--red:#e06060;
+  --font:'Be Vietnam Pro',sans-serif;
+  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font)}
 
-:root {
-  --bg:        #111111;
-  --surface:   #1c1c1c;
-  --surface2:  #252525;
-  --border:    #2e2e2e;
-  --text:      #f2f2f2;
-  --sub:       #888888;
-  --gold:      #e0b46a;
-  --gold-dim:  #2e2108;
-  --green:     #52c48a;
-  --green-dim: #0c2518;
-  --red:       #e06060;
-  --red-dim:   #2a0e0e;
-  --safe-top:  env(safe-area-inset-top);
-  --safe-bot:  env(safe-area-inset-bottom);
-  --font:      'Nunito', sans-serif;
-  --mono:      'Nunito Sans', sans-serif;
-}
+/* SCREENS */
+.screen{position:fixed;inset:0;display:none;flex-direction:column;background:var(--bg);overflow:hidden}
+.screen.on{display:flex}
 
-html, body {
-  height: 100%; overflow: hidden;
-  background: var(--bg); color: var(--text);
-  font-family: var(--font);
-  -webkit-user-select: none; user-select: none;
+/* TOPBAR */
+.topbar{
+  flex-shrink:0;display:flex;align-items:center;gap:12px;
+  padding:calc(var(--st) + 14px) 16px 14px;
+  border-bottom:1px solid var(--border);
 }
+.topbar-title{flex:1;font-size:16px;font-weight:800}
+.btn-icon{background:none;border:none;color:var(--sub);font-size:22px;cursor:pointer;padding:4px;line-height:1}
 
-/* ── SCREENS ─────────────────────────────────────────── */
-.screen {
-  position: fixed; inset: 0;
-  display: flex; flex-direction: column;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.18s ease;
-  overflow: hidden;
-  padding-top: calc(var(--safe-top) + 14px);
-  padding-bottom: var(--safe-bot);
-}
-.screen.active { opacity: 1; pointer-events: all; }
+/* SCROLL */
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 
-/* ── TOPBAR ──────────────────────────────────────────── */
-.topbar {
-  flex-shrink: 0;
-  display: flex; align-items: center; gap: 14px;
-  padding: 0 20px 16px;
+/* ── S1 BRAND ── */
+.brand{
+  flex-shrink:0;
+  padding:calc(var(--st) + 14px) 18px 10px;
+  display:flex;justify-content:space-between;align-items:center;
 }
-.topbar-title { font-size: 20px; font-weight: 800; flex: 1; }
-.topbar-sub   { font-size: 12px; font-weight: 600; color: var(--sub); margin-top: 2px; }
-.btn-icon {
-  width: 42px; height: 42px; border-radius: 50%;
-  background: var(--surface2); border: none;
-  color: var(--sub); font-size: 20px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; flex-shrink: 0;
-}
-.btn-icon:active { background: var(--border); }
+.brand-name{font-size:13px;font-weight:800;letter-spacing:3px;color:var(--gold);text-transform:uppercase}
 
-/* ── SHARED SECTION LABEL ────────────────────────────── */
-.sec { font-size: 11px; font-weight: 800; color: var(--sub);
-       text-transform: uppercase; letter-spacing: 1.5px; margin: 18px 0 10px; }
+/* ── S1 CART ── */
+.cart-area{flex-shrink:0;min-height:52px;max-height:140px;overflow-y:auto;padding:6px 18px 0}
+.cart-hint{font-size:13px;color:var(--sub);padding:14px 0;text-align:center}
+.cart-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.cart-row:last-child{border-bottom:none}
+.c-ico{font-size:18px;flex-shrink:0}
+.c-name{flex:1;font-size:14px;font-weight:700}
+.c-price{font-size:14px;font-weight:800;cursor:pointer;color:var(--gold);min-width:80px;text-align:right}
+.c-price.empty{color:var(--red);font-size:12px;font-weight:600}
+.c-del{width:28px;height:28px;border-radius:50%;background:none;border:none;color:var(--sub);font-size:16px;cursor:pointer;flex-shrink:0}
 
-/* ════════════════════════════════════════════════════════
-   SCREEN 1 — NHẬP DỊCH VỤ
-════════════════════════════════════════════════════════ */
-#s-entry { background: var(--bg); }
+/* ── S1 TOTAL ── */
+.cart-total{
+  flex-shrink:0;padding:8px 18px;
+  border-bottom:1px solid var(--border);
+  justify-content:space-between;align-items:center;
+}
+.ct-label{font-size:12px;font-weight:700;color:var(--sub)}
+.ct-amt{font-size:18px;font-weight:800;color:var(--gold)}
 
-/* brand */
-.brand {
-  flex-shrink: 0;
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 0 22px 14px;
-  font-size: 13px; font-weight: 800; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--gold);
+/* ── S1 SVC GRID ── */
+.svc-area{flex-shrink:0;padding:10px 18px 8px}
+.svc-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.svc-btn{
+  border-radius:14px;padding:11px 4px 9px;
+  background:var(--card);border:2px solid var(--border);
+  font-size:11.5px;font-weight:700;color:var(--sub);
+  cursor:pointer;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  transition:all .12s;
 }
+.svc-btn .ico{font-size:20px}
+.svc-btn.on{color:var(--gold);border-color:var(--gold);background:var(--gold-dim)}
 
-/* giỏ dịch vụ */
-.cart-box {
-  flex-shrink: 0;
-  min-height: 56px; max-height: 180px;
-  overflow-y: auto;
-  padding: 0 22px;
-  border-bottom: 1px solid var(--border);
+/* ── QUICK ROW + KEYPAD (dùng chung) ── */
+.quick-row{
+  flex-shrink:0;display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--border);gap:1px;background:var(--border);
 }
-.cart-hint {
-  font-size: 13px; color: var(--sub); font-weight: 600;
-  padding: 16px 0; text-align: center;
+.qk{background:var(--bg);padding:12px 4px;text-align:center;font-size:15px;font-weight:800;color:var(--sub);cursor:pointer;font-family:var(--font)}
+.qk:active{background:var(--surface);color:var(--text)}
+.keypad{
+  flex:1;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,1fr);
+  gap:1px;background:var(--border);overflow:hidden;
 }
-.cart-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 11px 0; border-bottom: 1px solid var(--border);
-}
-.cart-row:last-child { border-bottom: none; }
-.cart-ico  { font-size: 20px; flex-shrink: 0; }
-.cart-name { flex: 1; font-size: 15px; font-weight: 700; color: var(--text); }
-.cart-price {
-  font-size: 15px; font-weight: 800; color: var(--gold);
-  cursor: pointer; min-width: 80px; text-align: right;
-}
-.cart-price.none { color: var(--red); font-size: 13px; font-weight: 600; }
-.cart-del {
-  width: 32px; height: 32px; border-radius: 50%;
-  background: var(--red-dim); border: none;
-  color: var(--red); font-size: 17px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; flex-shrink: 0;
-}
-.cart-del:active { opacity: 0.7; }
+.key{background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:400;color:var(--text);cursor:pointer;transition:background .08s;font-family:'Nunito Sans',sans-serif;user-select:none}
+.key:active{background:var(--border)}
+.key.fn{background:var(--bg);color:var(--sub);font-size:14px;font-weight:800;font-family:var(--font)}
+.key.del{color:var(--red);font-size:22px}
 
-/* tổng nhỏ */
-.cart-total-bar {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 22px 0; flex-shrink: 0;
+/* ── S1 GO BTN ── */
+.go-bar{flex-shrink:0;padding:10px 18px calc(var(--sb) + 10px);background:var(--bg)}
+.btn-go{
+  width:100%;border-radius:16px;padding:17px;
+  font-size:16px;font-weight:900;font-family:var(--font);
+  border:2px solid var(--border);background:var(--card);color:var(--sub);
+  opacity:.35;pointer-events:none;transition:all .14s;cursor:pointer;
 }
-.cart-total-bar .label { font-size: 12px; font-weight: 700; color: var(--sub); }
-.cart-total-bar .amt {
-  font-size: 20px; font-weight: 800; color: var(--gold);
-  font-family: var(--mono);
-}
+.btn-go.on{background:var(--gold);border-color:var(--gold);color:#111;opacity:1;pointer-events:all;box-shadow:0 4px 20px rgba(224,180,106,.3)}
+.btn-go.on:active{background:#c49a40;transform:scale(.98)}
 
-/* 5 nút dịch vụ */
-.svc-grid {
-  flex-shrink: 0;
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 10px; padding: 12px 22px;
-}
-.svc-btn {
-  border-radius: 16px; padding: 16px 4px 13px;
-  font-size: 13px; font-weight: 700; color: var(--sub);
-  background: var(--surface); border: 2px solid var(--border);
-  cursor: pointer; text-align: center;
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  transition: all 0.13s;
-}
-.svc-btn .ico { font-size: 24px; }
-.svc-btn:active { transform: scale(0.94); }
-.svc-btn.on { color: var(--gold); border-color: var(--gold); background: var(--gold-dim); }
+/* ── KP OVERLAY ── */
+.kp-overlay{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;background:var(--bg)}
+.kp-overlay.on{display:flex}
+.kp-topbar{flex-shrink:0;padding:calc(var(--st)+14px) 18px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.kp-label{font-size:15px;font-weight:800}
+.kp-preview{flex-shrink:0;padding:18px 18px 10px;font-size:42px;font-weight:300;color:var(--text);font-family:'Nunito Sans',sans-serif;letter-spacing:-1px;text-align:right}
+.kp-preview.lit{color:var(--gold)}
+.btn-done{background:var(--gold);color:#111;border:none;border-radius:20px;padding:8px 22px;font-family:var(--font);font-size:14px;font-weight:800;cursor:pointer}
 
-/* bàn phím số — ẩn/hiện */
-#keypad-wrap {
-  flex: 1; display: none; flex-direction: column; overflow: hidden;
-}
-#keypad-wrap.show { display: flex; }
+/* ── S2 INVOICE ── */
+.inv-header{flex-shrink:0;padding:16px 18px;border-bottom:1px solid var(--border);background:var(--card)}
+.inv-time{font-size:12px;color:var(--sub);margin-bottom:6px}
+.inv-total-row{display:flex;align-items:baseline;gap:8px}
+.inv-cur{font-size:20px;font-weight:600;color:var(--sub)}
+.inv-total{font-size:50px;font-weight:300;letter-spacing:-2px;color:var(--gold);font-family:'Nunito Sans',sans-serif}
+.section{padding:16px 18px 0}
+.section-label{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--sub);margin-bottom:10px}
+.inv-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.inv-row:last-child{border-bottom:none}
+.inv-ico{font-size:18px}
+.inv-name{flex:1;font-size:14px;font-weight:700}
+.inv-price{font-size:14px;font-weight:800;color:var(--gold)}
+.pay-row{display:flex;gap:10px}
+.pay-btn{flex:1;border-radius:12px;padding:12px 8px;text-align:center;font-size:14px;font-weight:700;cursor:pointer;background:var(--card);border:2px solid var(--border);color:var(--sub);transition:all .12s;font-family:var(--font)}
+.pay-btn.on{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
+.staff-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.staff-btn{border-radius:14px;padding:12px 6px;background:var(--card);border:2px solid var(--border);text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .12s}
+.s-av{width:36px;height:36px;border-radius:50%;background:var(--surface);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--sub)}
+.s-name{font-size:12px;font-weight:700;color:var(--sub)}
+.staff-btn.on .s-av{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
+.staff-btn.on .s-name{color:var(--gold)}
+.staff-btn.on{border-color:var(--gold)}
+.note-inp{width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:12px;color:var(--text);font-family:var(--font);font-size:14px;resize:none;outline:none}
+.note-inp:focus{border-color:var(--gold)}
+.finish-bar{flex-shrink:0;padding:12px 18px calc(var(--sb)+12px);background:var(--bg);border-top:1px solid var(--border)}
+.btn-finish{width:100%;border-radius:16px;padding:17px;font-size:16px;font-weight:900;font-family:var(--font);border:none;background:var(--green);color:#0a2010;cursor:pointer;transition:all .14s}
+.btn-finish:disabled{background:var(--card);border:2px solid var(--border);color:var(--sub);cursor:not-allowed}
+.btn-finish:not(:disabled):active{transform:scale(.98)}
 
-.kp-header {
-  flex-shrink: 0;
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 22px; border-top: 1px solid var(--border);
-}
-.kp-label { font-size: 15px; font-weight: 800; color: var(--text); }
-.kp-preview { font-size: 22px; font-weight: 300; color: var(--gold); font-family: var(--mono); }
-.btn-done {
-  background: var(--gold); color: #111; border: none;
-  border-radius: 22px; padding: 9px 22px;
-  font-family: var(--font); font-size: 14px; font-weight: 900; cursor: pointer;
-}
-.btn-done:active { opacity: 0.8; }
+/* ── S3 SUCCESS ── */
+.ok-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 28px;gap:14px}
+.ok-icon{font-size:64px}
+.ok-amt{font-size:48px;font-weight:300;color:var(--gold);font-family:'Nunito Sans',sans-serif;letter-spacing:-2px}
+.ok-detail{font-size:14px;color:var(--sub);text-align:center;line-height:1.9}
+.ok-detail b{color:var(--text)}
+.btn-new{width:100%;max-width:320px;border-radius:16px;padding:17px;font-size:16px;font-weight:900;font-family:var(--font);border:2px solid var(--gold);background:var(--gold-dim);color:var(--gold);cursor:pointer}
+.btn-new:active{background:var(--gold);color:#111}
 
-.quick-row {
-  flex-shrink: 0;
-  display: grid; grid-template-columns: repeat(4,1fr);
-  gap: 1px; background: var(--border);
-  border-top: 1px solid var(--border);
-}
-.qk {
-  background: var(--bg); padding: 12px 4px;
-  text-align: center; font-size: 15px; font-weight: 800;
-  color: var(--sub); cursor: pointer; font-family: var(--font);
-}
-.qk:active { background: var(--surface); color: var(--text); }
+/* ── S4 HISTORY ── */
+.hist-sum{flex-shrink:0;padding:14px 18px;background:var(--card);border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--gold)}
+.hist-list{flex:1;overflow-y:auto}
+.hi{display:flex;align-items:flex-start;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border)}
+.hi-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:5px}
+.hi-main{flex:1}
+.hi-who{font-size:14px;font-weight:800}
+.hi-svcs{font-size:12px;color:var(--sub);margin-top:3px;line-height:1.7}
+.hi-meta{font-size:11px;color:var(--sub);margin-top:3px}
+.hi-amt{font-size:15px;font-weight:800;color:var(--gold);flex-shrink:0}
+.no-hist{padding:40px 18px;text-align:center;color:var(--sub);font-size:14px}
 
-.numpad {
-  flex: 1; display: grid;
-  grid-template-columns: repeat(3,1fr);
-  grid-template-rows: repeat(4,1fr);
-  gap: 1px; background: var(--border);
-}
-.nk {
-  background: var(--surface);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 30px; font-weight: 400; color: var(--text);
-  cursor: pointer; font-family: var(--mono);
-}
-.nk:active { background: var(--surface2); }
-.nk.fn { background: var(--bg); color: var(--sub); font-size: 16px; font-weight: 800; font-family: var(--font); }
-.nk.fn:active { background: var(--surface); }
-.nk.red { color: var(--red); }
+/* ── S5 SETTINGS ── */
+.set-body{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.set-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;cursor:pointer}
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.set-label{font-size:14px;font-weight:800;margin-bottom:3px}
+.set-sub{font-size:12px;color:var(--sub)}
+.set-badge{flex-shrink:0;background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;color:var(--sub);white-space:nowrap}
+.set-badge.gold{background:var(--gold-dim);border-color:var(--gold-mid);color:var(--gold)}
+.set-hint{font-size:12px;color:var(--sub);line-height:1.7;padding:0 4px}
 
-/* nút TIẾP — dưới cùng, luôn nhìn thấy */
-.entry-footer {
-  flex-shrink: 0;
-  padding: 12px 22px calc(var(--safe-bot) + 12px);
-  border-top: 1px solid var(--border);
-}
-.btn-next {
-  width: 100%; border: none; border-radius: 16px;
-  padding: 18px; font-family: var(--font);
-  font-size: 17px; font-weight: 900; cursor: pointer;
-  transition: all 0.14s;
-}
-.btn-next.off { background: var(--surface2); color: var(--sub); pointer-events: none; }
-.btn-next.on  { background: var(--gold); color: #111; box-shadow: 0 4px 20px rgba(224,180,106,0.3); }
-.btn-next.on:active { transform: scale(0.98); }
+/* ── PIN MODAL ── */
+.pin-modal{position:fixed;inset:0;z-index:200;display:none;align-items:flex-end;background:rgba(0,0,0,.7)}
+.pin-modal.on{display:flex}
+.pin-sheet{width:100%;background:var(--card);border-radius:24px 24px 0 0;padding:28px 24px calc(var(--sb)+24px)}
+.pin-title{font-size:17px;font-weight:900;text-align:center;margin-bottom:6px}
+.pin-sub{font-size:13px;color:var(--sub);text-align:center;margin-bottom:20px}
+.pin-dots{display:flex;justify-content:center;gap:16px;margin-bottom:24px}
+.pd{width:14px;height:14px;border-radius:50%;background:var(--border);transition:background .15s}
+.pd.filled{background:var(--gold)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pk{background:var(--surface);border-radius:14px;padding:16px 8px;text-align:center;cursor:pointer;user-select:none;transition:background .08s}
+.pk:active{background:var(--border)}
+.pk-n{font-size:24px;font-weight:400;font-family:'Nunito Sans',sans-serif}
+.pk-s{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--sub);margin-top:2px}
+.pk.cancel{background:none;color:var(--sub);font-size:14px;font-weight:700;font-family:var(--font)}
+.pk.del{font-size:20px;color:var(--red)}
+.pin-err{min-height:18px;text-align:center;font-size:13px;color:var(--red);font-weight:600;margin-top:14px}
 
-/* ════════════════════════════════════════════════════════
-   SCREEN 2 — HOÁ ĐƠN + NHÂN VIÊN
-════════════════════════════════════════════════════════ */
-#s-invoice { background: var(--bg); }
-.invoice-scroll { flex: 1; overflow-y: auto; padding: 0 22px; }
-
-/* hoá đơn */
-.invoice-box {
-  background: var(--surface); border-radius: 18px;
-  border: 1px solid var(--border); overflow: hidden;
-  margin-bottom: 4px;
-}
-.invoice-header {
-  background: var(--gold-dim); border-bottom: 1px solid var(--border);
-  padding: 14px 18px;
-  display: flex; justify-content: space-between; align-items: center;
-}
-.invoice-title { font-size: 13px; font-weight: 800; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; }
-.invoice-time  { font-size: 12px; color: var(--sub); font-weight: 600; }
-
-.invoice-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 13px 18px; border-bottom: 1px solid var(--border);
-}
-.invoice-row:last-child { border-bottom: none; }
-.inv-ico  { font-size: 18px; flex-shrink: 0; }
-.inv-name { flex: 1; font-size: 15px; font-weight: 700; color: var(--text); }
-.inv-price { font-size: 15px; font-weight: 800; color: var(--text); font-family: var(--mono); }
-
-.invoice-total {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 16px 18px;
-  background: var(--surface2); border-top: 1px solid var(--border);
-}
-.inv-total-label { font-size: 14px; font-weight: 800; color: var(--sub); }
-.inv-total-amt   { font-size: 28px; font-weight: 300; color: var(--gold); font-family: var(--mono); letter-spacing: -1px; }
-
-/* thanh toán */
-.pay-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.pay-btn {
-  background: var(--surface); border: 2px solid var(--border);
-  border-radius: 14px; padding: 16px 12px;
-  cursor: pointer; transition: all 0.14s;
-  display: flex; align-items: center; gap: 10px;
-}
-.pay-btn:active { transform: scale(0.97); }
-.pay-ico   { font-size: 26px; }
-.pay-label { font-size: 15px; font-weight: 700; color: var(--sub); }
-.pay-btn.on { border-color: var(--green); background: var(--green-dim); }
-.pay-btn.on .pay-label { color: var(--green); }
-
-/* nhân viên */
-.staff-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
-.staff-btn {
-  background: var(--surface); border: 2px solid var(--border);
-  border-radius: 14px; padding: 16px 6px 13px;
-  text-align: center; cursor: pointer; transition: all 0.14s;
-}
-.staff-btn:active { transform: scale(0.95); }
-.staff-av {
-  width: 44px; height: 44px; border-radius: 50%;
-  background: var(--surface2); margin: 0 auto 9px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; font-weight: 800; color: var(--sub);
-  transition: all 0.14s;
-}
-.staff-nm { font-size: 14px; font-weight: 700; color: var(--sub); transition: color 0.14s; }
-.staff-btn.on { border-color: var(--gold); background: var(--gold-dim); }
-.staff-btn.on .staff-av { background: var(--gold); color: #111; }
-.staff-btn.on .staff-nm { color: var(--gold); }
-
-/* ghi chú */
-.note-inp {
-  width: 100%; background: var(--surface);
-  border: 1.5px solid var(--border); border-radius: 14px;
-  padding: 14px 16px; font-family: var(--font);
-  font-size: 15px; color: var(--text); outline: none;
-  resize: none; height: 64px;
-  -webkit-user-select: text; user-select: text;
-  transition: border-color 0.15s;
-}
-.note-inp:focus { border-color: var(--gold); }
-.note-inp::placeholder { color: var(--sub); }
-
-/* footer */
-.invoice-footer {
-  flex-shrink: 0; padding: 12px 22px calc(var(--safe-bot) + 12px);
-  border-top: 1px solid var(--border);
-  display: flex; gap: 10px;
-}
-.btn-finish {
-  flex: 1; background: var(--gold); color: #111; border: none;
-  border-radius: 16px; padding: 18px;
-  font-family: var(--font); font-size: 17px; font-weight: 900; cursor: pointer;
-  transition: all 0.14s;
-}
-.btn-finish:active { transform: scale(0.98); opacity: 0.85; }
-.btn-finish:disabled { background: var(--surface2); color: var(--sub); }
-.spin {
-  width: 20px; height: 20px; border-radius: 50%;
-  border: 2.5px solid rgba(0,0,0,0.2); border-top-color: #111;
-  animation: spin 0.7s linear infinite; display: none;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ════════════════════════════════════════════════════════
-   SCREEN 3 — THÀNH CÔNG
-════════════════════════════════════════════════════════ */
-#s-ok {
-  background: var(--bg);
-  align-items: center; justify-content: center;
-  text-align: center; padding: 32px 28px;
-}
-.ok-ring {
-  width: 96px; height: 96px; border-radius: 50%;
-  background: var(--green-dim); border: 2px solid var(--green);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 42px; margin: 0 auto 24px;
-  animation: pop .4s cubic-bezier(.34,1.56,.64,1) both;
-}
-@keyframes pop { from { transform: scale(0.3); opacity: 0; } }
-.ok-tag  { font-size: 11px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: var(--green); margin-bottom: 10px; }
-.ok-amt  { font-size: 44px; font-weight: 300; font-family: var(--mono); color: var(--text); letter-spacing: -1px; margin-bottom: 6px; }
-.ok-who  { font-size: 18px; font-weight: 800; color: var(--gold); }
-.ok-svcs { font-size: 13px; color: var(--sub); margin-top: 10px; line-height: 1.8; }
-.ok-time { font-size: 12px; color: var(--sub); margin-top: 8px; }
-.btn-new {
-  margin-top: 44px; width: 100%;
-  background: var(--surface2); border: 1.5px solid var(--border);
-  border-radius: 16px; padding: 18px;
-  font-family: var(--font); font-size: 16px; font-weight: 800;
-  color: var(--text); cursor: pointer;
-}
-.btn-new:active { background: var(--border); }
-.btn-hist {
-  margin-top: 10px; width: 100%; background: none; border: none;
-  font-family: var(--font); font-size: 14px; font-weight: 700;
-  color: var(--sub); cursor: pointer; padding: 12px;
-}
-
-/* ════════════════════════════════════════════════════════
-   SCREEN 4 — LỊCH SỬ
-════════════════════════════════════════════════════════ */
-#s-hist { background: var(--bg); }
-.hist-scroll { flex: 1; overflow-y: auto; padding: 0 22px; }
-.hi {
-  display: flex; align-items: flex-start; gap: 12px;
-  padding: 14px 0; border-bottom: 1px solid var(--border);
-}
-.hi:last-child { border-bottom: none; }
-.hi-dot {
-  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 5px;
-  background: var(--gold-dim); border: 2px solid var(--gold);
-}
-.hi-main { flex: 1; min-width: 0; }
-.hi-who   { font-size: 15px; font-weight: 800; color: var(--text); }
-.hi-items { font-size: 12px; color: var(--sub); margin-top: 4px; line-height: 1.7; }
-.hi-meta  { font-size: 11px; color: var(--sub); margin-top: 3px; }
-.hi-right { text-align: right; flex-shrink: 0; }
-.hi-total { font-size: 16px; font-weight: 800; color: var(--gold); font-family: var(--mono); }
-.hi-cnt   { font-size: 11px; color: var(--sub); margin-top: 2px; }
-.no-hist  { font-size: 14px; color: var(--sub); text-align: center; padding: 30px 0; }
-
-/* ════════════════════════════════════════════════════════
-   SCREEN 5 — BẢO MẬT (PIN)
-════════════════════════════════════════════════════════ */
-#s-settings { background: var(--bg); }
-.set-scroll { flex: 1; overflow-y: auto; padding: 0 22px 40px; }
-.set-card {
-  background: var(--surface); border-radius: 16px;
-  border: 1px solid var(--border); overflow: hidden; margin-bottom: 16px;
-}
-.pin-setup-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 18px; gap: 14px;
-}
-.pin-setup-label { font-size: 15px; font-weight: 700; color: var(--text); }
-.pin-setup-sub   { font-size: 12px; color: var(--sub); margin-top: 2px; }
-.pin-badge {
-  background: var(--gold-dim); border: 1.5px solid var(--gold);
-  border-radius: 10px; padding: 9px 18px;
-  font-size: 14px; font-weight: 800; color: var(--gold);
-  cursor: pointer; white-space: nowrap; flex-shrink: 0;
-}
-.pin-badge:active { opacity: 0.75; }
-.pin-badge.set { background: var(--green-dim); border-color: var(--green); color: var(--green); }
-.set-hint { font-size: 13px; color: var(--sub); line-height: 1.7; margin-top: 12px; }
-
-/* ── MODAL PIN ───────────────────────────────────────── */
-#modal-pin {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.82);
-  display: none; align-items: flex-end; justify-content: center; z-index: 600;
-}
-#modal-pin.open { display: flex; }
-.pin-sheet {
-  background: var(--surface); border-radius: 24px 24px 0 0;
-  padding: 28px 24px calc(var(--safe-bot) + 28px);
-  width: 100%; max-width: 480px;
-  animation: up .28s ease;
-}
-@keyframes up { from { transform: translateY(100%); } }
-.pin-title { font-size: 18px; font-weight: 800; text-align: center; margin-bottom: 6px; }
-.pin-sub   { font-size: 13px; color: var(--sub); text-align: center; margin-bottom: 22px; font-weight: 600; }
-.pin-dots  { display: flex; justify-content: center; gap: 16px; margin-bottom: 26px; }
-.pin-dot   { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); background: transparent; transition: all .15s; }
-.pin-dot.filled { background: var(--gold); border-color: var(--gold); }
-.pin-dot.shake  { animation: shake .35s ease; }
-@keyframes shake {
-  0%,100% { transform: translateX(0); } 20% { transform: translateX(-6px); }
-  40% { transform: translateX(6px); }  60% { transform: translateX(-4px); }
-  80% { transform: translateX(4px); }
-}
-.pin-pad { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
-.pk {
-  background: var(--surface2); border: none; border-radius: 14px;
-  padding: 18px 8px; text-align: center; cursor: pointer; font-family: var(--font);
-}
-.pk:active { background: var(--border); }
-.pk-n { font-size: 24px; font-weight: 700; color: var(--text); line-height: 1; }
-.pk-s { font-size: 9px; font-weight: 700; color: var(--sub); letter-spacing: 1px; margin-top: 2px; }
-.pk.del { color: var(--red); font-size: 22px; font-weight: 700; }
-.pk.cancel { background: transparent; color: var(--sub); font-size: 15px; font-weight: 700; }
-.pin-err { text-align: center; font-size: 13px; font-weight: 700; color: var(--red); margin-top: 14px; min-height: 18px; }
-
-/* ── TOAST ───────────────────────────────────────────── */
-#toast {
-  position: fixed; bottom: 36px; left: 50%;
-  transform: translateX(-50%) translateY(70px);
-  background: var(--surface2); color: var(--text);
-  padding: 13px 28px; border-radius: 30px;
-  font-size: 15px; font-weight: 700; border: 1px solid var(--border);
-  z-index: 999; transition: transform .3s cubic-bezier(.34,1.56,.64,1);
-  pointer-events: none; white-space: nowrap;
-}
-#toast.show { transform: translateX(-50%) translateY(0); }
-#toast.ok  { border-color: var(--green); color: var(--green); }
-#toast.err { border-color: var(--red);   color: var(--red); }
+/* TOAST */
+#toast{position:fixed;bottom:calc(var(--sb)+24px);left:50%;transform:translateX(-50%);background:#222;color:#fff;border-radius:20px;padding:10px 20px;font-size:13px;font-weight:700;white-space:nowrap;opacity:0;transition:opacity .25s;pointer-events:none;z-index:300}
+#toast.show{opacity:1}
 </style>
 </head>
 <body>
 
-<!-- ══ SCREEN 1: NHẬP DỊCH VỤ ═══════════════════════════ -->
-<div id="s-entry" class="screen active">
-
+<!-- ═══ S1: NHẬP LIỆU ═══════════════════════════════ -->
+<div id="s1" class="screen on">
   <div class="brand">
-    <span>✦ KOL Nails</span>
-    <button class="btn-icon" id="btn-settings" style="font-size:18px">☰</button>
+    <span class="brand-name">✦ KOL Nails</span>
+    <button class="btn-icon" onclick="goSettings()">☰</button>
   </div>
 
-  <!-- Giỏ dịch vụ đã chọn -->
-  <div class="cart-box" id="cart-box">
-    <div class="cart-hint" id="cart-hint">Chọn dịch vụ bên dưới để thêm vào</div>
+  <div class="cart-area" id="cart-area">
+    <div class="cart-hint" id="cart-hint">Chọn dịch vụ bên dưới để thêm ↓</div>
   </div>
 
-  <!-- Tổng nhỏ -->
-  <div class="cart-total-bar" id="cart-total-bar" style="display:none">
-    <span class="label">Tổng</span>
-    <span class="amt" id="cart-total-amt">0đ</span>
+  <div class="cart-total" id="cart-total" style="display:none">
+    <span class="ct-label">TỔNG CỘNG</span>
+    <span class="ct-amt" id="ct-amt">0đ</span>
   </div>
 
-  <!-- 5 nút dịch vụ -->
-  <div class="svc-grid" id="svc-grid"></div>
-
-  <!-- Bàn phím nhập giá -->
-  <div id="keypad-wrap">
-    <div class="kp-header">
-      <div>
-        <div class="kp-label" id="kp-label">Nhập giá</div>
-        <div class="kp-preview" id="kp-preview">₫ 0</div>
-      </div>
-      <button class="btn-done" onclick="donePrice()">Xong ✓</button>
-    </div>
-    <div class="quick-row">
-      <div class="qk" onclick="setQ(50000)">50k</div>
-      <div class="qk" onclick="setQ(100000)">100k</div>
-      <div class="qk" onclick="setQ(150000)">150k</div>
-      <div class="qk" onclick="setQ(200000)">200k</div>
-    </div>
-    <div class="numpad">
-      <div class="nk" onclick="tap('7')">7</div>
-      <div class="nk" onclick="tap('8')">8</div>
-      <div class="nk" onclick="tap('9')">9</div>
-      <div class="nk" onclick="tap('4')">4</div>
-      <div class="nk" onclick="tap('5')">5</div>
-      <div class="nk" onclick="tap('6')">6</div>
-      <div class="nk" onclick="tap('1')">1</div>
-      <div class="nk" onclick="tap('2')">2</div>
-      <div class="nk" onclick="tap('3')">3</div>
-      <div class="nk fn" onclick="tap('000')">000</div>
-      <div class="nk" onclick="tap('0')">0</div>
-      <div class="nk fn red" onclick="tap('del')">⌫</div>
-    </div>
+  <div class="svc-area">
+    <div class="svc-grid" id="svc-grid"></div>
   </div>
 
-  <!-- Nút TIẾP — luôn ở dưới cùng, dễ bấm -->
-  <div class="entry-footer">
-    <button class="btn-next off" id="btn-next" onclick="goInvoice()">
-      Tiếp theo →
-    </button>
+  <div class="quick-row">
+    <div class="qk" onclick="qset(50000)">50k</div>
+    <div class="qk" onclick="qset(100000)">100k</div>
+    <div class="qk" onclick="qset(150000)">150k</div>
+    <div class="qk" onclick="qset(200000)">200k</div>
+  </div>
+  <div class="keypad">
+    <div class="key" onclick="tap('7')">7</div><div class="key" onclick="tap('8')">8</div><div class="key" onclick="tap('9')">9</div>
+    <div class="key" onclick="tap('4')">4</div><div class="key" onclick="tap('5')">5</div><div class="key" onclick="tap('6')">6</div>
+    <div class="key" onclick="tap('1')">1</div><div class="key" onclick="tap('2')">2</div><div class="key" onclick="tap('3')">3</div>
+    <div class="key fn" onclick="tap('000')">000</div><div class="key" onclick="tap('0')">0</div><div class="key fn del" onclick="tap('del')">⌫</div>
   </div>
 
+  <div class="go-bar">
+    <button class="btn-go" id="btn-go" onclick="goInvoice()">Tiếp theo →</button>
+  </div>
 </div>
 
-<!-- ══ SCREEN 2: HOÁ ĐƠN + NHÂN VIÊN ═══════════════════ -->
-<div id="s-invoice" class="screen">
-
-  <div class="topbar">
-    <button class="btn-icon" onclick="goBack()">←</button>
-    <div>
-      <div class="topbar-title">Xác nhận hoá đơn</div>
-      <div class="topbar-sub" id="inv-time">--:--</div>
-    </div>
+<!-- Overlay nhập giá cho 1 dịch vụ -->
+<div class="kp-overlay" id="kp-overlay">
+  <div class="kp-topbar">
+    <div class="kp-label" id="kp-label">Nhập giá</div>
+    <button class="btn-done" onclick="donePrice()">Xong ✓</button>
   </div>
+  <div class="kp-preview" id="kp-preview">₫ 0</div>
+  <div class="quick-row">
+    <div class="qk" onclick="qset(50000)">50k</div>
+    <div class="qk" onclick="qset(100000)">100k</div>
+    <div class="qk" onclick="qset(150000)">150k</div>
+    <div class="qk" onclick="qset(200000)">200k</div>
+  </div>
+  <div class="keypad">
+    <div class="key" onclick="tap('7')">7</div><div class="key" onclick="tap('8')">8</div><div class="key" onclick="tap('9')">9</div>
+    <div class="key" onclick="tap('4')">4</div><div class="key" onclick="tap('5')">5</div><div class="key" onclick="tap('6')">6</div>
+    <div class="key" onclick="tap('1')">1</div><div class="key" onclick="tap('2')">2</div><div class="key" onclick="tap('3')">3</div>
+    <div class="key fn" onclick="tap('000')">000</div><div class="key" onclick="tap('0')">0</div><div class="key fn del" onclick="tap('del')">⌫</div>
+  </div>
+</div>
 
-  <div class="invoice-scroll">
-
-    <!-- Hoá đơn -->
-    <div class="invoice-box">
-      <div class="invoice-header">
-        <span class="invoice-title">✦ KOL Nails</span>
-        <span class="invoice-time" id="inv-date">--/--/----</span>
+<!-- ═══ S2: HOÁ ĐƠN ═════════════════════════════════ -->
+<div id="s2" class="screen">
+  <div class="topbar">
+    <button class="btn-icon" onclick="go('s1')">←</button>
+    <div class="topbar-title">Xác nhận hoá đơn</div>
+  </div>
+  <div class="scroll">
+    <div class="inv-header">
+      <div class="inv-time" id="inv-time"></div>
+      <div class="inv-total-row">
+        <div class="inv-cur">₫</div>
+        <div class="inv-total" id="inv-total">0</div>
       </div>
+    </div>
+    <div class="section">
+      <div class="section-label">Dịch vụ</div>
       <div id="inv-rows"></div>
-      <div class="invoice-total">
-        <span class="inv-total-label">TỔNG CỘNG</span>
-        <span class="inv-total-amt">₫ <span id="inv-total">0</span></span>
+    </div>
+    <div class="section" style="margin-top:16px">
+      <div class="section-label">Thanh toán</div>
+      <div class="pay-row">
+        <div class="pay-btn on" data-val="Tiền mặt" onclick="pickPay(this)">💵 Tiền mặt</div>
+        <div class="pay-btn" data-val="Chuyển khoản" onclick="pickPay(this)">📱 Chuyển khoản</div>
       </div>
     </div>
-
-    <!-- Thanh toán -->
-    <div class="sec">Thanh toán</div>
-    <div class="pay-row">
-      <div class="pay-btn on" data-val="Tiền mặt" onclick="pickPay(this)">
-        <span class="pay-ico">💵</span><span class="pay-label">Tiền mặt</span>
-      </div>
-      <div class="pay-btn" data-val="Chuyển khoản" onclick="pickPay(this)">
-        <span class="pay-ico">📱</span><span class="pay-label">Chuyển khoản</span>
-      </div>
+    <div class="section" style="margin-top:16px">
+      <div class="section-label">Nhân viên</div>
+      <div class="staff-grid" id="staff-grid"></div>
     </div>
-
-    <!-- Nhân viên -->
-    <div class="sec">Nhân viên thực hiện</div>
-    <div class="staff-grid" id="staff-grid"></div>
-
-    <!-- Ghi chú -->
-    <div class="sec">Ghi chú</div>
-    <textarea class="note-inp" id="note-inp" placeholder="Tuỳ chọn…"></textarea>
-
-    <div style="height:16px"></div>
+    <div class="section" style="margin-top:16px;padding-bottom:20px">
+      <div class="section-label">Ghi chú</div>
+      <textarea class="note-inp" id="note-inp" rows="2" placeholder="Không bắt buộc..."></textarea>
+    </div>
   </div>
-
-  <div class="invoice-footer">
-    <button class="btn-finish" id="btn-finish" onclick="doFinish()" disabled>
-      <span id="finish-txt">Chọn nhân viên trước</span>
-      <div class="spin" id="spin"></div>
-    </button>
+  <div class="finish-bar">
+    <button class="btn-finish" id="btn-finish" onclick="doFinish()" disabled>Chọn nhân viên trước</button>
   </div>
-
 </div>
 
-<!-- ══ SCREEN 3: THÀNH CÔNG ═════════════════════════════ -->
-<div id="s-ok" class="screen">
-  <div class="ok-ring">✓</div>
-  <div class="ok-tag">Đã lưu thành công</div>
-  <div class="ok-amt" id="ok-amt">₫ 0</div>
-  <div class="ok-who" id="ok-who">—</div>
-  <div class="ok-svcs" id="ok-svcs"></div>
-  <div class="ok-time" id="ok-time">—</div>
-  <button class="btn-new" onclick="newEntry()">＋  Giao dịch mới</button>
-  <button class="btn-hist" onclick="openHist('s-ok')">Xem lịch sử hôm nay</button>
-</div>
-
-<!-- ══ SCREEN 4: LỊCH SỬ ════════════════════════════════ -->
-<div id="s-hist" class="screen">
+<!-- ═══ S3: THÀNH CÔNG ══════════════════════════════ -->
+<div id="s3" class="screen">
   <div class="topbar">
-    <button class="btn-icon" id="hist-back-btn">←</button>
-    <div>
-      <div class="topbar-title">Lịch sử hôm nay</div>
-      <div class="topbar-sub" id="hist-sum">—</div>
-    </div>
+    <div class="topbar-title" style="text-align:center">Đã lưu ✓</div>
+    <button class="btn-icon" onclick="goHist()">📋</button>
   </div>
-  <div class="hist-scroll">
-    <div id="hist-list"></div>
-    <div style="height:20px"></div>
+  <div class="ok-wrap">
+    <div class="ok-icon">✅</div>
+    <div class="ok-amt" id="ok-amt"></div>
+    <div class="ok-detail" id="ok-detail"></div>
+    <button class="btn-new" onclick="newEntry()">＋ Giao dịch mới</button>
   </div>
 </div>
 
-<!-- ══ SCREEN 5: BẢO MẬT ════════════════════════════════ -->
-<div id="s-settings" class="screen">
+<!-- ═══ S4: LỊCH SỬ ════════════════════════════════ -->
+<div id="s4" class="screen">
   <div class="topbar">
-    <button class="btn-icon" onclick="go('s-entry')">←</button>
-    <div class="topbar-title">Bảo mật Admin</div>
+    <button class="btn-icon" onclick="go(histFrom)">←</button>
+    <div class="topbar-title">Lịch sử giao dịch</div>
   </div>
-  <div class="set-scroll">
-    <div class="set-card">
-      <div class="pin-setup-row">
+  <div class="hist-sum" id="hist-sum"></div>
+  <div class="hist-list" id="hist-list"></div>
+</div>
+
+<!-- ═══ S5: CÀI ĐẶT ════════════════════════════════ -->
+<div id="s5" class="screen">
+  <div class="topbar">
+    <button class="btn-icon" onclick="go('s1')">←</button>
+    <div class="topbar-title">Cài đặt</div>
+  </div>
+  <div class="set-body">
+    <div class="set-card" onclick="goHist()">
+      <div class="set-row">
         <div>
-          <div class="pin-setup-label">Mã PIN Admin</div>
-          <div class="pin-setup-sub" id="pin-status-txt">Chưa đặt PIN</div>
+          <div class="set-label">📋 Lịch sử giao dịch</div>
+          <div class="set-sub" id="hist-quick-sub">Xem tất cả giao dịch đã lưu</div>
         </div>
-        <div class="pin-badge" id="pin-setup-btn" onclick="openPinSetup()">Đặt PIN</div>
+        <div class="set-badge">Xem →</div>
       </div>
     </div>
-    <div class="set-hint">
-      🔐 Sau khi đặt PIN, nhân viên không thể xoá lịch sử giao dịch. Chỉ admin biết mã PIN mới chỉnh sửa được.
+    <div class="set-card" onclick="openPinSetup()">
+      <div class="set-row">
+        <div>
+          <div class="set-label">🔐 Mã PIN Admin</div>
+          <div class="set-sub" id="pin-status-txt">Chưa đặt PIN</div>
+        </div>
+        <div class="set-badge" id="pin-badge">Đặt PIN</div>
+      </div>
     </div>
+    <div class="set-hint">PIN bảo vệ nhân viên không tự xoá được lịch sử. Chỉ admin biết PIN mới thao tác được.</div>
   </div>
 </div>
 
-<!-- MODAL PIN -->
-<div id="modal-pin">
+<!-- PIN MODAL -->
+<div class="pin-modal" id="pin-modal">
   <div class="pin-sheet">
     <div class="pin-title">🔐 Admin PIN</div>
     <div class="pin-sub" id="pin-sub">Nhập mã PIN 4 số</div>
     <div class="pin-dots">
-      <div class="pin-dot" id="pd0"></div>
-      <div class="pin-dot" id="pd1"></div>
-      <div class="pin-dot" id="pd2"></div>
-      <div class="pin-dot" id="pd3"></div>
+      <div class="pd" id="pd0"></div><div class="pd" id="pd1"></div>
+      <div class="pd" id="pd2"></div><div class="pd" id="pd3"></div>
     </div>
     <div class="pin-pad">
       <div class="pk" onclick="pinTap('1')"><div class="pk-n">1</div></div>
@@ -655,269 +378,245 @@ html, body {
 <div id="toast"></div>
 
 <script>
-// ══ CẤU HÌNH ═════════════════════════════════════════════
+// ═══════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxaxVzrUv9T3K1hdou3R5gsOiupf17CoyRk93wXQkqDw-R-0EpgnzUWt_1X5107to1o/exec';
 
-const SERVICES = [
-  { ico:'💅', label:'Sơn tay'  },
-  { ico:'🦶', label:'Sơn chân' },
-  { ico:'👁',  label:'Nối mi'  },
-  { ico:'🚿', label:'Gội đầu' },
-  { ico:'💸', label:'Tiền tip' },
+const SVCS = [
+  {ico:'💅', name:'Sơn tay'},
+  {ico:'🦶', name:'Sơn chân'},
+  {ico:'👁',  name:'Nối mi'},
+  {ico:'🚿', name:'Gội đầu'},
+  {ico:'💸', name:'Tiền tip'},
 ];
-
 const STAFF = ['Duyên','Thy','Thuỳ','Trân','Ngọc'];
-const QUICK = [50000, 100000, 150000, 200000];
-const TTL   = 7 * 24 * 60 * 60 * 1000; // 7 ngày
+const TTL   = 60 * 24 * 60 * 60 * 1000; // 60 ngày
 
-// ══ STATE ═════════════════════════════════════════════════
-let cart     = [];   // [{ico, label, price}]
-let raw      = '';   // digits đang nhập
-let editIdx  = -1;   // index item đang nhập giá
-let curPay   = 'Tiền mặt';
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+let cart     = [];
+let raw      = '';
+let editIdx  = -1;
 let curStaff = '';
+let curPay   = 'Tiền mặt';
 let sessions = [];
-let histFrom = 's-ok';
+let histFrom = 's1';
 
-// PIN
-let pinBuf    = '';
-let pinAct    = null;
-let pinMode   = 'verify';
-let pinNewTmp = '';
-const getPin  = () => localStorage.getItem('kn_pin') || '';
-
-// ══ NAVIGATION ════════════════════════════════════════════
+// ═══════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════
 function go(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
 }
 
-// ══ INIT ══════════════════════════════════════════════════
-function init() {
-  loadSessions();
-  renderSvcGrid();
-  document.getElementById('btn-settings').onclick = openSettings;
-  document.getElementById('hist-back-btn').onclick = () => go(histFrom);
-}
-
-// ══ SCREEN 1: DỊCH VỤ ════════════════════════════════════
-
-// Render 5 nút dịch vụ
-function renderSvcGrid() {
+// ═══════════════════════════════════════════
+//  S1 — NHẬP LIỆU
+// ═══════════════════════════════════════════
+function renderSvcs() {
   const g = document.getElementById('svc-grid');
   g.innerHTML = '';
-  SERVICES.forEach(s => {
-    const inCart = cart.some(c => c.label === s.label);
+  SVCS.forEach((s, i) => {
     const el = document.createElement('div');
-    el.className = 'svc-btn' + (inCart ? ' on' : '');
-    el.innerHTML = `<span class="ico">${s.ico}</span>${s.label}`;
-    el.onclick = () => tapService(s);
+    el.className = 'svc-btn' + (cart.some(c => c.name === s.name) ? ' on' : '');
+    el.innerHTML = `<span class="ico">${s.ico}</span>${s.name}`;
+    el.onclick = () => addSvc(i);
     g.appendChild(el);
   });
 }
 
-// Bấm dịch vụ → mở bàn phím nhập giá
-function tapService(s) {
-  const existing = cart.findIndex(c => c.label === s.label);
-  if (existing >= 0) {
-    // Đã có → sửa giá
-    editIdx = existing;
-    raw = cart[existing].price > 0 ? String(cart[existing].price) : '';
+function addSvc(i) {
+  const s = SVCS[i];
+  const idx = cart.findIndex(c => c.name === s.name);
+  if (idx >= 0) {
+    openKp(idx);
   } else {
-    // Thêm mới
-    cart.push({ ico: s.ico, label: s.label, price: 0 });
-    editIdx = cart.length - 1;
-    raw = '';
+    cart.push({ico: s.ico, name: s.name, price: 0});
+    openKp(cart.length - 1);
   }
-  openKeypad(s.label);
 }
 
-function openKeypad(label) {
-  document.getElementById('kp-label').textContent = label;
-  syncKpPreview();
-  document.getElementById('keypad-wrap').classList.add('show');
-  document.getElementById('svc-grid').style.display = 'none';
-  document.getElementById('btn-next').style.display = 'none';
-}
-
-function closeKeypad() {
-  document.getElementById('keypad-wrap').classList.remove('show');
-  document.getElementById('svc-grid').style.display = 'grid';
-  document.getElementById('btn-next').style.display = 'block';
-}
-
-// Bàn phím số
-function tap(k) {
-  if (k === 'del')   raw = raw.slice(0,-1);
-  else if (raw.length < 10) raw += k;
-  syncKpPreview();
-}
-function setQ(v) { raw = String(v); syncKpPreview(); }
-function syncKpPreview() {
-  const n = parseInt(raw || '0');
-  document.getElementById('kp-preview').textContent = '₫ ' + n.toLocaleString('vi-VN');
-}
-
-// Bấm Xong
-function donePrice() {
-  const price = parseInt(raw || '0');
-  if (price <= 0) {
-    // Nếu không nhập giá → xoá item khỏi giỏ
-    if (editIdx >= 0 && cart[editIdx].price === 0) {
-      cart.splice(editIdx, 1);
-    }
-  } else {
-    cart[editIdx].price = price;
-  }
-  raw = ''; editIdx = -1;
-  closeKeypad();
-  renderCart();
-  renderSvcGrid();
-  syncNextBtn();
-}
-
-// Render giỏ
+// Render cart — KHÔNG dùng innerHTML trên cart-area để tránh mất #cart-hint
 function renderCart() {
-  const box   = document.getElementById('cart-box');
-  const hint  = document.getElementById('cart-hint');
-  const tbar  = document.getElementById('cart-total-bar');
-  const tamt  = document.getElementById('cart-total-amt');
-  const total = cart.reduce((s,c)=>s+c.price,0);
+  const area   = document.getElementById('cart-area');
+  const hint   = document.getElementById('cart-hint');
+  const totEl  = document.getElementById('cart-total');
+  const amtEl  = document.getElementById('ct-amt');
+  const total  = cart.reduce((s, c) => s + c.price, 0);
+
+  // Xoá chỉ .cart-row
+  area.querySelectorAll('.cart-row').forEach(el => el.remove());
 
   if (!cart.length) {
-    box.innerHTML = '';
-    box.appendChild(hint);
     hint.style.display = 'block';
-    tbar.style.display = 'none';
+    totEl.style.display = 'none';
     return;
   }
 
   hint.style.display = 'none';
-  tbar.style.display = 'flex';
-  tamt.textContent = total.toLocaleString('vi-VN') + 'đ';
+  totEl.style.display = 'flex';
+  amtEl.textContent = total.toLocaleString('vi-VN') + 'đ';
 
-  box.innerHTML = cart.map((c,i) => `
-    <div class="cart-row">
-      <span class="cart-ico">${c.ico}</span>
-      <span class="cart-name">${c.label}</span>
-      <span class="cart-price" onclick="editCartItem(${i})">
-        ${c.price > 0
-          ? Number(c.price).toLocaleString('vi-VN')+'đ  ✎'
-          : '<span class="none">Nhập giá ✎</span>'}
-      </span>
-      <button class="cart-del" onclick="delCartItem(${i})">✕</button>
-    </div>
-  `).join('');
+  cart.forEach((c, i) => {
+    const row = document.createElement('div');
+    row.className = 'cart-row';
+    row.innerHTML =
+      `<span class="c-ico">${c.ico}</span>` +
+      `<span class="c-name">${c.name}</span>` +
+      (c.price > 0
+        ? `<span class="c-price" onclick="openKp(${i})">${c.price.toLocaleString('vi-VN')}đ ✎</span>`
+        : `<span class="c-price empty" onclick="openKp(${i})">Nhập giá ✎</span>`) +
+      `<button class="c-del" onclick="delItem(${i})">✕</button>`;
+    area.appendChild(row);
+  });
 }
 
-function editCartItem(i) {
-  editIdx = i;
-  raw = cart[i].price > 0 ? String(cart[i].price) : '';
-  openKeypad(cart[i].label);
-}
-
-function delCartItem(i) {
+function delItem(i) {
   cart.splice(i, 1);
   renderCart();
-  renderSvcGrid();
-  syncNextBtn();
+  renderSvcs();
+  syncGoBtn();
 }
 
-// Nút Tiếp
-function syncNextBtn() {
-  const ready = cart.length > 0 && cart.every(c=>c.price>0);
-  const btn = document.getElementById('btn-next');
-  btn.className = 'btn-next ' + (ready ? 'on' : 'off');
+function syncGoBtn() {
+  const ready = cart.length > 0 && cart.every(c => c.price > 0);
+  document.getElementById('btn-go').className = 'btn-go' + (ready ? ' on' : '');
 }
 
-// ══ SCREEN 2: HOÁ ĐƠN ════════════════════════════════════
+// ── Keypad overlay ──────────────────────────
+function openKp(idx) {
+  editIdx = idx;
+  raw = cart[idx].price > 0 ? String(cart[idx].price) : '';
+  document.getElementById('kp-label').textContent = cart[idx].ico + '  ' + cart[idx].name;
+  syncKpPreview();
+  document.getElementById('kp-overlay').classList.add('on');
+}
+
+function closeKp() {
+  document.getElementById('kp-overlay').classList.remove('on');
+  editIdx = -1;
+  raw = '';
+}
+
+function syncKpPreview() {
+  const n  = parseInt(raw || '0');
+  const el = document.getElementById('kp-preview');
+  el.textContent = '₫ ' + n.toLocaleString('vi-VN');
+  el.className   = 'kp-preview' + (n > 0 ? ' lit' : '');
+}
+
+function tap(k) {
+  if (k === 'del')      raw = raw.slice(0, -1);
+  else if (k === '000') { if (raw) raw += '000'; }
+  else                  { if (raw.length < 9) raw += k; }
+  syncKpPreview();
+}
+
+function qset(v) { raw = String(v); syncKpPreview(); }
+
+function donePrice() {
+  const price = parseInt(raw || '0');
+  if (price <= 0) {
+    cart.splice(editIdx, 1); // không nhập giá → xoá
+  } else {
+    cart[editIdx].price = price;
+  }
+  closeKp();
+  renderCart();
+  renderSvcs();
+  syncGoBtn();
+}
+
+// ═══════════════════════════════════════════
+//  S2 — HOÁ ĐƠN
+// ═══════════════════════════════════════════
 function goInvoice() {
-  if (!cart.length || cart.some(c=>c.price===0)) return;
-
+  if (!cart.length || cart.some(c => c.price === 0)) return;
   const now   = new Date();
-  const total = cart.reduce((s,c)=>s+c.price,0);
+  const total = cart.reduce((s, c) => s + c.price, 0);
 
-  document.getElementById('inv-time').textContent = now.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
-  document.getElementById('inv-date').textContent = now.toLocaleDateString('vi-VN');
+  document.getElementById('inv-time').textContent =
+    now.toLocaleDateString('vi-VN') + '  ·  ' +
+    now.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'});
   document.getElementById('inv-total').textContent = total.toLocaleString('vi-VN');
 
-  document.getElementById('inv-rows').innerHTML = cart.map(c=>`
-    <div class="invoice-row">
-      <span class="inv-ico">${c.ico}</span>
-      <span class="inv-name">${c.label}</span>
-      <span class="inv-price">${Number(c.price).toLocaleString('vi-VN')}đ</span>
-    </div>
-  `).join('');
+  document.getElementById('inv-rows').innerHTML = cart.map(c =>
+    `<div class="inv-row">
+       <span class="inv-ico">${c.ico}</span>
+       <span class="inv-name">${c.name}</span>
+       <span class="inv-price">${c.price.toLocaleString('vi-VN')}đ</span>
+     </div>`
+  ).join('');
 
-  // Reset thanh toán
   curPay = 'Tiền mặt';
-  document.querySelectorAll('.pay-btn').forEach(el=>
-    el.classList.toggle('on', el.dataset.val==='Tiền mặt'));
+  document.querySelectorAll('.pay-btn').forEach(el =>
+    el.classList.toggle('on', el.dataset.val === 'Tiền mặt'));
 
-  // Reset nhân viên
   curStaff = '';
-  buildStaff();
-  updateFinishBtn();
-
+  renderStaff();
+  syncFinishBtn();
   document.getElementById('note-inp').value = '';
-  go('s-invoice');
-}
-
-function goBack() {
-  go('s-entry');
+  go('s2');
 }
 
 function pickPay(el) {
-  document.querySelectorAll('.pay-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('on'));
   el.classList.add('on');
   curPay = el.dataset.val;
 }
 
-function buildStaff() {
+function renderStaff() {
   const g = document.getElementById('staff-grid');
   g.innerHTML = '';
   STAFF.forEach(name => {
     const el = document.createElement('div');
-    el.className = 'staff-btn' + (name===curStaff?' on':'');
-    el.innerHTML = `<div class="staff-av">${name.slice(0,2)}</div><div class="staff-nm">${name}</div>`;
+    el.className = 'staff-btn' + (name === curStaff ? ' on' : '');
+    el.innerHTML = `<div class="s-av">${name.slice(0,2)}</div><div class="s-name">${name}</div>`;
     el.onclick = () => {
-      curStaff = curStaff===name ? '' : name;
-      buildStaff(); updateFinishBtn();
+      curStaff = curStaff === name ? '' : name;
+      renderStaff();
+      syncFinishBtn();
     };
     g.appendChild(el);
   });
 }
 
-function updateFinishBtn() {
+function syncFinishBtn() {
   const btn = document.getElementById('btn-finish');
-  const txt = document.getElementById('finish-txt');
-  const ok  = !!curStaff;
-  btn.disabled = !ok;
-  txt.textContent = ok
-    ? `Hoàn tất  ·  ${curPay==='Tiền mặt'?'💵':'📱'}  ${curPay}`
-    : 'Chọn nhân viên trước';
+  if (curStaff) {
+    btn.disabled = false;
+    btn.textContent = `Hoàn tất  ·  ${curPay === 'Tiền mặt' ? '💵' : '📱'}  ${curPay}`;
+  } else {
+    btn.disabled = true;
+    btn.textContent = 'Chọn nhân viên trước';
+  }
 }
 
-// ══ HOÀN TẤT — GỬI LÊN SHEETS ═══════════════════════════
+// ═══════════════════════════════════════════
+//  GỬI DỮ LIỆU + S3
+// ═══════════════════════════════════════════
 async function doFinish() {
-  if (!curStaff || !cart.length) return;
-  const now  = new Date();
-  const note = document.getElementById('note-inp').value.trim();
-  const total = cart.reduce((s,c)=>s+c.price,0);
-
+  if (!curStaff) return;
   const btn  = document.getElementById('btn-finish');
-  const txt  = document.getElementById('finish-txt');
-  const spin = document.getElementById('spin');
-  btn.disabled=true; txt.style.display='none'; spin.style.display='block';
+  btn.disabled = true;
+  btn.textContent = 'Đang gửi…';
 
+  const now   = new Date();
+  const note  = document.getElementById('note-inp').value.trim();
+  const total = cart.reduce((s, c) => s + c.price, 0);
+
+  // Gửi từng dịch vụ lên Sheets
+  // Dùng text/plain để tránh CORS preflight với Google Apps Script
   try {
-    // Gửi từng dịch vụ = 1 dòng riêng trên Sheets
     for (const item of cart) {
       await fetch(SCRIPT_URL, {
-        method:'POST', mode:'no-cors',
-        headers:{'Content-Type':'application/json'},
+        method:  'POST',
+        mode:    'no-cors',
+        headers: {'Content-Type': 'text/plain'},
         body: JSON.stringify({
-          service: item.label,
+          service: item.name,
           price:   item.price,
           payment: curPay,
           staff:   curStaff,
@@ -925,220 +624,221 @@ async function doFinish() {
         }),
       });
     }
-
-    // Lưu lịch sử local
-    const group = {
-      id:      Date.now(),
-      savedAt: Date.now(),
-      date:    now.toLocaleDateString('vi-VN'),
-      time:    now.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),
-      staff:   curStaff,
-      payment: curPay,
-      note,
-      items:   cart.map(c=>({ico:c.ico,label:c.label,price:c.price})),
-      total,
-    };
-    sessions.unshift(group);
-    if (sessions.length > 80) sessions.pop();
-    saveSessions();
-
-    // Màn thành công
-    document.getElementById('ok-amt').textContent  = '₫ ' + total.toLocaleString('vi-VN');
-    document.getElementById('ok-who').textContent  = curStaff;
-    document.getElementById('ok-svcs').innerHTML   =
-      cart.map(c=>`${c.ico} ${c.label}  <b style="color:var(--gold)">${Number(c.price).toLocaleString('vi-VN')}đ</b>`).join('<br>');
-    document.getElementById('ok-time').textContent = group.date + '  ·  ' + group.time;
-    go('s-ok');
-
   } catch(e) {
-    toast('Lỗi kết nối — kiểm tra mạng', 'err');
-    btn.disabled=false; txt.style.display=''; spin.style.display='none';
+    toast('Lỗi kết nối — kiểm tra mạng');
+    btn.disabled = false;
+    syncFinishBtn();
+    return;
   }
+
+  // Lưu lịch sử
+  const group = {
+    id:      Date.now(),
+    savedAt: Date.now(),
+    date:    now.toLocaleDateString('vi-VN'),
+    time:    now.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
+    staff:   curStaff,
+    payment: curPay,
+    note,
+    items:   cart.map(c => ({ico:c.ico, name:c.name, price:c.price})),
+    total,
+  };
+  sessions.unshift(group);
+  if (sessions.length > 3000) sessions.length = 3000;
+  saveSessions();
+
+  // Hiện màn thành công
+  document.getElementById('ok-amt').textContent = '₫ ' + total.toLocaleString('vi-VN');
+  document.getElementById('ok-detail').innerHTML =
+    `<b>${curStaff}</b>  ·  ${curPay}<br>` +
+    cart.map(c => `${c.ico} ${c.name}  ${c.price.toLocaleString('vi-VN')}đ`).join('<br>');
+  go('s3');
 }
 
-// ══ GIAO DỊCH MỚI ════════════════════════════════════════
+// ═══════════════════════════════════════════
+//  GIAO DỊCH MỚI — reset hoàn toàn
+// ═══════════════════════════════════════════
 function newEntry() {
-  // Reset state
-  cart=[]; raw=''; curStaff=''; editIdx=-1; curPay='Tiền mặt';
+  cart = []; raw = ''; editIdx = -1; curStaff = ''; curPay = 'Tiền mặt';
 
-  // Ẩn bàn phím, hiện lại grid + nút tiếp
-  document.getElementById('keypad-wrap').classList.remove('show');
-  document.getElementById('svc-grid').style.display = 'grid';
-  document.getElementById('btn-next').style.display = 'block';
+  // Đóng overlay nếu đang mở
+  document.getElementById('kp-overlay').classList.remove('on');
 
-  // Reset ghi chú
-  const noteEl = document.getElementById('note-inp');
-  if (noteEl) noteEl.value = '';
+  // Reset cart area — KHÔNG dùng innerHTML, chỉ xoá .cart-row
+  const area = document.getElementById('cart-area');
+  area.querySelectorAll('.cart-row').forEach(el => el.remove());
+  document.getElementById('cart-hint').style.display  = 'block';
+  document.getElementById('cart-total').style.display = 'none';
 
-  // Reset cart-box — đảm bảo cart-hint không bị mất
-  const box  = document.getElementById('cart-box');
-  const hint = document.getElementById('cart-hint');
-  Array.from(box.querySelectorAll('.cart-row')).forEach(el=>el.remove());
-  if (hint) hint.style.display = 'block';
-  const tbar = document.getElementById('cart-total-bar');
-  if (tbar) tbar.style.display = 'none';
-
-  renderSvcGrid();
-  syncNextBtn();
-  go('s-entry');
+  renderSvcs();
+  syncGoBtn();
+  go('s1');
 }
 
-// ══ LỊCH SỬ ══════════════════════════════════════════════
-function openHist(from) {
-  histFrom = from;
-  const total = sessions.reduce((s,h)=>s+h.total,0);
+// ═══════════════════════════════════════════
+//  S4 — LỊCH SỬ
+// ═══════════════════════════════════════════
+function goHist() {
+  histFrom = document.querySelector('.screen.on')?.id || 's1';
+  const total = sessions.reduce((s, h) => s + h.total, 0);
 
-  // Tổng theo nhân viên
-  const byStaff = {};
-  sessions.forEach(h => {
-    byStaff[h.staff] = (byStaff[h.staff]||0) + h.total;
-  });
-  const staffLine = Object.entries(byStaff)
-    .map(([n,v])=>`${n}: ${Number(v).toLocaleString('vi-VN')}đ`).join('  ·  ');
-
-  document.getElementById('hist-sum').textContent =
-    sessions.length + ' giao dịch  ·  ' + total.toLocaleString('vi-VN') + 'đ';
+  document.getElementById('hist-sum').textContent = sessions.length
+    ? `${sessions.length} giao dịch  ·  ${total.toLocaleString('vi-VN')}đ`
+    : 'Chưa có giao dịch nào';
 
   const list = document.getElementById('hist-list');
   if (!sessions.length) {
-    list.innerHTML = '<div class="no-hist">Chưa có giao dịch nào hôm nay</div>';
+    list.innerHTML = '<div class="no-hist">Chưa có giao dịch nào</div>';
   } else {
-    // Dòng tổng nhân viên
-    const staffDiv = staffLine
-      ? `<div style="font-size:12px;color:var(--gold);padding:10px 0 14px;border-bottom:1px solid var(--border);line-height:1.8">${staffLine}</div>`
-      : '';
-    list.innerHTML = staffDiv + sessions.map(h=>`
-      <div class="hi">
-        <div class="hi-dot"></div>
-        <div class="hi-main">
-          <div class="hi-who">${h.staff}</div>
-          <div class="hi-items">${h.items.map(i=>`${i.ico} ${i.label} · ${Number(i.price).toLocaleString('vi-VN')}đ`).join('<br>')}</div>
-          <div class="hi-meta">${h.time}  ·  ${h.payment}${h.note?' · '+h.note:''}</div>
-        </div>
-        <div class="hi-right">
-          <div class="hi-total">${Number(h.total).toLocaleString('vi-VN')}đ</div>
-          <div class="hi-cnt">${h.items.length} dịch vụ</div>
-        </div>
-      </div>
-    `).join('');
+    const byStaff = {};
+    sessions.forEach(h => { byStaff[h.staff] = (byStaff[h.staff]||0) + h.total; });
+    const staffLine = Object.entries(byStaff)
+      .map(([n,v]) => `${n}: ${v.toLocaleString('vi-VN')}đ`).join('  ·  ');
+
+    list.innerHTML =
+      `<div style="font-size:12px;color:var(--gold);padding:12px 18px;border-bottom:1px solid var(--border);line-height:1.9">${staffLine}</div>` +
+      sessions.map(h =>
+        `<div class="hi">
+           <div class="hi-dot"></div>
+           <div class="hi-main">
+             <div class="hi-who">${h.staff}</div>
+             <div class="hi-svcs">${h.items.map(i=>`${i.ico} ${i.name} · ${i.price.toLocaleString('vi-VN')}đ`).join('<br>')}</div>
+             <div class="hi-meta">${h.date}  ${h.time}  ·  ${h.payment}${h.note?' · '+h.note:''}</div>
+           </div>
+           <div class="hi-amt">${h.total.toLocaleString('vi-VN')}đ</div>
+         </div>`
+      ).join('');
   }
-  go('s-hist');
+  go('s4');
 }
 
-// ══ LƯU LỊCH SỬ (localStorage 7 ngày, tự xoá từng giao dịch quá hạn) ══
-function saveSessions() {
-  // Đảm bảo mỗi session có savedAt để tính tuổi
-  sessions.forEach(s => { if (!s.savedAt) s.savedAt = s.id; });
-  localStorage.setItem('kn_sess', JSON.stringify(sessions));
-}
-function loadSessions() {
-  try {
-    const r = localStorage.getItem('kn_sess');
-    if (!r) return;
-    const all = JSON.parse(r);
-    const cutoff = Date.now() - TTL;
-    // Giữ lại những session chưa quá 7 ngày, xoá từng cái quá hạn
-    sessions = all.filter(s => (s.savedAt || s.id) > cutoff);
-    // Nếu có giao dịch bị pruned → lưu lại để dọn storage
-    if (sessions.length < all.length) saveSessions();
-  } catch(e) { sessions = []; }
+// ═══════════════════════════════════════════
+//  S5 — CÀI ĐẶT
+// ═══════════════════════════════════════════
+function goSettings() {
+  const total = sessions.reduce((s, h) => s + h.total, 0);
+  document.getElementById('hist-quick-sub').textContent = sessions.length
+    ? `${sessions.length} giao dịch  ·  ${total.toLocaleString('vi-VN')}đ`
+    : 'Chưa có giao dịch nào';
+  updatePinUI();
+  go('s5');
 }
 
-// ══ CÀI ĐẶT ══════════════════════════════════════════════
-function openSettings() { updatePinUI(); go('s-settings'); }
 function updatePinUI() {
   const has = !!getPin();
   document.getElementById('pin-status-txt').textContent =
-    has ? 'Đã đặt — lịch sử được bảo vệ' : 'Chưa đặt — ai cũng xem lịch sử được';
-  const btn = document.getElementById('pin-setup-btn');
-  btn.textContent = has ? 'Đổi PIN' : 'Đặt PIN';
-  btn.className   = 'pin-badge' + (has ? ' set' : '');
+    has ? 'Đã đặt — lịch sử được bảo vệ' : 'Chưa đặt PIN';
+  const badge = document.getElementById('pin-badge');
+  badge.textContent = has ? 'Đổi PIN' : 'Đặt PIN';
+  badge.className   = 'set-badge' + (has ? ' gold' : '');
 }
 
-// ══ PIN ═══════════════════════════════════════════════════
-function requirePin(cb) {
-  if (!getPin()) { cb(); return; }
-  pinAct = cb; pinMode = 'verify';
-  openPinModal('Nhập mã PIN Admin để tiếp tục');
+// ═══════════════════════════════════════════
+//  LƯU / ĐỌC LỊCH SỬ
+// ═══════════════════════════════════════════
+function saveSessions() {
+  try { localStorage.setItem('kn_v2', JSON.stringify(sessions)); } catch(e) {}
 }
+
+function loadSessions() {
+  try {
+    const r = localStorage.getItem('kn_v2');
+    if (!r) return;
+    let arr = JSON.parse(r);
+    if (!Array.isArray(arr)) arr = arr.data || []; // compat cũ
+    const cutoff = Date.now() - TTL;
+    sessions = arr.filter(s => (s.savedAt || s.id || 0) > cutoff);
+    if (sessions.length < arr.length) saveSessions();
+  } catch(e) { sessions = []; }
+}
+
+// ═══════════════════════════════════════════
+//  PIN
+// ═══════════════════════════════════════════
+let pinBuf = '', pinMode = '', pinTmp = '', pinCb = null;
+
+function getPin() { return localStorage.getItem('kn_pin') || ''; }
+function setPin(p) { localStorage.setItem('kn_pin', p); }
+
 function openPinSetup() {
-  pinBuf=''; pinNewTmp='';
   if (getPin()) {
-    pinAct = () => { pinMode='setup-new'; openPinModal('Tạo mã PIN mới (4 số)'); };
-    pinMode='verify'; openPinModal('Nhập PIN hiện tại trước');
+    pinMode = 'verify';
+    pinCb = () => { pinMode = 'new'; openPinModal('Tạo mã PIN mới (4 số)'); };
+    openPinModal('Nhập PIN hiện tại trước');
   } else {
-    pinMode='setup-new'; openPinModal('Tạo mã PIN Admin (4 số)');
+    pinMode = 'new';
+    openPinModal('Tạo mã PIN Admin (4 số)');
   }
 }
+
 function openPinModal(sub) {
-  pinBuf='';
-  document.getElementById('pin-sub').textContent = sub;
-  document.getElementById('pin-err').textContent = '';
-  document.getElementById('modal-pin').classList.add('open');
-  updateDots();
+  pinBuf = '';
+  document.getElementById('pin-sub').textContent  = sub;
+  document.getElementById('pin-err').textContent  = '';
+  syncPinDots();
+  document.getElementById('pin-modal').classList.add('on');
 }
+
 function closePinModal() {
-  document.getElementById('modal-pin').classList.remove('open');
-  pinBuf=''; pinAct=null;
+  document.getElementById('pin-modal').classList.remove('on');
+  pinBuf = ''; pinTmp = '';
 }
-function updateDots() {
-  for(let i=0;i<4;i++){
-    const d=document.getElementById('pd'+i);
-    d.className='pin-dot'+(i<pinBuf.length?' filled':'');
-  }
+
+function syncPinDots() {
+  for (let i = 0; i < 4; i++)
+    document.getElementById('pd' + i).className = 'pd' + (i < pinBuf.length ? ' filled' : '');
 }
+
 function pinTap(d) {
-  if(pinBuf.length>=4) return;
-  pinBuf+=d; updateDots();
-  if(pinBuf.length===4) setTimeout(handlePin, 120);
+  if (pinBuf.length >= 4) return;
+  pinBuf += d;
+  syncPinDots();
+  if (pinBuf.length === 4) setTimeout(pinSubmit, 120);
 }
-function pinDel() { if(pinBuf.length) { pinBuf=pinBuf.slice(0,-1); updateDots(); } }
-function handlePin() {
-  if(pinMode==='verify') {
-    if(pinBuf===getPin()) {
-      document.getElementById('modal-pin').classList.remove('open');
-      pinBuf='';
-      if(pinAct){pinAct();pinAct=null;}
+
+function pinDel() { pinBuf = pinBuf.slice(0, -1); syncPinDots(); }
+
+function pinSubmit() {
+  if (pinMode === 'verify') {
+    if (pinBuf === getPin()) {
+      closePinModal();
+      if (pinCb) { pinCb(); pinCb = null; }
     } else {
-      shakeDots();
-      document.getElementById('pin-err').textContent='Mã PIN không đúng';
-      pinBuf=''; setTimeout(updateDots,10);
+      document.getElementById('pin-err').textContent = 'PIN sai — thử lại';
+      pinBuf = ''; syncPinDots();
     }
-  } else if(pinMode==='setup-new') {
-    pinNewTmp=pinBuf; pinBuf=''; pinMode='setup-confirm';
-    document.getElementById('pin-sub').textContent='Nhập lại để xác nhận';
-    document.getElementById('pin-err').textContent='';
-    updateDots();
-  } else if(pinMode==='setup-confirm') {
-    if(pinBuf===pinNewTmp) {
-      localStorage.setItem('kn_pin',pinBuf);
-      closePinModal(); pinNewTmp='';
-      updatePinUI(); toast('Đã đặt mã PIN ✓','ok');
+  } else if (pinMode === 'new') {
+    pinTmp = pinBuf; pinBuf = ''; pinMode = 'confirm';
+    document.getElementById('pin-sub').textContent = 'Nhập lại PIN để xác nhận';
+    syncPinDots();
+  } else if (pinMode === 'confirm') {
+    if (pinBuf === pinTmp) {
+      setPin(pinBuf); closePinModal(); updatePinUI(); toast('Đã lưu PIN mới ✓');
     } else {
-      shakeDots();
-      document.getElementById('pin-err').textContent='Không khớp, thử lại';
-      pinBuf=''; pinNewTmp=''; pinMode='setup-new';
-      document.getElementById('pin-sub').textContent='Tạo mã PIN mới (4 số)';
-      setTimeout(updateDots,10);
+      document.getElementById('pin-err').textContent = 'Không khớp — thử lại từ đầu';
+      pinBuf = ''; pinTmp = ''; pinMode = 'new';
+      document.getElementById('pin-sub').textContent = 'Tạo mã PIN Admin (4 số)';
+      syncPinDots();
     }
   }
 }
-function shakeDots() {
-  for(let i=0;i<4;i++){
-    const d=document.getElementById('pd'+i);
-    d.classList.remove('shake'); void d.offsetWidth; d.classList.add('shake');
-  }
+
+// ═══════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════
+let _t;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(_t); _t = setTimeout(() => el.classList.remove('show'), 2800);
 }
 
-// ══ TOAST ═════════════════════════════════════════════════
-let _tt;
-function toast(msg,type='') {
-  const el=document.getElementById('toast');
-  el.textContent=msg; el.className='show '+type;
-  clearTimeout(_tt); _tt=setTimeout(()=>el.className='',2600);
-}
-
-init();
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+loadSessions();
+renderSvcs();
+syncGoBtn();
 </script>
 </body>
 </html>
