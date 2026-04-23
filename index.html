@@ -583,44 +583,57 @@ html, body {
   <div class="ok-svcs" id="ok-svcs"></div>
   <div class="ok-time" id="ok-time">—</div>
   <button class="btn-new" onclick="newEntry()">＋  Giao dịch mới</button>
+  <button class="btn-hist" onclick="openHist('s-ok')">Xem lịch sử hôm nay</button>
 </div>
 
-<!-- ══ SCREEN 5: CÀI ĐẶT + LỊCH SỬ ══════════════════════ -->
+<!-- ══ SCREEN 4: LỊCH SỬ ════════════════════════════════ -->
+<div id="s-hist" class="screen">
+  <div class="topbar">
+    <button class="btn-icon" id="hist-back-btn">←</button>
+    <div>
+      <div class="topbar-title">Lịch sử hôm nay</div>
+      <div class="topbar-sub" id="hist-sum">—</div>
+    </div>
+  </div>
+  <div class="hist-scroll">
+    <div id="hist-list"></div>
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 5: CÀI ĐẶT ═════════════════════════════════ -->
 <div id="s-settings" class="screen">
   <div class="topbar">
     <button class="btn-icon" onclick="go('s-entry')">←</button>
-    <div class="topbar-title">Quản lý</div>
+    <div class="topbar-title">Cài đặt</div>
   </div>
   <div class="set-scroll">
 
-    <!-- PIN -->
-    <div class="sec">Bảo mật Admin</div>
+    <!-- Lịch sử giao dịch -->
+    <div class="set-card" onclick="openHist('s-settings')" style="cursor:pointer">
+      <div class="pin-setup-row">
+        <div>
+          <div class="pin-setup-label">📋 Lịch sử giao dịch</div>
+          <div class="pin-setup-sub" id="hist-quick-sub">Xem tất cả giao dịch đã lưu</div>
+        </div>
+        <div class="pin-badge" style="background:var(--surface2);border-color:var(--border);color:var(--sub);pointer-events:none">Xem →</div>
+      </div>
+    </div>
+
+    <!-- PIN Admin -->
     <div class="set-card">
       <div class="pin-setup-row">
         <div>
-          <div class="pin-setup-label">Mã PIN Admin</div>
+          <div class="pin-setup-label">🔐 Mã PIN Admin</div>
           <div class="pin-setup-sub" id="pin-status-txt">Chưa đặt PIN</div>
         </div>
         <div class="pin-badge" id="pin-setup-btn" onclick="openPinSetup()">Đặt PIN</div>
       </div>
     </div>
     <div class="set-hint">
-      🔐 Sau khi đặt PIN, nhân viên không thể xoá lịch sử. Chỉ admin biết mã PIN mới chỉnh sửa được.
+      🔐 Sau khi đặt PIN, nhân viên không thể xoá lịch sử giao dịch. Chỉ admin biết mã PIN mới chỉnh sửa được.
     </div>
 
-    <!-- Lịch sử -->
-    <div class="sec" style="margin-top:24px">
-      Lịch sử hôm nay
-      <span id="hist-sum" style="font-size:11px;color:var(--gold);margin-left:8px;font-weight:700"></span>
-    </div>
-
-    <!-- Tổng theo nhân viên -->
-    <div id="hist-staff-sum" style="font-size:12px;color:var(--gold);line-height:1.9;margin-bottom:10px"></div>
-
-    <!-- Danh sách giao dịch -->
-    <div id="hist-list"></div>
-
-    <div style="height:40px"></div>
   </div>
 </div>
 
@@ -657,7 +670,7 @@ html, body {
 
 <script>
 // ══ CẤU HÌNH ═════════════════════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxhtDuFtFIVNFdOVHkVY0XgBlGIHoV8EH061n_Ug8QzAcciwqH0Drd5moDvoh2GFVfUA/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxaxVzrUv9T3K1hdou3R5gsOiupf17CoyRk93wXQkqDw-R-0EpgnzUWt_1X5107to1o/exec';
 
 const SERVICES = [
   { ico:'💅', label:'Sơn tay'  },
@@ -669,7 +682,7 @@ const SERVICES = [
 
 const STAFF = ['Duyên','Thy','Thuỳ','Trân','Ngọc'];
 const QUICK = [50000, 100000, 150000, 200000];
-const TTL   = 60 * 24 * 60 * 60 * 1000; // 60 ngày
+const TTL   = 90 * 24 * 60 * 60 * 1000; // 90 ngày
 
 // ══ STATE ═════════════════════════════════════════════════
 let cart     = [];   // [{ico, label, price}]
@@ -678,6 +691,7 @@ let editIdx  = -1;   // index item đang nhập giá
 let curPay   = 'Tiền mặt';
 let curStaff = '';
 let sessions = [];
+let histFrom = 's-ok';
 
 // PIN
 let pinBuf    = '';
@@ -695,10 +709,9 @@ function go(id) {
 // ══ INIT ══════════════════════════════════════════════════
 function init() {
   loadSessions();
-  renderCart();
   renderSvcGrid();
-  syncNextBtn();
   document.getElementById('btn-settings').onclick = openSettings;
+  document.getElementById('hist-back-btn').onclick = () => go(histFrom);
 }
 
 // ══ SCREEN 1: DỊCH VỤ ════════════════════════════════════
@@ -777,7 +790,7 @@ function donePrice() {
   syncNextBtn();
 }
 
-// Render giỏ
+// Render giỏ — KHÔNG dùng innerHTML để tránh mất #cart-hint khỏi DOM
 function renderCart() {
   const box   = document.getElementById('cart-box');
   const hint  = document.getElementById('cart-hint');
@@ -785,9 +798,10 @@ function renderCart() {
   const tamt  = document.getElementById('cart-total-amt');
   const total = cart.reduce((s,c)=>s+c.price,0);
 
+  // Xoá chỉ các .cart-row, giữ nguyên hint trong DOM
+  Array.from(box.querySelectorAll('.cart-row')).forEach(el=>el.remove());
+
   if (!cart.length) {
-    box.innerHTML = '';
-    box.appendChild(hint);
     hint.style.display = 'block';
     tbar.style.display = 'none';
     return;
@@ -795,10 +809,13 @@ function renderCart() {
 
   hint.style.display = 'none';
   tbar.style.display = 'flex';
-  tamt.textContent = total.toLocaleString('vi-VN') + 'đ';
+  tamt.textContent   = total.toLocaleString('vi-VN') + 'đ';
 
-  box.innerHTML = cart.map((c,i) => `
-    <div class="cart-row">
+  // Thêm từng .cart-row vào trước tbar (tbar nằm ngoài cart-box nên append vào box là đúng)
+  cart.forEach((c,i) => {
+    const row = document.createElement('div');
+    row.className = 'cart-row';
+    row.innerHTML = `
       <span class="cart-ico">${c.ico}</span>
       <span class="cart-name">${c.label}</span>
       <span class="cart-price" onclick="editCartItem(${i})">
@@ -807,8 +824,9 @@ function renderCart() {
           : '<span class="none">Nhập giá ✎</span>'}
       </span>
       <button class="cart-del" onclick="delCartItem(${i})">✕</button>
-    </div>
-  `).join('');
+    `;
+    box.appendChild(row);
+  });
 }
 
 function editCartItem(i) {
@@ -902,25 +920,21 @@ function updateFinishBtn() {
 // ══ HOÀN TẤT — GỬI LÊN SHEETS ═══════════════════════════
 async function doFinish() {
   if (!curStaff || !cart.length) return;
+  const now  = new Date();
+  const note = document.getElementById('note-inp').value.trim();
+  const total = cart.reduce((s,c)=>s+c.price,0);
 
   const btn  = document.getElementById('btn-finish');
   const txt  = document.getElementById('finish-txt');
   const spin = document.getElementById('spin');
-
-  // Khoá nút, hiện spinner
-  btn.disabled = true;
-  txt.style.display = 'none';
-  spin.style.display = 'block';
-
-  const now   = new Date();
-  const note  = document.getElementById('note-inp').value.trim();
-  const total = cart.reduce((s,c) => s + c.price, 0);
+  btn.disabled=true; txt.style.display='none'; spin.style.display='block';
 
   try {
+    // Gửi từng dịch vụ = 1 dòng riêng trên Sheets
     for (const item of cart) {
       await fetch(SCRIPT_URL, {
-        method: 'POST', mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
+        method:'POST', mode:'no-cors',
+        headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
           service: item.label,
           price:   item.price,
@@ -931,140 +945,136 @@ async function doFinish() {
       });
     }
 
-    // Lưu lịch sử — id = timestamp để lọc 60 ngày
+    // Lưu lịch sử local
     const group = {
       id:      Date.now(),
+      savedAt: Date.now(),
       date:    now.toLocaleDateString('vi-VN'),
-      time:    now.toLocaleTimeString('vi-VN', { hour:'2-digit', minute:'2-digit', second:'2-digit' }),
+      time:    now.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),
       staff:   curStaff,
       payment: curPay,
       note,
-      items:   cart.map(c => ({ ico: c.ico, label: c.label, price: c.price })),
+      items:   cart.map(c=>({ico:c.ico,label:c.label,price:c.price})),
       total,
     };
     sessions.unshift(group);
+    if (sessions.length > 2000) sessions.pop();
     saveSessions();
 
-    // Điền màn thành công TRƯỚC khi reset state
-    document.getElementById('ok-amt').textContent = '₫ ' + total.toLocaleString('vi-VN');
-    document.getElementById('ok-who').textContent = curStaff;
-    document.getElementById('ok-svcs').innerHTML  =
-      cart.map(c => `${c.ico} ${c.label}  <b style="color:var(--gold)">${Number(c.price).toLocaleString('vi-VN')}đ</b>`).join('<br>');
+    // Màn thành công
+    document.getElementById('ok-amt').textContent  = '₫ ' + total.toLocaleString('vi-VN');
+    document.getElementById('ok-who').textContent  = curStaff;
+    document.getElementById('ok-svcs').innerHTML   =
+      cart.map(c=>`${c.ico} ${c.label}  <b style="color:var(--gold)">${Number(c.price).toLocaleString('vi-VN')}đ</b>`).join('<br>');
     document.getElementById('ok-time').textContent = group.date + '  ·  ' + group.time;
-
-    // Reset spinner/btn NGAY để newEntry không gặp state cũ
-    btn.disabled = false;
-    txt.style.display = '';
-    spin.style.display = 'none';
-
     go('s-ok');
 
   } catch(e) {
     toast('Lỗi kết nối — kiểm tra mạng', 'err');
-    btn.disabled = false;
-    txt.style.display = '';
-    spin.style.display = 'none';
+    btn.disabled=false; txt.style.display=''; spin.style.display='none';
   }
 }
 
 // ══ GIAO DỊCH MỚI ════════════════════════════════════════
 function newEntry() {
-  // 1. Reset state JS
-  cart     = [];
-  raw      = '';
-  editIdx  = -1;
-  curStaff = '';
-  curPay   = 'Tiền mặt';
+// ══ GIAO DỊCH MỚI ════════════════════════════════════════
+function newEntry() {
+  cart=[]; raw=''; curStaff=''; editIdx=-1; curPay='Tiền mặt';
 
-  // 2. Reset màn entry — ẩn bàn phím, hiện grid và nút tiếp
-  const kp   = document.getElementById('keypad-wrap');
-  const grid = document.getElementById('svc-grid');
-  const btnN = document.getElementById('btn-next');
-  kp.classList.remove('show');
-  kp.style.display = '';        // xoá inline style nếu có
-  grid.style.display = 'grid';
-  btnN.style.display = 'block';
-  btnN.className = 'btn-next off'; // tắt nút tiếp (chưa chọn gì)
+  // Ẩn bàn phím
+  document.getElementById('keypad-wrap').classList.remove('show');
+  document.getElementById('svc-grid').style.display = 'grid';
+  document.getElementById('btn-next').style.display = 'block';
 
-  // 3. Reset màn hoá đơn
-  document.getElementById('note-inp').value = '';
-  document.querySelectorAll('.pay-btn').forEach(el =>
-    el.classList.toggle('on', el.dataset.val === 'Tiền mặt'));
+  // Reset ghi chú
+  const noteEl = document.getElementById('note-inp');
+  if (noteEl) noteEl.value = '';
 
-  // 4. Reset giỏ và grid dịch vụ
-  renderCart();
+  // Reset cart UI mà KHÔNG dùng innerHTML (tránh mất #cart-hint)
+  const box  = document.getElementById('cart-box');
+  const hint = document.getElementById('cart-hint');
+  Array.from(box.querySelectorAll('.cart-row')).forEach(el=>el.remove());
+  if (hint) hint.style.display = 'block';
+  const tbar = document.getElementById('cart-total-bar');
+  if (tbar) tbar.style.display = 'none';
+
   renderSvcGrid();
-
-  // 5. Chuyển màn
+  syncNextBtn();
   go('s-entry');
 }
 
-// ══ LƯU LỊCH SỬ (localStorage, giữ 60 ngày, xoá dần cũ nhất) ══
-function saveSessions() {
-  // Mỗi session đã có field id = Date.now() khi tạo
-  // Xoá các entry cũ hơn 60 ngày trước khi lưu
-  const cutoff = Date.now() - TTL;
-  sessions = sessions.filter(h => (h.id || 0) > cutoff);
-  localStorage.setItem('kn_sess', JSON.stringify({ v: 2, data: sessions }));
-}
-
-function loadSessions() {
-  try {
-    const raw = localStorage.getItem('kn_sess');
-    if (!raw) return;
-    const o = JSON.parse(raw);
-    // Hỗ trợ cả format cũ (v1 có ts) và mới (v2 lọc từng entry)
-    const all = o.data || [];
-    const cutoff = Date.now() - TTL;
-    sessions = all.filter(h => (h.id || 0) > cutoff);
-  } catch(e) { sessions = []; }
-}
-
-// ══ CÀI ĐẶT + LỊCH SỬ ═══════════════════════════════════
-function openSettings() {
-  updatePinUI();
-  renderHistInSettings();
-  go('s-settings');
-}
-
-function renderHistInSettings() {
-  const total   = sessions.reduce((s,h) => s+h.total, 0);
-  const byStaff = {};
-  sessions.forEach(h => { byStaff[h.staff] = (byStaff[h.staff]||0) + h.total; });
-
-  // Tổng tóm tắt
-  document.getElementById('hist-sum').textContent = sessions.length
-    ? sessions.length + ' giao dịch  ·  ' + total.toLocaleString('vi-VN') + 'đ'
-    : '';
+// ══ LỊCH SỬ ══════════════════════════════════════════════
+function openHist(from) {
+  histFrom = from;
+  const total = sessions.reduce((s,h)=>s+h.total,0);
 
   // Tổng theo nhân viên
-  const staffEl = document.getElementById('hist-staff-sum');
-  staffEl.innerHTML = Object.entries(byStaff)
-    .map(([n,v]) => `<span style="margin-right:14px">${n}: <b>${Number(v).toLocaleString('vi-VN')}đ</b></span>`)
-    .join('');
+  const byStaff = {};
+  sessions.forEach(h => {
+    byStaff[h.staff] = (byStaff[h.staff]||0) + h.total;
+  });
+  const staffLine = Object.entries(byStaff)
+    .map(([n,v])=>`${n}: ${Number(v).toLocaleString('vi-VN')}đ`).join('  ·  ');
 
-  // Danh sách giao dịch
+  document.getElementById('hist-sum').textContent =
+    sessions.length + ' giao dịch  ·  ' + total.toLocaleString('vi-VN') + 'đ';
+
   const list = document.getElementById('hist-list');
   if (!sessions.length) {
     list.innerHTML = '<div class="no-hist">Chưa có giao dịch nào hôm nay</div>';
-    return;
+  } else {
+    // Dòng tổng nhân viên
+    const staffDiv = staffLine
+      ? `<div style="font-size:12px;color:var(--gold);padding:10px 0 14px;border-bottom:1px solid var(--border);line-height:1.8">${staffLine}</div>`
+      : '';
+    list.innerHTML = staffDiv + sessions.map(h=>`
+      <div class="hi">
+        <div class="hi-dot"></div>
+        <div class="hi-main">
+          <div class="hi-who">${h.staff}</div>
+          <div class="hi-items">${h.items.map(i=>`${i.ico} ${i.label} · ${Number(i.price).toLocaleString('vi-VN')}đ`).join('<br>')}</div>
+          <div class="hi-meta">${h.time}  ·  ${h.payment}${h.note?' · '+h.note:''}</div>
+        </div>
+        <div class="hi-right">
+          <div class="hi-total">${Number(h.total).toLocaleString('vi-VN')}đ</div>
+          <div class="hi-cnt">${h.items.length} dịch vụ</div>
+        </div>
+      </div>
+    `).join('');
   }
-  list.innerHTML = sessions.map((h,i) => `
-    <div class="hi">
-      <div class="hi-dot"></div>
-      <div class="hi-main">
-        <div class="hi-who">${h.staff}</div>
-        <div class="hi-items">${h.items.map(it =>
-          `${it.ico} ${it.label} · ${Number(it.price).toLocaleString('vi-VN')}đ`
-        ).join('<br>')}</div>
-        <div class="hi-meta">${h.time}  ·  ${h.payment}${h.note?' · '+h.note:''}</div>
-      </div>
-      <div class="hi-right">
-        <div class="hi-total">${Number(h.total).toLocaleString('vi-VN')}đ</div>
-        <div class="hi-cnt">${h.items.length} dịch vụ</div>
-      </div>
-    </div>
-  `).join('');
+  go('s-hist');
+}
+
+// ══ LƯU LỊCH SỬ (localStorage 90 ngày, xoá từng item quá hạn) ══
+function saveSessions() {
+  sessions.forEach(s=>{ if(!s.savedAt) s.savedAt = s.id||Date.now(); });
+  localStorage.setItem('kn_sess', JSON.stringify(sessions));
+}
+function loadSessions() {
+  try {
+    const r = localStorage.getItem('kn_sess');
+    if (!r) return;
+    const raw = JSON.parse(r);
+    // Tương thích format cũ { ts, data }
+    const arr = Array.isArray(raw) ? raw : (raw.data||[]);
+    const cutoff = Date.now() - TTL;
+    sessions = arr.filter(s=>(s.savedAt||s.id||0) > cutoff);
+    if (sessions.length < arr.length) saveSessions();
+  } catch(e) { sessions=[]; }
+}
+
+// ══ CÀI ĐẶT ══════════════════════════════════════════════
+function openSettings() {
+  updatePinUI();
+  // Tóm tắt nhanh lịch sử
+  const sub = document.getElementById('hist-quick-sub');
+  if (sub) {
+    const total = sessions.reduce((s,h)=>s+h.total,0);
+    sub.textContent = sessions.length
+      ? `${sessions.length} giao dịch  ·  ${total.toLocaleString('vi-VN')}đ đã lưu`
+      : 'Chưa có giao dịch nào';
+  }
+  go('s-settings');
 }
 function updatePinUI() {
   const has = !!getPin();
