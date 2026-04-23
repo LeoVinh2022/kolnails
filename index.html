@@ -605,26 +605,13 @@ html, body {
 <div id="s-settings" class="screen">
   <div class="topbar">
     <button class="btn-icon" onclick="go('s-entry')">←</button>
-    <div class="topbar-title">Cài đặt</div>
+    <div class="topbar-title">Bảo mật Admin</div>
   </div>
   <div class="set-scroll">
-
-    <!-- Lịch sử giao dịch -->
-    <div class="set-card">
-      <div class="pin-setup-row" onclick="openHist('s-settings')" style="cursor:pointer">
-        <div>
-          <div class="pin-setup-label">📋 Lịch sử hôm nay</div>
-          <div class="pin-setup-sub" id="hist-quick-sub">Xem tất cả giao dịch trong ngày</div>
-        </div>
-        <div class="pin-badge" style="background:var(--surface2);border-color:var(--border);color:var(--sub)">Xem →</div>
-      </div>
-    </div>
-
-    <!-- Mã PIN -->
     <div class="set-card">
       <div class="pin-setup-row">
         <div>
-          <div class="pin-setup-label">🔐 Mã PIN Admin</div>
+          <div class="pin-setup-label">Mã PIN Admin</div>
           <div class="pin-setup-sub" id="pin-status-txt">Chưa đặt PIN</div>
         </div>
         <div class="pin-badge" id="pin-setup-btn" onclick="openPinSetup()">Đặt PIN</div>
@@ -681,7 +668,7 @@ const SERVICES = [
 
 const STAFF = ['Duyên','Thy','Thuỳ','Trân','Ngọc'];
 const QUICK = [50000, 100000, 150000, 200000];
-const TTL   = 24 * 60 * 60 * 1000; // 24h
+const TTL   = 7 * 24 * 60 * 60 * 1000; // 7 ngày
 
 // ══ STATE ═════════════════════════════════════════════════
 let cart     = [];   // [{ico, label, price}]
@@ -942,6 +929,7 @@ async function doFinish() {
     // Lưu lịch sử local
     const group = {
       id:      Date.now(),
+      savedAt: Date.now(),
       date:    now.toLocaleDateString('vi-VN'),
       time:    now.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),
       staff:   curStaff,
@@ -970,11 +958,28 @@ async function doFinish() {
 
 // ══ GIAO DỊCH MỚI ════════════════════════════════════════
 function newEntry() {
-  cart=[]; raw=''; curStaff=''; editIdx=-1;
+  // Reset state
+  cart=[]; raw=''; curStaff=''; editIdx=-1; curPay='Tiền mặt';
+
+  // Ẩn bàn phím, hiện lại grid + nút tiếp
   document.getElementById('keypad-wrap').classList.remove('show');
   document.getElementById('svc-grid').style.display = 'grid';
   document.getElementById('btn-next').style.display = 'block';
-  renderCart(); renderSvcGrid(); syncNextBtn();
+
+  // Reset ghi chú
+  const noteEl = document.getElementById('note-inp');
+  if (noteEl) noteEl.value = '';
+
+  // Reset cart-box — đảm bảo cart-hint không bị mất
+  const box  = document.getElementById('cart-box');
+  const hint = document.getElementById('cart-hint');
+  Array.from(box.querySelectorAll('.cart-row')).forEach(el=>el.remove());
+  if (hint) hint.style.display = 'block';
+  const tbar = document.getElementById('cart-total-bar');
+  if (tbar) tbar.style.display = 'none';
+
+  renderSvcGrid();
+  syncNextBtn();
   go('s-entry');
 }
 
@@ -1020,33 +1025,27 @@ function openHist(from) {
   go('s-hist');
 }
 
-// ══ LƯU LỊCH SỬ (localStorage 24h) ══════════════════════
+// ══ LƯU LỊCH SỬ (localStorage 7 ngày, tự xoá từng giao dịch quá hạn) ══
 function saveSessions() {
-  localStorage.setItem('kn_sess', JSON.stringify({ ts: Date.now(), data: sessions }));
+  // Đảm bảo mỗi session có savedAt để tính tuổi
+  sessions.forEach(s => { if (!s.savedAt) s.savedAt = s.id; });
+  localStorage.setItem('kn_sess', JSON.stringify(sessions));
 }
 function loadSessions() {
   try {
     const r = localStorage.getItem('kn_sess');
     if (!r) return;
-    const o = JSON.parse(r);
-    if (Date.now() - o.ts > TTL) { localStorage.removeItem('kn_sess'); return; }
-    sessions = o.data || [];
+    const all = JSON.parse(r);
+    const cutoff = Date.now() - TTL;
+    // Giữ lại những session chưa quá 7 ngày, xoá từng cái quá hạn
+    sessions = all.filter(s => (s.savedAt || s.id) > cutoff);
+    // Nếu có giao dịch bị pruned → lưu lại để dọn storage
+    if (sessions.length < all.length) saveSessions();
   } catch(e) { sessions = []; }
 }
 
 // ══ CÀI ĐẶT ══════════════════════════════════════════════
-function openSettings() {
-  updatePinUI();
-  // Hiển thị tổng nhanh trên nút lịch sử
-  const total = sessions.reduce((s,h)=>s+h.total,0);
-  const sub   = document.getElementById('hist-quick-sub');
-  if (sub) {
-    sub.textContent = sessions.length
-      ? `${sessions.length} giao dịch  ·  ${total.toLocaleString('vi-VN')}đ hôm nay`
-      : 'Chưa có giao dịch nào hôm nay';
-  }
-  go('s-settings');
-}
+function openSettings() { updatePinUI(); go('s-settings'); }
 function updatePinUI() {
   const has = !!getPin();
   document.getElementById('pin-status-txt').textContent =
