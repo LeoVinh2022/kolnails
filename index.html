@@ -601,30 +601,17 @@ html, body {
   </div>
 </div>
 
-<!-- ══ SCREEN 5: CÀI ĐẶT ════════════════════════════════ -->
+<!-- ══ SCREEN 5: BẢO MẬT ════════════════════════════════ -->
 <div id="s-settings" class="screen">
   <div class="topbar">
     <button class="btn-icon" onclick="go('s-entry')">←</button>
-    <div class="topbar-title">Cài đặt</div>
+    <div class="topbar-title">Bảo mật Admin</div>
   </div>
   <div class="set-scroll">
-
-    <!-- Lịch sử giao dịch -->
-    <div class="set-card" onclick="openHist('s-settings')" style="cursor:pointer">
-      <div class="pin-setup-row">
-        <div>
-          <div class="pin-setup-label">📋 Lịch sử giao dịch</div>
-          <div class="pin-setup-sub" id="hist-quick-sub">Đang tải…</div>
-        </div>
-        <div class="pin-badge">Xem →</div>
-      </div>
-    </div>
-
-    <!-- PIN Admin -->
     <div class="set-card">
       <div class="pin-setup-row">
         <div>
-          <div class="pin-setup-label">🔐 Mã PIN Admin</div>
+          <div class="pin-setup-label">Mã PIN Admin</div>
           <div class="pin-setup-sub" id="pin-status-txt">Chưa đặt PIN</div>
         </div>
         <div class="pin-badge" id="pin-setup-btn" onclick="openPinSetup()">Đặt PIN</div>
@@ -681,7 +668,7 @@ const SERVICES = [
 
 const STAFF = ['Duyên','Thy','Thuỳ','Trân','Ngọc'];
 const QUICK = [50000, 100000, 150000, 200000];
-const TTL   = 60 * 24 * 60 * 60 * 1000; // 60 ngày
+const TTL   = 24 * 60 * 60 * 1000; // 24h
 
 // ══ STATE ═════════════════════════════════════════════════
 let cart     = [];   // [{ico, label, price}]
@@ -789,7 +776,7 @@ function donePrice() {
   syncNextBtn();
 }
 
-// Render giỏ — KHÔNG dùng innerHTML trên cart-box để giữ #cart-hint trong DOM
+// Render giỏ
 function renderCart() {
   const box   = document.getElementById('cart-box');
   const hint  = document.getElementById('cart-hint');
@@ -797,10 +784,9 @@ function renderCart() {
   const tamt  = document.getElementById('cart-total-amt');
   const total = cart.reduce((s,c)=>s+c.price,0);
 
-  // Chỉ xoá .cart-row, giữ hint nguyên vị trí trong DOM
-  box.querySelectorAll('.cart-row').forEach(el=>el.remove());
-
   if (!cart.length) {
+    box.innerHTML = '';
+    box.appendChild(hint);
     hint.style.display = 'block';
     tbar.style.display = 'none';
     return;
@@ -810,20 +796,18 @@ function renderCart() {
   tbar.style.display = 'flex';
   tamt.textContent = total.toLocaleString('vi-VN') + 'đ';
 
-  cart.forEach((c,i) => {
-    const row = document.createElement('div');
-    row.className = 'cart-row';
-    row.innerHTML =
-      `<span class="cart-ico">${c.ico}</span>` +
-      `<span class="cart-name">${c.label}</span>` +
-      `<span class="cart-price" onclick="editCartItem(${i})">` +
-        (c.price > 0
+  box.innerHTML = cart.map((c,i) => `
+    <div class="cart-row">
+      <span class="cart-ico">${c.ico}</span>
+      <span class="cart-name">${c.label}</span>
+      <span class="cart-price" onclick="editCartItem(${i})">
+        ${c.price > 0
           ? Number(c.price).toLocaleString('vi-VN')+'đ  ✎'
-          : '<span class="none">Nhập giá ✎</span>') +
-      `</span>` +
-      `<button class="cart-del" onclick="delCartItem(${i})">✕</button>`;
-    box.appendChild(row);
-  });
+          : '<span class="none">Nhập giá ✎</span>'}
+      </span>
+      <button class="cart-del" onclick="delCartItem(${i})">✕</button>
+    </div>
+  `).join('');
 }
 
 function editCartItem(i) {
@@ -931,7 +915,7 @@ async function doFinish() {
     for (const item of cart) {
       await fetch(SCRIPT_URL, {
         method:'POST', mode:'no-cors',
-        headers:{'Content-Type':'text/plain'},
+        headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
           service: item.label,
           price:   item.price,
@@ -945,7 +929,6 @@ async function doFinish() {
     // Lưu lịch sử local
     const group = {
       id:      Date.now(),
-      savedAt: Date.now(),
       date:    now.toLocaleDateString('vi-VN'),
       time:    now.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),
       staff:   curStaff,
@@ -955,7 +938,7 @@ async function doFinish() {
       total,
     };
     sessions.unshift(group);
-    if (sessions.length > 2000) sessions.length = 2000;
+    if (sessions.length > 80) sessions.pop();
     saveSessions();
 
     // Màn thành công
@@ -975,19 +958,10 @@ async function doFinish() {
 // ══ GIAO DỊCH MỚI ════════════════════════════════════════
 function newEntry() {
   cart=[]; raw=''; curStaff=''; editIdx=-1;
-
-  // Đóng bàn phím nếu đang mở
   document.getElementById('keypad-wrap').classList.remove('show');
   document.getElementById('svc-grid').style.display = 'grid';
   document.getElementById('btn-next').style.display = 'block';
-
-  // Reset cart-box trực tiếp — KHÔNG gọi renderCart() để tránh mất hint
-  document.getElementById('cart-box').querySelectorAll('.cart-row').forEach(el=>el.remove());
-  document.getElementById('cart-hint').style.display      = 'block';
-  document.getElementById('cart-total-bar').style.display = 'none';
-
-  renderSvcGrid();
-  syncNextBtn();
+  renderCart(); renderSvcGrid(); syncNextBtn();
   go('s-entry');
 }
 
@@ -1031,35 +1005,25 @@ function openHist(from) {
     `).join('');
   }
   go('s-hist');
-}
+  // Luôn scroll về đầu để giao dịch mới nhất hiện ngay
+  document.querySelector('.hist-scroll').scrollTop = 0;
 
-// ══ LƯU LỊCH SỬ (localStorage 60 ngày, xoá từng item quá hạn) ══
+// ══ LƯU LỊCH SỬ (localStorage 24h) ══════════════════════
 function saveSessions() {
-  sessions.forEach(s=>{ if(!s.savedAt) s.savedAt = s.id||Date.now(); });
-  try { localStorage.setItem('kn_sess', JSON.stringify(sessions)); } catch(e) {}
+  localStorage.setItem('kn_sess', JSON.stringify({ ts: Date.now(), data: sessions }));
 }
 function loadSessions() {
   try {
     const r = localStorage.getItem('kn_sess');
     if (!r) return;
-    const raw = JSON.parse(r);
-    // Tương thích format cũ { ts, data }
-    const arr = Array.isArray(raw) ? raw : (raw.data||[]);
-    const cutoff = Date.now() - TTL;
-    sessions = arr.filter(s=>(s.savedAt||s.id||0)>cutoff);
-    if (sessions.length < arr.length) saveSessions(); // dọn bản ghi cũ
-  } catch(e) { sessions=[]; }
+    const o = JSON.parse(r);
+    if (Date.now() - o.ts > TTL) { localStorage.removeItem('kn_sess'); return; }
+    sessions = o.data || [];
+  } catch(e) { sessions = []; }
 }
 
 // ══ CÀI ĐẶT ══════════════════════════════════════════════
-function openSettings() {
-  updatePinUI();
-  const total = sessions.reduce((s,h)=>s+h.total,0);
-  document.getElementById('hist-quick-sub').textContent = sessions.length
-    ? `${sessions.length} giao dịch  ·  ${total.toLocaleString('vi-VN')}đ`
-    : 'Chưa có giao dịch nào';
-  go('s-settings');
-}
+function openSettings() { updatePinUI(); go('s-settings'); }
 function updatePinUI() {
   const has = !!getPin();
   document.getElementById('pin-status-txt').textContent =
