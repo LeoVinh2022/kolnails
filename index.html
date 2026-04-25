@@ -583,7 +583,7 @@ html, body {
   <div class="ok-svcs" id="ok-svcs"></div>
   <div class="ok-time" id="ok-time">—</div>
   <button class="btn-new" onclick="newEntry()">＋  Giao dịch mới</button>
-  <button class="btn-hist" onclick="openHist('s-ok')">Xem lịch sử hôm nay</button>
+  <button class="btn-hist" onclick="openHist('s-ok')">Xem lịch sử giao dịch</button>
 </div>
 
 <!-- ══ SCREEN 4: LỊCH SỬ ════════════════════════════════ -->
@@ -591,7 +591,7 @@ html, body {
   <div class="topbar">
     <button class="btn-icon" id="hist-back-btn">←</button>
     <div>
-      <div class="topbar-title">Lịch sử hôm nay</div>
+      <div class="topbar-title">Lịch sử giao dịch</div>
       <div class="topbar-sub" id="hist-sum">—</div>
     </div>
   </div>
@@ -981,9 +981,7 @@ function openHist(from) {
 
   // Tổng theo nhân viên
   const byStaff = {};
-  sessions.forEach(h => {
-    byStaff[h.staff] = (byStaff[h.staff]||0) + h.total;
-  });
+  sessions.forEach(h => { byStaff[h.staff] = (byStaff[h.staff]||0) + h.total; });
   const staffLine = Object.entries(byStaff)
     .map(([n,v])=>`${n}: ${Number(v).toLocaleString('vi-VN')}đ`).join('  ·  ');
 
@@ -992,28 +990,42 @@ function openHist(from) {
 
   const list = document.getElementById('hist-list');
   if (!sessions.length) {
-    list.innerHTML = '<div class="no-hist">Chưa có giao dịch nào hôm nay</div>';
+    list.innerHTML = '<div class="no-hist">Chưa có giao dịch nào</div>';
   } else {
-    // Dòng tổng nhân viên
     const staffDiv = staffLine
       ? `<div style="font-size:12px;color:var(--gold);padding:10px 0 14px;border-bottom:1px solid var(--border);line-height:1.8">${staffLine}</div>`
       : '';
-    list.innerHTML = staffDiv + sessions.map(h=>`
-      <div class="hi">
-        <div class="hi-dot"></div>
-        <div class="hi-main">
-          <div class="hi-who">${h.staff}</div>
-          <div class="hi-items">${h.items.map(i=>`${i.ico} ${i.label} · ${Number(i.price).toLocaleString('vi-VN')}đ`).join('<br>')}</div>
-          <div class="hi-meta">${h.time}  ·  ${h.payment}${h.note?' · '+h.note:''}</div>
-        </div>
-        <div class="hi-right">
-          <div class="hi-total">${Number(h.total).toLocaleString('vi-VN')}đ</div>
-          <div class="hi-cnt">${h.items.length} dịch vụ</div>
-        </div>
-      </div>
-    `).join('');
+
+    // Nhóm theo ngày (sessions đã mới nhất lên đầu)
+    const groups = {};
+    const order  = [];
+    sessions.forEach(h => {
+      if (!groups[h.date]) { groups[h.date] = []; order.push(h.date); }
+      groups[h.date].push(h);
+    });
+
+    const daysHtml = order.map(date => {
+      const dayTotal = groups[date].reduce((s,h)=>s+h.total,0);
+      const rows = groups[date].map(h=>`
+        <div class="hi">
+          <div class="hi-dot"></div>
+          <div class="hi-main">
+            <div class="hi-who">${h.staff}</div>
+            <div class="hi-items">${h.items.map(i=>`${i.ico} ${i.label} · ${Number(i.price).toLocaleString('vi-VN')}đ`).join('<br>')}</div>
+            <div class="hi-meta">${h.time}  ·  ${h.payment}${h.note?' · '+h.note:''}</div>
+          </div>
+          <div class="hi-right">
+            <div class="hi-total">${Number(h.total).toLocaleString('vi-VN')}đ</div>
+            <div class="hi-cnt">${h.items.length} dịch vụ</div>
+          </div>
+        </div>`).join('');
+      return `<div style="font-size:12px;font-weight:800;color:var(--gold);padding:14px 0 8px;border-bottom:1px solid var(--border)">📅 ${date}  ·  ${dayTotal.toLocaleString('vi-VN')}đ</div>${rows}`;
+    }).join('');
+
+    list.innerHTML = staffDiv + daysHtml;
   }
   go('s-hist');
+  document.querySelector('.hist-scroll').scrollTop = 0;
 }
 
 // ══ LƯU LỊCH SỬ (localStorage 24h) ══════════════════════
