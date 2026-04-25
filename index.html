@@ -605,13 +605,24 @@ html, body {
 <div id="s-settings" class="screen">
   <div class="topbar">
     <button class="btn-icon" onclick="go('s-entry')">←</button>
-    <div class="topbar-title">Bảo mật Admin</div>
+    <div class="topbar-title">Cài đặt</div>
   </div>
   <div class="set-scroll">
+
+    <div class="set-card" onclick="openHist('s-settings')" style="cursor:pointer">
+      <div class="pin-setup-row">
+        <div>
+          <div class="pin-setup-label">📋 Lịch sử giao dịch</div>
+          <div class="pin-setup-sub" id="hist-quick-sub">Xem tất cả giao dịch đã lưu</div>
+        </div>
+        <div class="pin-badge">Xem →</div>
+      </div>
+    </div>
+
     <div class="set-card">
       <div class="pin-setup-row">
         <div>
-          <div class="pin-setup-label">Mã PIN Admin</div>
+          <div class="pin-setup-label">🔐 Mã PIN Admin</div>
           <div class="pin-setup-sub" id="pin-status-txt">Chưa đặt PIN</div>
         </div>
         <div class="pin-badge" id="pin-setup-btn" onclick="openPinSetup()">Đặt PIN</div>
@@ -995,7 +1006,7 @@ function openHist(from) {
         <div class="hi-main">
           <div class="hi-who">${h.staff}</div>
           <div class="hi-items">${h.items.map(i=>`${i.ico} ${i.label} · ${Number(i.price).toLocaleString('vi-VN')}đ`).join('<br>')}</div>
-          <div class="hi-meta">${h.date}  ·  ${h.time}  ·  ${h.payment}${h.note?' · '+h.note:''}</div>
+          <div class="hi-meta">${h.time}  ·  ${h.payment}${h.note?' · '+h.note:''}</div>
         </div>
         <div class="hi-right">
           <div class="hi-total">${Number(h.total).toLocaleString('vi-VN')}đ</div>
@@ -1022,7 +1033,14 @@ function loadSessions() {
 }
 
 // ══ CÀI ĐẶT ══════════════════════════════════════════════
-function openSettings() { updatePinUI(); go('s-settings'); }
+function openSettings() {
+  updatePinUI();
+  const total = sessions.reduce((s,h)=>s+h.total,0);
+  document.getElementById('hist-quick-sub').textContent = sessions.length
+    ? `${sessions.length} giao dịch  ·  ${total.toLocaleString('vi-VN')}đ`
+    : 'Chưa có giao dịch nào';
+  go('s-settings');
+}
 function updatePinUI() {
   const has = !!getPin();
   document.getElementById('pin-status-txt').textContent =
