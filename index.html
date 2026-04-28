@@ -320,39 +320,29 @@ html, body {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ════════════════════════════════════════════════════════
-   SCREEN 3 — THÀNH CÔNG
+   SCREEN 3 — QUẢN LÝ (sau hoàn tất)
 ════════════════════════════════════════════════════════ */
-#s-ok {
-  background: var(--bg);
-  align-items: center; justify-content: center;
-  text-align: center; padding: 32px 28px;
+#s-manage { background: var(--bg); }
+.manage-header {
+  flex-shrink: 0;
+  padding: 0 22px 14px;
+  border-bottom: 1px solid var(--border);
 }
-.ok-ring {
-  width: 96px; height: 96px; border-radius: 50%;
-  background: var(--green-dim); border: 2px solid var(--green);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 42px; margin: 0 auto 24px;
-  animation: pop .4s cubic-bezier(.34,1.56,.64,1) both;
+.manage-brand {
+  font-size: 13px; font-weight: 800; letter-spacing: 3px;
+  color: var(--gold); text-transform: uppercase;
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 14px;
 }
-@keyframes pop { from { transform: scale(0.3); opacity: 0; } }
-.ok-tag  { font-size: 11px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: var(--green); margin-bottom: 10px; }
-.ok-amt  { font-size: 44px; font-weight: 300; font-family: var(--mono); color: var(--text); letter-spacing: -1px; margin-bottom: 6px; }
-.ok-who  { font-size: 18px; font-weight: 800; color: var(--gold); }
-.ok-svcs { font-size: 13px; color: var(--sub); margin-top: 10px; line-height: 1.8; }
-.ok-time { font-size: 12px; color: var(--sub); margin-top: 8px; }
-.btn-new {
-  margin-top: 44px; width: 100%;
-  background: var(--surface2); border: 1.5px solid var(--border);
-  border-radius: 16px; padding: 18px;
-  font-family: var(--font); font-size: 16px; font-weight: 800;
-  color: var(--text); cursor: pointer;
+.btn-new-big {
+  width: 100%; border: none; border-radius: 16px;
+  padding: 17px; font-family: var(--font);
+  font-size: 16px; font-weight: 900; cursor: pointer;
+  background: var(--gold); color: #111;
+  box-shadow: 0 4px 20px rgba(224,180,106,0.25);
 }
-.btn-new:active { background: var(--border); }
-.btn-hist {
-  margin-top: 10px; width: 100%; background: none; border: none;
-  font-family: var(--font); font-size: 14px; font-weight: 700;
-  color: var(--sub); cursor: pointer; padding: 12px;
-}
+.btn-new-big:active { opacity: 0.85; transform: scale(0.98); }
+.manage-scroll { flex: 1; overflow-y: auto; }
 
 /* ════════════════════════════════════════════════════════
    SCREEN 4 — LỊCH SỬ
@@ -375,12 +365,6 @@ html, body {
 .hi-right { text-align: right; flex-shrink: 0; }
 .hi-total { font-size: 16px; font-weight: 800; color: var(--gold); font-family: var(--mono); }
 .hi-cnt   { font-size: 11px; color: var(--sub); margin-top: 2px; }
-.hi-day {
-  font-size: 12px; font-weight: 800; color: var(--gold);
-  padding: 14px 0 8px; letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 2px;
-}
 .no-hist  { font-size: 14px; color: var(--sub); text-align: center; padding: 30px 0; }
 
 /* ════════════════════════════════════════════════════════
@@ -466,7 +450,7 @@ html, body {
 
   <div class="brand">
     <span>✦ KOL Nails</span>
-    <button class="btn-icon" id="btn-settings" style="font-size:18px">☰</button>
+    <button class="btn-icon" id="btn-settings" style="font-size:18px" onclick="goManage()">☰</button>
   </div>
 
   <!-- Giỏ dịch vụ đã chọn -->
@@ -580,52 +564,37 @@ html, body {
 
 </div>
 
-<!-- ══ SCREEN 3: THÀNH CÔNG ═════════════════════════════ -->
-<div id="s-ok" class="screen">
-  <div class="ok-ring">✓</div>
-  <div class="ok-tag">Đã lưu thành công</div>
-  <div class="ok-amt" id="ok-amt">₫ 0</div>
-  <div class="ok-who" id="ok-who">—</div>
-  <div class="ok-svcs" id="ok-svcs"></div>
-  <div class="ok-time" id="ok-time">—</div>
-  <button class="btn-new" onclick="newEntry()">＋  Giao dịch mới</button>
-  <button class="btn-hist" onclick="openHist('s-ok')">Xem lịch sử hôm nay</button>
+<!-- ══ SCREEN 3: QUẢN LÝ ════════════════════════════════ -->
+<div id="s-manage" class="screen">
+
+  <div class="manage-header">
+    <div class="manage-brand">
+      <span>✦ KOL Nails</span>
+      <button class="btn-icon" onclick="openPin()" style="font-size:16px">🔐</button>
+    </div>
+    <button class="btn-new-big" onclick="newEntry()">＋ Giao dịch mới</button>
+  </div>
+
+  <!-- Lịch sử chiếm phần còn lại -->
+  <div class="manage-scroll">
+    <div id="manage-hist-list"></div>
+    <div style="height:20px"></div>
+  </div>
+
 </div>
 
-<!-- ══ SCREEN 4: LỊCH SỬ ════════════════════════════════ -->
+<!-- ══ SCREEN 4: LỊCH SỬ (giữ cho openHist từ nơi khác) ══ -->
 <div id="s-hist" class="screen">
   <div class="topbar">
     <button class="btn-icon" id="hist-back-btn">←</button>
     <div>
-      <div class="topbar-title">Lịch sử hôm nay</div>
+      <div class="topbar-title">Lịch sử giao dịch</div>
       <div class="topbar-sub" id="hist-sum">—</div>
     </div>
   </div>
   <div class="hist-scroll">
     <div id="hist-list"></div>
     <div style="height:20px"></div>
-  </div>
-</div>
-
-<!-- ══ SCREEN 5: BẢO MẬT ════════════════════════════════ -->
-<div id="s-settings" class="screen">
-  <div class="topbar">
-    <button class="btn-icon" onclick="go('s-entry')">←</button>
-    <div class="topbar-title">Bảo mật Admin</div>
-  </div>
-  <div class="set-scroll">
-    <div class="set-card">
-      <div class="pin-setup-row">
-        <div>
-          <div class="pin-setup-label">Mã PIN Admin</div>
-          <div class="pin-setup-sub" id="pin-status-txt">Chưa đặt PIN</div>
-        </div>
-        <div class="pin-badge" id="pin-setup-btn" onclick="openPinSetup()">Đặt PIN</div>
-      </div>
-    </div>
-    <div class="set-hint">
-      🔐 Sau khi đặt PIN, nhân viên không thể xoá lịch sử giao dịch. Chỉ admin biết mã PIN mới chỉnh sửa được.
-    </div>
   </div>
 </div>
 
@@ -662,7 +631,7 @@ html, body {
 
 <script>
 // ══ CẤU HÌNH ═════════════════════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyI2LlWMIMKoAO7rhGXw492NestzQt1v0c60yN7ELAdg2z1kKGOb9gg6TmhRS7xUXCtPQ/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxaxVzrUv9T3K1hdou3R5gsOiupf17CoyRk93wXQkqDw-R-0EpgnzUWt_1X5107to1o/exec';
 
 const SERVICES = [
   { ico:'💅', label:'Sơn tay'  },
@@ -674,7 +643,7 @@ const SERVICES = [
 
 const STAFF = ['Duyên','Thy','Thuỳ','Trân','Ngọc'];
 const QUICK = [50000, 100000, 150000, 200000];
-const TTL   = 24 * 60 * 60 * 1000; // 24h
+const TTL   = 60 * 24 * 60 * 60 * 1000; // 60 ngày
 
 // ══ STATE ═════════════════════════════════════════════════
 let cart     = [];   // [{ico, label, price}]
@@ -702,8 +671,8 @@ function go(id) {
 function init() {
   loadSessions();
   renderSvcGrid();
-  document.getElementById('btn-settings').onclick = openSettings;
-  document.getElementById('hist-back-btn').onclick = () => go(histFrom);
+  const hb = document.getElementById('hist-back-btn');
+  if (hb) hb.onclick = () => go(histFrom);
 }
 
 // ══ SCREEN 1: DỊCH VỤ ════════════════════════════════════
@@ -782,7 +751,7 @@ function donePrice() {
   syncNextBtn();
 }
 
-// Render giỏ
+// Render giỏ — KHÔNG dùng innerHTML trên cart-box để giữ #cart-hint trong DOM
 function renderCart() {
   const box   = document.getElementById('cart-box');
   const hint  = document.getElementById('cart-hint');
@@ -790,30 +759,29 @@ function renderCart() {
   const tamt  = document.getElementById('cart-total-amt');
   const total = cart.reduce((s,c)=>s+c.price,0);
 
+  box.querySelectorAll('.cart-row').forEach(el=>el.remove());
+
   if (!cart.length) {
-    box.innerHTML = '';
-    box.appendChild(hint);
     hint.style.display = 'block';
     tbar.style.display = 'none';
     return;
   }
-
   hint.style.display = 'none';
   tbar.style.display = 'flex';
   tamt.textContent = total.toLocaleString('vi-VN') + 'đ';
 
-  box.innerHTML = cart.map((c,i) => `
-    <div class="cart-row">
-      <span class="cart-ico">${c.ico}</span>
-      <span class="cart-name">${c.label}</span>
-      <span class="cart-price" onclick="editCartItem(${i})">
-        ${c.price > 0
-          ? Number(c.price).toLocaleString('vi-VN')+'đ  ✎'
-          : '<span class="none">Nhập giá ✎</span>'}
-      </span>
-      <button class="cart-del" onclick="delCartItem(${i})">✕</button>
-    </div>
-  `).join('');
+  cart.forEach((c,i) => {
+    const row = document.createElement('div');
+    row.className = 'cart-row';
+    row.innerHTML =
+      `<span class="cart-ico">${c.ico}</span>` +
+      `<span class="cart-name">${c.label}</span>` +
+      `<span class="cart-price" onclick="editCartItem(${i})">` +
+        (c.price>0 ? Number(c.price).toLocaleString('vi-VN')+'đ  ✎' : '<span class="none">Nhập giá ✎</span>') +
+      `</span>` +
+      `<button class="cart-del" onclick="delCartItem(${i})">✕</button>`;
+    box.appendChild(row);
+  });
 }
 
 function editCartItem(i) {
@@ -921,7 +889,7 @@ async function doFinish() {
     for (const item of cart) {
       await fetch(SCRIPT_URL, {
         method:'POST', mode:'no-cors',
-        headers:{'Content-Type':'application/json'},
+        headers:{'Content-Type':'text/plain'},
         body: JSON.stringify({
           service: item.label,
           price:   item.price,
@@ -935,6 +903,7 @@ async function doFinish() {
     // Lưu lịch sử local
     const group = {
       id:      Date.now(),
+      savedAt: Date.now(),
       date:    now.toLocaleDateString('vi-VN'),
       time:    now.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),
       staff:   curStaff,
@@ -944,21 +913,69 @@ async function doFinish() {
       total,
     };
     sessions.unshift(group);
-    if (sessions.length > 80) sessions.pop();
+    if (sessions.length > 2000) sessions.length = 2000;
     saveSessions();
 
-    // Màn thành công
-    document.getElementById('ok-amt').textContent  = '₫ ' + total.toLocaleString('vi-VN');
-    document.getElementById('ok-who').textContent  = curStaff;
-    document.getElementById('ok-svcs').innerHTML   =
-      cart.map(c=>`${c.ico} ${c.label}  <b style="color:var(--gold)">${Number(c.price).toLocaleString('vi-VN')}đ</b>`).join('<br>');
-    document.getElementById('ok-time').textContent = group.date + '  ·  ' + group.time;
-    go('s-ok');
+    toast('✓ Đã lưu  ·  ₫ ' + total.toLocaleString('vi-VN'), 'ok');
+    goManage();
 
   } catch(e) {
     toast('Lỗi kết nối — kiểm tra mạng', 'err');
     btn.disabled=false; txt.style.display=''; spin.style.display='none';
   }
+}
+
+// ══ QUẢN LÝ ══════════════════════════════════════════════
+function goManage() {
+  renderManageHist();
+  go('s-manage');
+}
+
+function renderManageHist() {
+  const list  = document.getElementById('manage-hist-list');
+  const total = sessions.reduce((s,h)=>s+h.total,0);
+
+  if (!sessions.length) {
+    list.innerHTML = '<div class="no-hist">Chưa có giao dịch nào</div>';
+    return;
+  }
+
+  // Tổng theo nhân viên
+  const byStaff = {};
+  sessions.forEach(h=>{ byStaff[h.staff]=(byStaff[h.staff]||0)+h.total; });
+  const staffLine = Object.entries(byStaff)
+    .map(([n,v])=>`${n}: ${Number(v).toLocaleString('vi-VN')}đ`).join('  ·  ');
+
+  const sumDiv = `<div style="font-size:12px;color:var(--gold);padding:14px 22px;border-bottom:1px solid var(--border);line-height:1.9">`+
+    `${sessions.length} giao dịch  ·  ${total.toLocaleString('vi-VN')}đ<br>${staffLine}</div>`;
+
+  // Nhóm theo ngày
+  const groups={}, order=[];
+  sessions.forEach(h=>{
+    if(!groups[h.date]){groups[h.date]=[];order.push(h.date);}
+    groups[h.date].push(h);
+  });
+
+  const daysHtml = order.map(date=>{
+    const dayTotal = groups[date].reduce((s,h)=>s+h.total,0);
+    const rows = groups[date].map(h=>`
+      <div class="hi">
+        <div class="hi-dot"></div>
+        <div class="hi-main">
+          <div class="hi-who">${h.staff}</div>
+          <div class="hi-items">${h.items.map(i=>`${i.ico} ${i.label} · ${Number(i.price).toLocaleString('vi-VN')}đ`).join('<br>')}</div>
+          <div class="hi-meta">${h.time}  ·  ${h.payment}${h.note?' · '+h.note:''}</div>
+        </div>
+        <div class="hi-right">
+          <div class="hi-total">${Number(h.total).toLocaleString('vi-VN')}đ</div>
+          <div class="hi-cnt">${h.items.length} dịch vụ</div>
+        </div>
+      </div>`).join('');
+    return `<div style="font-size:12px;font-weight:800;color:var(--gold);padding:14px 22px 8px;border-bottom:1px solid var(--border)">📅 ${date}  ·  ${dayTotal.toLocaleString('vi-VN')}đ</div>${rows}`;
+  }).join('');
+
+  list.innerHTML = sumDiv + daysHtml;
+  list.scrollTop = 0;
 }
 
 // ══ GIAO DỊCH MỚI ════════════════════════════════════════
@@ -967,90 +984,41 @@ function newEntry() {
   document.getElementById('keypad-wrap').classList.remove('show');
   document.getElementById('svc-grid').style.display = 'grid';
   document.getElementById('btn-next').style.display = 'block';
-  renderCart(); renderSvcGrid(); syncNextBtn();
+  // Reset cart UI trực tiếp — không gọi renderCart() để tránh mất hint
+  document.getElementById('cart-box').querySelectorAll('.cart-row').forEach(el=>el.remove());
+  document.getElementById('cart-hint').style.display      = 'block';
+  document.getElementById('cart-total-bar').style.display = 'none';
+  renderSvcGrid(); syncNextBtn();
   go('s-entry');
 }
 
-// ══ LỊCH SỬ ══════════════════════════════════════════════
+// ══ LỊCH SỬ (dự phòng từ nơi khác gọi) ══════════════════
 function openHist(from) {
   histFrom = from;
-  const total = sessions.reduce((s,h)=>s+h.total,0);
-
-  // Tổng theo nhân viên
-  const byStaff = {};
-  sessions.forEach(h => { byStaff[h.staff] = (byStaff[h.staff]||0) + h.total; });
-  const staffLine = Object.entries(byStaff)
-    .map(([n,v])=>`${n}: ${Number(v).toLocaleString('vi-VN')}đ`).join('  ·  ');
-
-  document.getElementById('hist-sum').textContent =
-    sessions.length + ' giao dịch  ·  ' + total.toLocaleString('vi-VN') + 'đ';
-
-  const list = document.getElementById('hist-list');
-  if (!sessions.length) {
-    list.innerHTML = '<div class="no-hist">Chưa có giao dịch nào</div>';
-  } else {
-    // Dòng tổng nhân viên
-    const staffDiv = staffLine
-      ? `<div style="font-size:12px;color:var(--gold);padding:10px 0 14px;border-bottom:1px solid var(--border);line-height:1.8">${staffLine}</div>`
-      : '';
-
-    // Nhóm theo ngày — sessions đã sorted mới nhất lên đầu
-    const groups = {};
-    const order  = [];
-    sessions.forEach(h => {
-      if (!groups[h.date]) { groups[h.date] = []; order.push(h.date); }
-      groups[h.date].push(h);
-    });
-
-    const daysHtml = order.map(date => {
-      const dayTotal = groups[date].reduce((s,h)=>s+h.total,0);
-      const rowsHtml = groups[date].map(h=>`
-        <div class="hi">
-          <div class="hi-dot"></div>
-          <div class="hi-main">
-            <div class="hi-who">${h.staff}</div>
-            <div class="hi-items">${h.items.map(i=>`${i.ico} ${i.label} · ${Number(i.price).toLocaleString('vi-VN')}đ`).join('<br>')}</div>
-            <div class="hi-meta">${h.time}  ·  ${h.payment}${h.note?' · '+h.note:''}</div>
-          </div>
-          <div class="hi-right">
-            <div class="hi-total">${Number(h.total).toLocaleString('vi-VN')}đ</div>
-            <div class="hi-cnt">${h.items.length} dịch vụ</div>
-          </div>
-        </div>
-      `).join('');
-      return `<div class="hi-day">📅 ${date}  ·  ${dayTotal.toLocaleString('vi-VN')}đ</div>${rowsHtml}`;
-    }).join('');
-
-    list.innerHTML = staffDiv + daysHtml;
-  }
-  go('s-hist');
-  document.querySelector('.hist-scroll').scrollTop = 0;
+  goManage(); // đơn giản redirect về màn Quản lý
 }
 
-// ══ LƯU LỊCH SỬ (localStorage 24h) ══════════════════════
+// ══ LƯU LỊCH SỬ (localStorage 60 ngày, per-item TTL) ════
 function saveSessions() {
-  localStorage.setItem('kn_sess', JSON.stringify({ ts: Date.now(), data: sessions }));
+  sessions.forEach(s=>{ if(!s.savedAt) s.savedAt=s.id||Date.now(); });
+  try { localStorage.setItem('kn_sess', JSON.stringify(sessions)); } catch(e){}
 }
 function loadSessions() {
   try {
     const r = localStorage.getItem('kn_sess');
     if (!r) return;
-    const o = JSON.parse(r);
-    if (Date.now() - o.ts > TTL) { localStorage.removeItem('kn_sess'); return; }
-    sessions = o.data || [];
-  } catch(e) { sessions = []; }
+    const raw = JSON.parse(r);
+    const arr = Array.isArray(raw) ? raw : (raw.data||[]);
+    const cutoff = Date.now() - TTL;
+    sessions = arr.filter(s=>(s.savedAt||s.id||0)>cutoff);
+    if (sessions.length < arr.length) saveSessions();
+  } catch(e){ sessions=[]; }
 }
 
-// ══ CÀI ĐẶT ══════════════════════════════════════════════
-function openSettings() { updatePinUI(); go('s-settings'); }
-function updatePinUI() {
-  const has = !!getPin();
-  document.getElementById('pin-status-txt').textContent =
-    has ? 'Đã đặt — lịch sử được bảo vệ' : 'Chưa đặt — ai cũng xem lịch sử được';
-  const btn = document.getElementById('pin-setup-btn');
-  btn.textContent = has ? 'Đổi PIN' : 'Đặt PIN';
-  btn.className   = 'pin-badge' + (has ? ' set' : '');
-}
+// ══ CÀI ĐẶT / PIN ════════════════════════════════════════
+function openSettings() { goManage(); }
+function openPin() { openPinSetup(); }
+function updatePinUI() {}  // không còn UI PIN riêng
 
 // ══ PIN ═══════════════════════════════════════════════════
 function requirePin(cb) {
