@@ -327,13 +327,27 @@ html, body {
   align-items: center; justify-content: center;
   text-align: center; padding: 32px 28px;
 }
-.ok-ring {
-  width: 96px; height: 96px; border-radius: 50%;
-  background: var(--green-dim); border: 2px solid var(--green);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 42px; margin: 0 auto 24px;
-  animation: pop .4s cubic-bezier(.34,1.56,.64,1) both;
-}
+/* ── SCREEN BÁO CÁO ── */
+.rpt-top    { flex-shrink:0; padding:10px 22px 14px; border-bottom:1px solid var(--border); background:var(--card); }
+.rpt-picker { display:flex; gap:8px; margin-bottom:10px; }
+.rpt-sel    { flex:1; background:var(--surface); border:1.5px solid var(--border); border-radius:12px; padding:10px 14px; color:var(--text); font-family:var(--font); font-size:14px; font-weight:700; outline:none; cursor:pointer; -webkit-appearance:none; }
+.rpt-sel:focus { border-color:var(--gold); }
+.btn-rpt-load { background:var(--gold); color:#111; border:none; border-radius:12px; padding:10px 18px; font-family:var(--font); font-size:14px; font-weight:900; cursor:pointer; flex-shrink:0; }
+.rpt-sum    { font-size:13px; color:var(--sub); font-weight:600; min-height:18px; }
+.rpt-sum b  { color:var(--gold); }
+.rpt-scroll { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.rpt-day    { padding:12px 22px 8px; }
+.rpt-day-hd { font-size:11px; font-weight:800; color:var(--gold); letter-spacing:.5px; margin-bottom:6px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+.rpt-row    { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); }
+.rpt-row:last-child { border-bottom:none; }
+.rpt-info   { flex:1; }
+.rpt-svc    { font-size:13px; font-weight:700; }
+.rpt-meta   { font-size:11px; color:var(--sub); margin-top:2px; }
+.rpt-price  { font-size:14px; font-weight:800; color:var(--gold); flex-shrink:0; }
+.rpt-empty  { padding:40px 22px; text-align:center; color:var(--sub); font-size:14px; line-height:2; }
+.rpt-load   { padding:40px 22px; text-align:center; color:var(--sub); font-size:14px; }
+
+.ok-ring { width:96px; height:96px; border-radius:50%; background:var(--green-dim); border:2px solid var(--green); display:flex; align-items:center; justify-content:center; font-size:42px; margin:0 auto 24px; animation:pop .4s cubic-bezier(.34,1.56,.64,1) both; }
 @keyframes pop { from { transform: scale(0.3); opacity: 0; } }
 .ok-tag  { font-size: 11px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: var(--green); margin-bottom: 10px; }
 .ok-amt  { font-size: 44px; font-weight: 300; font-family: var(--mono); color: var(--text); letter-spacing: -1px; margin-bottom: 6px; }
@@ -583,7 +597,7 @@ html, body {
   <div class="ok-svcs" id="ok-svcs"></div>
   <div class="ok-time" id="ok-time">—</div>
   <button class="btn-new" onclick="newEntry()">＋  Giao dịch mới</button>
-  <button class="btn-hist" onclick="openHist('s-ok')">Xem lịch sử giao dịch</button>
+  <button class="btn-hist" onclick="openHist('s-ok')">Xem lịch sử hôm nay</button>
 </div>
 
 <!-- ══ SCREEN 4: LỊCH SỬ ════════════════════════════════ -->
@@ -591,13 +605,34 @@ html, body {
   <div class="topbar">
     <button class="btn-icon" id="hist-back-btn">←</button>
     <div>
-      <div class="topbar-title">Lịch sử giao dịch</div>
+      <div class="topbar-title">Lịch sử hôm nay</div>
       <div class="topbar-sub" id="hist-sum">—</div>
     </div>
   </div>
   <div class="hist-scroll">
     <div id="hist-list"></div>
     <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 6: BÁO CÁO THÁNG ══════════════════════════ -->
+<div id="s-report" class="screen">
+  <div class="topbar">
+    <button class="btn-icon" onclick="go('s-settings')">←</button>
+    <div class="topbar-title">Báo cáo của tôi</div>
+  </div>
+  <div class="rpt-top">
+    <div class="rpt-picker">
+      <select class="rpt-sel" id="rpt-staff">
+        <option value="">— Chọn tên —</option>
+      </select>
+      <select class="rpt-sel" id="rpt-month"></select>
+      <button class="btn-rpt-load" onclick="loadReport()">Xem</button>
+    </div>
+    <div class="rpt-sum" id="rpt-sum"></div>
+  </div>
+  <div class="rpt-scroll">
+    <div id="rpt-list"><div class="rpt-empty">Chọn tên và tháng rồi bấm Xem</div></div>
   </div>
 </div>
 
@@ -613,6 +648,15 @@ html, body {
         <div>
           <div class="pin-setup-label">📋 Lịch sử giao dịch</div>
           <div class="pin-setup-sub" id="hist-quick-sub">Xem tất cả giao dịch đã lưu</div>
+        </div>
+        <div class="pin-badge">Xem →</div>
+      </div>
+    </div>
+    <div class="set-card" onclick="openReport()" style="cursor:pointer">
+      <div class="pin-setup-row">
+        <div>
+          <div class="pin-setup-label">📊 Báo cáo tháng</div>
+          <div class="pin-setup-sub">Xem doanh thu từ Google Sheets</div>
         </div>
         <div class="pin-badge">Xem →</div>
       </div>
@@ -665,7 +709,7 @@ html, body {
 
 <script>
 // ══ CẤU HÌNH ═════════════════════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxwakj9EaRBLcm8XiqICqUYPfBFndULQl_OgbeKv3b4QnHLX7_943TJ-f6KRPeNsJJIcw/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxTlCop-i8tPpANAysackzaWIFo41OQEPCL31XAXXNQpoOmhhY97YzDXtFalVtfKZQ22g/exec';
 
 const SERVICES = [
   { ico:'💅', label:'Sơn tay'  },
@@ -677,7 +721,7 @@ const SERVICES = [
 
 const STAFF = ['Duyên','Thy','Thuỳ','Trân','Ngọc'];
 const QUICK = [50000, 100000, 150000, 200000];
-const TTL   = 60 * 24 * 60 * 60 * 1000; // 60 ngày
+const TTL   = 24 * 60 * 60 * 1000; // 24h
 
 // ══ STATE ═════════════════════════════════════════════════
 let cart     = [];   // [{ico, label, price}]
@@ -785,7 +829,7 @@ function donePrice() {
   syncNextBtn();
 }
 
-// Render giỏ — KHÔNG dùng innerHTML trên cart-box để giữ #cart-hint trong DOM
+// Render giỏ
 function renderCart() {
   const box   = document.getElementById('cart-box');
   const hint  = document.getElementById('cart-hint');
@@ -793,10 +837,9 @@ function renderCart() {
   const tamt  = document.getElementById('cart-total-amt');
   const total = cart.reduce((s,c)=>s+c.price,0);
 
-  // Xoá chỉ .cart-row, hint luôn giữ nguyên trong DOM
-  box.querySelectorAll('.cart-row').forEach(el=>el.remove());
-
   if (!cart.length) {
+    box.innerHTML = '';
+    box.appendChild(hint);
     hint.style.display = 'block';
     tbar.style.display = 'none';
     return;
@@ -806,20 +849,18 @@ function renderCart() {
   tbar.style.display = 'flex';
   tamt.textContent = total.toLocaleString('vi-VN') + 'đ';
 
-  cart.forEach((c,i) => {
-    const row = document.createElement('div');
-    row.className = 'cart-row';
-    row.innerHTML =
-      `<span class="cart-ico">${c.ico}</span>` +
-      `<span class="cart-name">${c.label}</span>` +
-      `<span class="cart-price" onclick="editCartItem(${i})">` +
-        (c.price > 0
+  box.innerHTML = cart.map((c,i) => `
+    <div class="cart-row">
+      <span class="cart-ico">${c.ico}</span>
+      <span class="cart-name">${c.label}</span>
+      <span class="cart-price" onclick="editCartItem(${i})">
+        ${c.price > 0
           ? Number(c.price).toLocaleString('vi-VN')+'đ  ✎'
-          : '<span class="none">Nhập giá ✎</span>') +
-      `</span>` +
-      `<button class="cart-del" onclick="delCartItem(${i})">✕</button>`;
-    box.appendChild(row);
-  });
+          : '<span class="none">Nhập giá ✎</span>'}
+      </span>
+      <button class="cart-del" onclick="delCartItem(${i})">✕</button>
+    </div>
+  `).join('');
 }
 
 function editCartItem(i) {
@@ -927,7 +968,7 @@ async function doFinish() {
     for (const item of cart) {
       await fetch(SCRIPT_URL, {
         method:'POST', mode:'no-cors',
-        headers:{'Content-Type':'text/plain'},
+        headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
           service: item.label,
           price:   item.price,
@@ -941,7 +982,6 @@ async function doFinish() {
     // Lưu lịch sử local
     const group = {
       id:      Date.now(),
-      savedAt: Date.now(),
       date:    now.toLocaleDateString('vi-VN'),
       time:    now.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),
       staff:   curStaff,
@@ -951,7 +991,7 @@ async function doFinish() {
       total,
     };
     sessions.unshift(group);
-    if (sessions.length > 2000) sessions.length = 2000;
+    if (sessions.length > 80) sessions.pop();
     saveSessions();
 
     // Màn thành công
@@ -974,11 +1014,7 @@ function newEntry() {
   document.getElementById('keypad-wrap').classList.remove('show');
   document.getElementById('svc-grid').style.display = 'grid';
   document.getElementById('btn-next').style.display = 'block';
-  // Reset cart UI trực tiếp — KHÔNG gọi renderCart() để tránh mất hint
-  document.getElementById('cart-box').querySelectorAll('.cart-row').forEach(el=>el.remove());
-  document.getElementById('cart-hint').style.display      = 'block';
-  document.getElementById('cart-total-bar').style.display = 'none';
-  renderSvcGrid(); syncNextBtn();
+  renderCart(); renderSvcGrid(); syncNextBtn();
   go('s-entry');
 }
 
@@ -986,8 +1022,12 @@ function newEntry() {
 function openHist(from) {
   histFrom = from;
   const total = sessions.reduce((s,h)=>s+h.total,0);
+
+  // Tổng theo nhân viên
   const byStaff = {};
-  sessions.forEach(h=>{ byStaff[h.staff]=(byStaff[h.staff]||0)+h.total; });
+  sessions.forEach(h => {
+    byStaff[h.staff] = (byStaff[h.staff]||0) + h.total;
+  });
   const staffLine = Object.entries(byStaff)
     .map(([n,v])=>`${n}: ${Number(v).toLocaleString('vi-VN')}đ`).join('  ·  ');
 
@@ -996,55 +1036,42 @@ function openHist(from) {
 
   const list = document.getElementById('hist-list');
   if (!sessions.length) {
-    list.innerHTML = '<div class="no-hist">Chưa có giao dịch nào</div>';
+    list.innerHTML = '<div class="no-hist">Chưa có giao dịch nào hôm nay</div>';
   } else {
+    // Dòng tổng nhân viên
     const staffDiv = staffLine
       ? `<div style="font-size:12px;color:var(--gold);padding:10px 0 14px;border-bottom:1px solid var(--border);line-height:1.8">${staffLine}</div>`
       : '';
-    // Nhóm theo ngày
-    const groups={}, order=[];
-    sessions.forEach(h=>{
-      if(!groups[h.date]){groups[h.date]=[];order.push(h.date);}
-      groups[h.date].push(h);
-    });
-    const daysHtml = order.map(date=>{
-      const dayTotal = groups[date].reduce((s,h)=>s+h.total,0);
-      const rows = groups[date].map(h=>`
-        <div class="hi">
-          <div class="hi-dot"></div>
-          <div class="hi-main">
-            <div class="hi-who">${h.staff}</div>
-            <div class="hi-items">${h.items.map(i=>`${i.ico} ${i.label} · ${Number(i.price).toLocaleString('vi-VN')}đ`).join('<br>')}</div>
-            <div class="hi-meta">${h.time}  ·  ${h.payment}${h.note?' · '+h.note:''}</div>
-          </div>
-          <div class="hi-right">
-            <div class="hi-total">${Number(h.total).toLocaleString('vi-VN')}đ</div>
-            <div class="hi-cnt">${h.items.length} dịch vụ</div>
-          </div>
-        </div>`).join('');
-      return `<div style="font-size:12px;font-weight:800;color:var(--gold);padding:14px 0 8px;border-bottom:1px solid var(--border)">📅 ${date}  ·  ${dayTotal.toLocaleString('vi-VN')}đ</div>${rows}`;
-    }).join('');
-    list.innerHTML = staffDiv + daysHtml;
+    list.innerHTML = staffDiv + sessions.map(h=>`
+      <div class="hi">
+        <div class="hi-dot"></div>
+        <div class="hi-main">
+          <div class="hi-who">${h.staff}</div>
+          <div class="hi-items">${h.items.map(i=>`${i.ico} ${i.label} · ${Number(i.price).toLocaleString('vi-VN')}đ`).join('<br>')}</div>
+          <div class="hi-meta">${h.time}  ·  ${h.payment}${h.note?' · '+h.note:''}</div>
+        </div>
+        <div class="hi-right">
+          <div class="hi-total">${Number(h.total).toLocaleString('vi-VN')}đ</div>
+          <div class="hi-cnt">${h.items.length} dịch vụ</div>
+        </div>
+      </div>
+    `).join('');
   }
   go('s-hist');
-  document.querySelector('.hist-scroll').scrollTop = 0;
 }
 
-// ══ LƯU LỊCH SỬ (localStorage 60 ngày, xoá từng item quá hạn) ══
+// ══ LƯU LỊCH SỬ (localStorage 24h) ══════════════════════
 function saveSessions() {
-  sessions.forEach(s=>{ if(!s.savedAt) s.savedAt=s.id||Date.now(); });
-  try { localStorage.setItem('kn_sess', JSON.stringify(sessions)); } catch(e){}
+  localStorage.setItem('kn_sess', JSON.stringify({ ts: Date.now(), data: sessions }));
 }
 function loadSessions() {
   try {
     const r = localStorage.getItem('kn_sess');
     if (!r) return;
-    const raw = JSON.parse(r);
-    const arr = Array.isArray(raw) ? raw : (raw.data||[]);
-    const cutoff = Date.now() - TTL;
-    sessions = arr.filter(s=>(s.savedAt||s.id||0)>cutoff);
-    if (sessions.length < arr.length) saveSessions();
-  } catch(e) { sessions=[]; }
+    const o = JSON.parse(r);
+    if (Date.now() - o.ts > TTL) { localStorage.removeItem('kn_sess'); return; }
+    sessions = o.data || [];
+  } catch(e) { sessions = []; }
 }
 
 // ══ CÀI ĐẶT ══════════════════════════════════════════════
@@ -1055,6 +1082,86 @@ function openSettings() {
     ? `${sessions.length} giao dịch  ·  ${total.toLocaleString('vi-VN')}đ`
     : 'Chưa có giao dịch nào';
   go('s-settings');
+}
+
+// ══ BÁO CÁO THÁNG (từ Google Sheets) ════════════════════
+function openReport() {
+  // Điền danh sách nhân viên
+  const sel = document.getElementById('rpt-staff');
+  sel.innerHTML = '<option value="">— Chọn tên —</option>' +
+    STAFF.map(n => `<option value="${n}">${n}</option>`).join('');
+
+  // Điền 6 tháng gần nhất
+  const mSel = document.getElementById('rpt-month');
+  const now  = new Date();
+  let opts   = '';
+  for (let i = 0; i < 6; i++) {
+    const d   = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const val = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+    const lbl = 'Tháng ' + (d.getMonth()+1) + '/' + d.getFullYear();
+    opts += `<option value="${val}"${i===0?' selected':''}>${lbl}</option>`;
+  }
+  mSel.innerHTML = opts;
+
+  document.getElementById('rpt-list').innerHTML = '<div class="rpt-empty">Chọn tên và tháng rồi bấm Xem</div>';
+  document.getElementById('rpt-sum').innerHTML  = '';
+  go('s-report');
+}
+
+async function loadReport() {
+  const staff = document.getElementById('rpt-staff').value;
+  const month = document.getElementById('rpt-month').value;
+  if (!staff) { alert('Hãy chọn tên nhân viên'); return; }
+
+  const list = document.getElementById('rpt-list');
+  const sum  = document.getElementById('rpt-sum');
+  list.innerHTML = '<div class="rpt-load">Đang tải…</div>';
+  sum.innerHTML  = '';
+
+  try {
+    const url = SCRIPT_URL + '?staff=' + encodeURIComponent(staff) + '&month=' + month;
+    const res = await fetch(url);
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || 'Lỗi server');
+
+    const rows = json.data;
+    if (!rows.length) {
+      list.innerHTML = `<div class="rpt-empty">Không có giao dịch nào<br>của <b>${staff}</b> trong tháng này</div>`;
+      return;
+    }
+
+    const total = rows.reduce((s,r)=>s+r.price,0);
+    sum.innerHTML = `<b>${rows.length}</b> giao dịch  ·  <b>${total.toLocaleString('vi-VN')}đ</b>`;
+
+    // Nhóm theo ngày
+    const groups = {}, order = [];
+    rows.forEach(r => {
+      if (!groups[r.date]) { groups[r.date]=[]; order.push(r.date); }
+      groups[r.date].push(r);
+    });
+
+    list.innerHTML = order.map(date => {
+      const dayTotal = groups[date].reduce((s,r)=>s+r.price,0);
+      const rowsHtml = groups[date].map(r =>
+        `<div class="rpt-row">
+           <div class="rpt-info">
+             <div class="rpt-svc">${r.service}</div>
+             <div class="rpt-meta">${r.time}  ·  ${r.payment}${r.note?' · '+r.note:''}</div>
+           </div>
+           <div class="rpt-price">${r.price.toLocaleString('vi-VN')}đ</div>
+         </div>`
+      ).join('');
+      return `<div class="rpt-day">
+        <div class="rpt-day-hd">📅 ${date}  ·  ${dayTotal.toLocaleString('vi-VN')}đ</div>
+        ${rowsHtml}
+      </div>`;
+    }).join('');
+
+    list.scrollTop = 0;
+
+  } catch(e) {
+    list.innerHTML = `<div class="rpt-empty">Lỗi kết nối<br><span style="font-size:12px">${e.message}</span><br><br>Kiểm tra mạng và thử lại</div>`;
+  }
 }
 function updatePinUI() {
   const has = !!getPin();
